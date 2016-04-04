@@ -26,6 +26,6 @@ public enum APCOperationResultStatus {
     case ConnectionError
     case InternalServerError
     case InvalidParamters
-    case ResourceNotFounded
+    case ResourceNotFound
     
 }

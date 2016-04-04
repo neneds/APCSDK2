@@ -52,9 +52,9 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
     
     
     /**
-        Initializes an user with user name and email.
-        - parameter username Name of the user
-        - parameter email E-mail of the user
+        Inicializa um usuário com nome e email.
+        - parameter username Nome do usuário.
+        - parameter email E-mail do usuário.
     */
     convenience public init(username: String, email: String) {
         self.init()
@@ -63,10 +63,10 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
     }
     
     /**
-     Initializes an user with user name and email.
-     - parameter username Name of the user
-     - parameter email E-mail of the user
-     - parameter password User password
+        Inicializa um usuário com nome e email e senha.
+        - parameter username Nome do usuário.
+        - parameter email E-mail do usuário.
+        - parameter password Senha do usuário
     */
     convenience public init(username: String, email: String, password: String) {
         self.init(username: username, email: email)
@@ -194,7 +194,8 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
                 "tokenFacebook = \(self.tokenFacebook)\n" +
                 "tokenGoogle = \(self.tokenGoogle)\n" +
                 "tokenTwitter = \(self.tokenTwitter)\n" +
-                "tokenInstagram  = \(self.tokenInstagram)\n"
+                "tokenInstagram  = \(self.tokenInstagram)\n" +
+                "senha = \(self.password)"
     }
 }
 

@@ -12,16 +12,22 @@ import Alamofire
 
 public let TokenValidDaysInterval: Int = 7
 public let DayInSeconds : Double = 60 * 60 * 24
-public class APCUserManger: NSObject {
+public class APCUserManager: NSObject {
     
     
-    static public var sharedManager = APCUserManger()
+    static public var sharedManager = APCUserManager()
     
     
-    private(set) var activeSession: APCUserSession?
+    public private(set) var activeSession: APCUserSession?
     
     public var isSessionActive: Bool {
         return self.activeSession != nil
+    }
+    
+    //MARK:- Initializers
+    private override init() {
+        super.init()
+        self.loadCurrentSession()
     }
     
     
@@ -54,54 +60,37 @@ public class APCUserManger: NSObject {
     }
     
     private func saveUserPass(email email: String, password: String) -> Bool{
-        let query = [
-            kSecClass as String       : kSecClassGenericPassword as String,
-            kSecAttrAccount as String : email,
-            kSecValueData as String   : password]
-        
-        SecItemDelete(query as CFDictionaryRef)
-        
-        let status: OSStatus = SecItemAdd(query as CFDictionaryRef, nil)
-        
-        return status == noErr
+        return KeychainWrapper.standardKeychainAccess().setString(password, forKey: email)
     }
     
     private func loadUserPass(email email: String)-> String? {
-        let query = [
-            kSecClass as String : kSecClassGenericPassword as String,
-            kSecAttrAccount as String : email,
-            kSecReturnData as String : kCFBooleanTrue,
-            kSecMatchLimit as String : kSecMatchLimitOne
-        ]
-
-        var extractedData: AnyObject?
-        let status: OSStatus = SecItemCopyMatching(query as CFDictionaryRef, &extractedData)
-        if status == noErr {
-            return extractedData as? String
-        } else {
-            return nil
-        }
+        return KeychainWrapper.standardKeychainAccess().stringForKey(email)
     }
     
     private func clearPassword() {
-        let query = [ kSecClass as String : kSecClassGenericPassword]
-        SecItemDelete(query as CFDictionaryRef)
+        KeychainWrapper.standardKeychainAccess().removeAllKeys()
     }
     
     /**
-     
+        Remove a sessão atualmente ativa limpando todos os dados relativos.
      
      */
     public func clearSession() {
         let defaults = NSUserDefaults.standardUserDefaults()
         defaults.removeObjectForKey("current_session")
         self.clearPassword()
+        self.activeSession = nil
     }
     
     
     //MARK:- Authentication methods
     /**
-     
+        Autentica usuário com conta padrão do TCU. Se o login for efetuado com sucesso, o método irá preencher automaticamente a propriedade -activeSession
+        - parameter email E-mail do usuário.
+        - parameter password Senha do usuário.
+        - parameter @optional appIdentifier Numero correspondente ao App no Servidor do TCU. Exemplo: 100 - Código do App Mapa da Saúde.
+        - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
+        - see APCOperationResponse.swift
     */
     public func authenticate(email email: String, password: String, appIdentifier: Int?, result: ((operationResponse: APCOperationResponse)-> Void)?) {
         var headers :[String : String] =  ["email" : email, "senha" : password]
@@ -109,13 +98,17 @@ public class APCUserManger: NSObject {
             headers.updateValue("\(unwrapperAppIdentifier)", forKey: "appIdentifier")
         }
         Alamofire.request(.GET, APCURLProvider.authenticateUserURL(), parameters: nil, encoding: .URLEncodedInURL, headers: headers).responseJSON { (responseObject) in
-            self.authenticationResponseHandler(response: responseObject, result: result)
+            self.authenticationResponseHandler(password: password, response: responseObject, result: result)
         }
     }
     
     /**
-     
-     
+     Autentica usuário com o facebook. Se o login for efetuado com sucesso, o método irá preencher automaticamente a propriedade -activeSession
+     - parameter email E-mail do usuário.
+     - parameter facebookToken Token do facebook do usuário.
+     - parameter @optional appIdentifier Numero correspondente ao App no Servidor do TCU. Exemplo: 100 - Código do App Mapa da Saúde.
+     - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
+     - see APCOperationResponse.swift
      */
     public func authenticateFacebook(email email: String, facebookToken: String, appIdentifier: Int?, result: ((operationResponse: APCOperationResponse)-> Void)?) {
         var headers :[String : String] =  ["email" : email, "facebookToken" : facebookToken]
@@ -123,27 +116,36 @@ public class APCUserManger: NSObject {
             headers.updateValue("\(unwrapperAppIdentifier)", forKey: "appIdentifier")
         }
         Alamofire.request(.GET, APCURLProvider.authenticateUserURL(), parameters: nil, encoding: .URLEncodedInURL, headers: headers).responseJSON { (responseObject) in
-            self.authenticationResponseHandler(response: responseObject, result: result)
+            self.authenticationResponseHandler(password: nil, response: responseObject, result: result)
         }
     }
-    
+    /**
+    Autentica usuário com o twitter. Se o login for efetuado com sucesso, o método irá preencher automaticamente a propriedade -activeSession
+    - parameter email E-mail do usuário.
+    - parameter facebookToken Token do facebook do usuário.
+    - parameter @optional appIdentifier Numero correspondente ao App no Servidor do TCU. Exemplo: 100 - Código do App Mapa da Saúde.
+    - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
+    - see APCOperationResponse.swift
+    */
     public func authenticateTwitter(email email: String, twitterToken: String, appIdentifier: Int?, result: ((operationResponse: APCOperationResponse)-> Void)?) {
         var headers :[String : String] =  ["email" : email, "twitterToken" : twitterToken]
         if let unwrapperAppIdentifier = appIdentifier {
             headers.updateValue("\(unwrapperAppIdentifier)", forKey: "appIdentifier")
         }
         Alamofire.request(.GET, APCURLProvider.authenticateUserURL(), parameters: nil, encoding: .URLEncodedInURL, headers: headers).responseJSON { (responseObject) in
-            self.authenticationResponseHandler(response: responseObject, result: result)
+            self.authenticationResponseHandler(password: nil, response: responseObject, result: result)
         }
     }
     
     
     //MARK:- Register Method
     
-    /**
-        
-     
-    */
+     /**
+     Cadastra um usuário. Se o cadastro for efetuado com sucesso, o método irá authenticar e preencher automaticamente  propriedade -activeSession
+     - parameter user E-mail do usuário.
+     - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
+     - see APCOperationResponse.swift
+     */
     public func registerUser(user user: APCUser,  result: (operationResponse: APCOperationResponse)-> Void) {
         if let request = self.requestForRegisterUser(user: user) {
             Alamofire.request(request).responseData(completionHandler: { (responseObject) in
@@ -177,7 +179,6 @@ public class APCUserManger: NSObject {
     
     private func requestForRegisterUser(user user: APCUser)-> NSURLRequest? {
         let userAsDictionary = user.asDictionary()
-        print(userAsDictionary)
         if let jsonData = try? NSJSONSerialization.dataWithJSONObject(userAsDictionary, options: .PrettyPrinted){
             let request = NSMutableURLRequest(URL: APCURLProvider.userBaserURL())
             request.HTTPMethod = "POST"
@@ -193,7 +194,7 @@ public class APCUserManger: NSObject {
     
     
     //MARK:- Useful methods
-    private func authenticationResponseHandler(response responseObject: Response<AnyObject, NSError>, result: ((operationResponse: APCOperationResponse)-> Void)?) {
+    private func authenticationResponseHandler(password passowrd: String?, response responseObject: Response<AnyObject, NSError>, result: ((operationResponse: APCOperationResponse)-> Void)?) {
         if let uwrappedResponse = responseObject.response {
             switch uwrappedResponse.statusCode {
             case 200:
@@ -204,6 +205,7 @@ public class APCUserManger: NSObject {
                 let expirationDate = fm.dateFromString(uwrappedResponse.allHeaderFields["date"] as! String)?.dateByAddingTimeInterval(DayInSeconds * (Double(TokenValidDaysInterval) - 1.0))
                 let user = JsonObjectCreator.createObject(dictionary: responseObject.result.value as! [String : AnyObject], objectClass: APCUser.self) as! APCUser
                 let session = APCUserSession(user: user, token: appToken, expirationDate: expirationDate!)
+                session.currentUser?.password = passowrd
                 self.activeSession = session
                 self.saveCurrentSession()
                 result?(operationResponse: APCOperationResponse(data: session, status: .CompletedSuccesfully))
@@ -215,7 +217,6 @@ public class APCUserManger: NSObject {
                 result?(operationResponse: APCOperationResponse(data: nil, status: .InvalidParamters))
                 break
             case 500:
-                print("\(String(data: responseObject.data!, encoding: NSUTF8StringEncoding))")
                 result?(operationResponse: APCOperationResponse(data: nil, status: .InternalServerError))
                 break
             default:

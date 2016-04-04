@@ -24,4 +24,8 @@ class APCURLProvider: NSObject {
         return NSURL(string: self.baseAPCService + "/pessoas/autenticar")!
     
     }
+    
+    class func redefinePasswordURL()-> NSURL {
+        return NSURL(string: self.baseAPCService)!
+    }
 }

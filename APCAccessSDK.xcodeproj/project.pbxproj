@@ -13,11 +13,12 @@
 		B2ADD39A1CB0544B00A4662E /* JsonObjectCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD3981CB0544B00A4662E /* JsonObjectCreator.swift */; };
 		B2ADD39D1CB054B000A4662E /* APCUserSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD39C1CB054B000A4662E /* APCUserSession.swift */; };
 		B2ADD3A11CB08C5100A4662E /* Dictionary+Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD3A01CB08C5100A4662E /* Dictionary+Util.swift */; };
-		B2ADD3A31CB0A18500A4662E /* APCUserManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD3A21CB0A18500A4662E /* APCUserManger.swift */; };
+		B2ADD3A31CB0A18500A4662E /* APCUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD3A21CB0A18500A4662E /* APCUserManager.swift */; };
 		B2ADD3A51CB0A2EB00A4662E /* APCURLProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD3A41CB0A2EB00A4662E /* APCURLProvider.swift */; };
 		B2ADD3A71CB1413B00A4662E /* APCOperationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD3A61CB1413B00A4662E /* APCOperationResponse.swift */; };
 		B2ADD3A91CB18F8700A4662E /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = B2ADD3A81CB18F8700A4662E /* Cartfile */; };
 		B2ADD3DD1CB1ACA700A4662E /* APCAccessSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = B2ADD38C1CB04E0C00A4662E /* APCAccessSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B2F5C4261CB3046A00BFAB5A /* KeychainWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2F5C4251CB3046A00BFAB5A /* KeychainWrapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -42,10 +43,11 @@
 		B2ADD3981CB0544B00A4662E /* JsonObjectCreator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonObjectCreator.swift; sourceTree = "<group>"; };
 		B2ADD39C1CB054B000A4662E /* APCUserSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCUserSession.swift; sourceTree = "<group>"; };
 		B2ADD3A01CB08C5100A4662E /* Dictionary+Util.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dictionary+Util.swift"; sourceTree = "<group>"; };
-		B2ADD3A21CB0A18500A4662E /* APCUserManger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCUserManger.swift; sourceTree = "<group>"; };
+		B2ADD3A21CB0A18500A4662E /* APCUserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCUserManager.swift; sourceTree = "<group>"; };
 		B2ADD3A41CB0A2EB00A4662E /* APCURLProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCURLProvider.swift; sourceTree = "<group>"; };
 		B2ADD3A61CB1413B00A4662E /* APCOperationResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCOperationResponse.swift; sourceTree = "<group>"; };
 		B2ADD3A81CB18F8700A4662E /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Cartfile; path = ../Cartfile; sourceTree = "<group>"; };
+		B2F5C4251CB3046A00BFAB5A /* KeychainWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainWrapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +64,7 @@
 		B2ADD37F1CB04E0C00A4662E = {
 			isa = PBXGroup;
 			children = (
+				B2F5C4241CB3045000BFAB5A /* KeyChainWrapper */,
 				B2ADD39F1CB08BAB00A4662E /* Extensions */,
 				B2ADD39E1CB089FD00A4662E /* Manager */,
 				B2ADD39B1CB0547600A4662E /* JsonConveter */,
@@ -111,7 +114,7 @@
 		B2ADD39E1CB089FD00A4662E /* Manager */ = {
 			isa = PBXGroup;
 			children = (
-				B2ADD3A21CB0A18500A4662E /* APCUserManger.swift */,
+				B2ADD3A21CB0A18500A4662E /* APCUserManager.swift */,
 				B2ADD3A41CB0A2EB00A4662E /* APCURLProvider.swift */,
 				B2ADD3A61CB1413B00A4662E /* APCOperationResponse.swift */,
 			);
@@ -124,6 +127,14 @@
 				B2ADD3A01CB08C5100A4662E /* Dictionary+Util.swift */,
 			);
 			name = Extensions;
+			sourceTree = "<group>";
+		};
+		B2F5C4241CB3045000BFAB5A /* KeyChainWrapper */ = {
+			isa = PBXGroup;
+			children = (
+				B2F5C4251CB3046A00BFAB5A /* KeychainWrapper.swift */,
+			);
+			name = KeyChainWrapper;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -228,13 +239,14 @@
 			files = (
 				B2ADD3951CB04E3900A4662E /* APCUser.swift in Sources */,
 				B2ADD3A71CB1413B00A4662E /* APCOperationResponse.swift in Sources */,
-				B2ADD3A31CB0A18500A4662E /* APCUserManger.swift in Sources */,
+				B2ADD3A31CB0A18500A4662E /* APCUserManager.swift in Sources */,
 				B2ADD39A1CB0544B00A4662E /* JsonObjectCreator.swift in Sources */,
 				B2958B941CB201F900F5AF76 /* APCProfile.swift in Sources */,
 				B2ADD3A11CB08C5100A4662E /* Dictionary+Util.swift in Sources */,
 				B2ADD39D1CB054B000A4662E /* APCUserSession.swift in Sources */,
 				B2ADD3A51CB0A2EB00A4662E /* APCURLProvider.swift in Sources */,
 				B2ADD3991CB0544B00A4662E /* JsonConverteble.swift in Sources */,
+				B2F5C4261CB3046A00BFAB5A /* KeychainWrapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
