@@ -194,8 +194,7 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
                 "tokenFacebook = \(self.tokenFacebook)\n" +
                 "tokenGoogle = \(self.tokenGoogle)\n" +
                 "tokenTwitter = \(self.tokenTwitter)\n" +
-                "tokenInstagram  = \(self.tokenInstagram)\n" +
-                "senha = \(self.password)"
+                "tokenInstagram  = \(self.tokenInstagram)\n" 
     }
 }
 
