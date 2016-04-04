@@ -7,13 +7,45 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B2ADD38D1CB04E0C00A4662E /* APCAccessSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = B2ADD38C1CB04E0C00A4662E /* APCAccessSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B2958B941CB201F900F5AF76 /* APCProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2958B931CB201F900F5AF76 /* APCProfile.swift */; };
+		B2ADD3951CB04E3900A4662E /* APCUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD3941CB04E3900A4662E /* APCUser.swift */; };
+		B2ADD3991CB0544B00A4662E /* JsonConverteble.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD3971CB0544B00A4662E /* JsonConverteble.swift */; };
+		B2ADD39A1CB0544B00A4662E /* JsonObjectCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD3981CB0544B00A4662E /* JsonObjectCreator.swift */; };
+		B2ADD39D1CB054B000A4662E /* APCUserSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD39C1CB054B000A4662E /* APCUserSession.swift */; };
+		B2ADD3A11CB08C5100A4662E /* Dictionary+Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD3A01CB08C5100A4662E /* Dictionary+Util.swift */; };
+		B2ADD3A31CB0A18500A4662E /* APCUserManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD3A21CB0A18500A4662E /* APCUserManger.swift */; };
+		B2ADD3A51CB0A2EB00A4662E /* APCURLProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD3A41CB0A2EB00A4662E /* APCURLProvider.swift */; };
+		B2ADD3A71CB1413B00A4662E /* APCOperationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD3A61CB1413B00A4662E /* APCOperationResponse.swift */; };
+		B2ADD3A91CB18F8700A4662E /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = B2ADD3A81CB18F8700A4662E /* Cartfile */; };
+		B2ADD3DD1CB1ACA700A4662E /* APCAccessSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = B2ADD38C1CB04E0C00A4662E /* APCAccessSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		B2ADD4001CB1C4D200A4662E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		B2958B931CB201F900F5AF76 /* APCProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCProfile.swift; sourceTree = "<group>"; };
 		B2ADD3891CB04E0C00A4662E /* APCAccessSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = APCAccessSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2ADD38C1CB04E0C00A4662E /* APCAccessSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = APCAccessSDK.h; sourceTree = "<group>"; };
 		B2ADD38E1CB04E0C00A4662E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B2ADD3941CB04E3900A4662E /* APCUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCUser.swift; sourceTree = "<group>"; };
+		B2ADD3971CB0544B00A4662E /* JsonConverteble.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonConverteble.swift; sourceTree = "<group>"; };
+		B2ADD3981CB0544B00A4662E /* JsonObjectCreator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonObjectCreator.swift; sourceTree = "<group>"; };
+		B2ADD39C1CB054B000A4662E /* APCUserSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCUserSession.swift; sourceTree = "<group>"; };
+		B2ADD3A01CB08C5100A4662E /* Dictionary+Util.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dictionary+Util.swift"; sourceTree = "<group>"; };
+		B2ADD3A21CB0A18500A4662E /* APCUserManger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCUserManger.swift; sourceTree = "<group>"; };
+		B2ADD3A41CB0A2EB00A4662E /* APCURLProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCURLProvider.swift; sourceTree = "<group>"; };
+		B2ADD3A61CB1413B00A4662E /* APCOperationResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCOperationResponse.swift; sourceTree = "<group>"; };
+		B2ADD3A81CB18F8700A4662E /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Cartfile; path = ../Cartfile; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30,6 +62,10 @@
 		B2ADD37F1CB04E0C00A4662E = {
 			isa = PBXGroup;
 			children = (
+				B2ADD39F1CB08BAB00A4662E /* Extensions */,
+				B2ADD39E1CB089FD00A4662E /* Manager */,
+				B2ADD39B1CB0547600A4662E /* JsonConveter */,
+				B2ADD3961CB04E4000A4662E /* Entities */,
 				B2ADD38B1CB04E0C00A4662E /* APCAccessSDK */,
 				B2ADD38A1CB04E0C00A4662E /* Products */,
 			);
@@ -47,9 +83,47 @@
 			isa = PBXGroup;
 			children = (
 				B2ADD38C1CB04E0C00A4662E /* APCAccessSDK.h */,
+				B2ADD3A81CB18F8700A4662E /* Cartfile */,
 				B2ADD38E1CB04E0C00A4662E /* Info.plist */,
 			);
 			path = APCAccessSDK;
+			sourceTree = "<group>";
+		};
+		B2ADD3961CB04E4000A4662E /* Entities */ = {
+			isa = PBXGroup;
+			children = (
+				B2ADD3941CB04E3900A4662E /* APCUser.swift */,
+				B2ADD39C1CB054B000A4662E /* APCUserSession.swift */,
+				B2958B931CB201F900F5AF76 /* APCProfile.swift */,
+			);
+			name = Entities;
+			sourceTree = "<group>";
+		};
+		B2ADD39B1CB0547600A4662E /* JsonConveter */ = {
+			isa = PBXGroup;
+			children = (
+				B2ADD3971CB0544B00A4662E /* JsonConverteble.swift */,
+				B2ADD3981CB0544B00A4662E /* JsonObjectCreator.swift */,
+			);
+			name = JsonConveter;
+			sourceTree = "<group>";
+		};
+		B2ADD39E1CB089FD00A4662E /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				B2ADD3A21CB0A18500A4662E /* APCUserManger.swift */,
+				B2ADD3A41CB0A2EB00A4662E /* APCURLProvider.swift */,
+				B2ADD3A61CB1413B00A4662E /* APCOperationResponse.swift */,
+			);
+			name = Manager;
+			sourceTree = "<group>";
+		};
+		B2ADD39F1CB08BAB00A4662E /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B2ADD3A01CB08C5100A4662E /* Dictionary+Util.swift */,
+			);
+			name = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -59,7 +133,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B2ADD38D1CB04E0C00A4662E /* APCAccessSDK.h in Headers */,
+				B2ADD3DD1CB1ACA700A4662E /* APCAccessSDK.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,6 +148,8 @@
 				B2ADD3851CB04E0C00A4662E /* Frameworks */,
 				B2ADD3861CB04E0C00A4662E /* Headers */,
 				B2ADD3871CB04E0C00A4662E /* Resources */,
+				B2ADD3AA1CB1919B00A4662E /* ShellScript */,
+				B2ADD4001CB1C4D200A4662E /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -90,6 +166,7 @@
 		B2ADD3801CB04E0C00A4662E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				CLASSPREFIX = APC;
 				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = "Luciano Almeida";
 				TargetAttributes = {
@@ -120,16 +197,44 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2ADD3A91CB18F8700A4662E /* Cartfile in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		B2ADD3AA1CB1919B00A4662E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			inputPaths = (
+				"",
+				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B2ADD3841CB04E0C00A4662E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2ADD3951CB04E3900A4662E /* APCUser.swift in Sources */,
+				B2ADD3A71CB1413B00A4662E /* APCOperationResponse.swift in Sources */,
+				B2ADD3A31CB0A18500A4662E /* APCUserManger.swift in Sources */,
+				B2ADD39A1CB0544B00A4662E /* JsonObjectCreator.swift in Sources */,
+				B2958B941CB201F900F5AF76 /* APCProfile.swift in Sources */,
+				B2ADD3A11CB08C5100A4662E /* Dictionary+Util.swift in Sources */,
+				B2ADD39D1CB054B000A4662E /* APCUserSession.swift in Sources */,
+				B2ADD3A51CB0A2EB00A4662E /* APCURLProvider.swift in Sources */,
+				B2ADD3991CB0544B00A4662E /* JsonConverteble.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,28 +335,36 @@
 		B2ADD3921CB04E0C00A4662E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
 				INFOPLIST_FILE = APCAccessSDK/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.bepid.APCAccessSDK;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		B2ADD3931CB04E0C00A4662E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
 				INFOPLIST_FILE = APCAccessSDK/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bepid.APCAccessSDK;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -278,6 +391,7 @@
 				B2ADD3931CB04E0C00A4662E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
