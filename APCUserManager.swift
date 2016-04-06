@@ -7,11 +7,11 @@
 //
 
 import Foundation
-import Security
 import Alamofire
 
 public let TokenValidDaysInterval: Int = 7
 public let DayInSeconds : Double = 60 * 60 * 24
+
 public class APCUserManager: NSObject {
     
     
@@ -190,7 +190,36 @@ public class APCUserManager: NSObject {
     }
     
     //MARK:- Redefine Password
-    //func redefinePassword()
+    /**
+        Gera uma senha aleatória e a envia por email para o usuário. Requer autenticação.
+        - parameter email E-mail do usuário que irá resetar a senha.
+        - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e sempre nil no campo data.
+        - see APCOperationResponse.swift e APCOperationResultStatus
+     */
+    func redefinePassword(email email: String, result: (operationResponse: APCOperationResponse)-> Void){
+        Alamofire.request(.POST, APCURLProvider.redefinePasswordURL(), parameters: ["email" : email], encoding: .URL, headers: nil).responseData { (responseObject) in
+            if let unwrappedStatusCode = responseObject.response?.statusCode {
+                switch(unwrappedStatusCode){
+                case 201:
+                    result(operationResponse: APCOperationResponse(data: nil, status: .CompletedSuccesfully))
+                    break
+                case 404:
+                    result(operationResponse: APCOperationResponse(data: nil, status: .ResourceNotFound))
+                    break
+                case 500:
+                    result(operationResponse: APCOperationResponse(data: nil, status: .InternalServerError))
+                    break
+                case 401:
+                    result(operationResponse: APCOperationResponse(data: nil, status: .OperationUnauthorized))
+                    break
+                default:
+                    break
+                }
+            }
+            result(operationResponse: APCOperationResponse(data: nil, status: .ConnectionError))
+        }
+        
+    }
     
     
     //MARK:- Useful methods
