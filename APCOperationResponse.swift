@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct APCOperationResponse {
+public class APCOperationResponse : NSObject{
     
     public var data: AnyObject?
     public var status: APCOperationResultStatus
@@ -20,7 +20,7 @@ public struct APCOperationResponse {
     
 }
 
-public enum APCOperationResultStatus {
+@objc public enum APCOperationResultStatus : Int {
     case CompletedSuccesfully
     case OperationUnauthorized
     case ConnectionError

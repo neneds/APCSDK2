@@ -16,14 +16,14 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
     public var cod: Int!
     public var birthdate: NSDate?
     public var email: String!
-    public var isEmailVerified: Bool?
+    public var isEmailVerified: Bool = false
     
     public var userLocation: CLLocationCoordinate2D?
     
     public var fullName: String?
     public var username: String!
     public var password: String?
-    public var gender: Gender?
+    public var gender: Gender = .Male
     public var tokenFacebook: String?
     public var tokenGoogle: String?
     public var tokenInstagram: String?
@@ -84,14 +84,20 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
             self.birthdate =  formatter.dateFromString(dateStr)
         }
         self.email = dictionary["email"] as? String
-        self.isEmailVerified = dictionary["emailVerificado"] as? Bool
+        if let emailVerificado = dictionary["emailVerificado"] as? Bool{
+            self.isEmailVerified = emailVerificado
+        }
         if let lat = dictionary["latitude"] as? Double,let long = dictionary["longitude"] as? Double {
             self.userLocation = CLLocationCoordinate2D(latitude: lat, longitude: long)
         }
         self.fullName = dictionary["nomeCompleto"] as? String
         self.username = dictionary["nomeUsuario"] as? String
+        
         if let rawGender = dictionary["sexo"] as? String {
-            self.gender = Gender(rawValue: rawGender.uppercaseString)
+            let intergerRepresentation = rawGender.uppercaseString == "M" ? 0 : 1
+            if let gender = Gender(rawValue: intergerRepresentation){
+                self.gender = gender
+            }
         }
         
         self.tokenFacebook = dictionary["tokenFacebook"] as? String
@@ -117,7 +123,10 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
         dictionary.updateOptionalValue(self.userLocation?.longitude, forKey: "longitude")
         dictionary.updateOptionalValue(self.fullName, forKey: "nomeCompleto")
         dictionary.updateOptionalValue(self.username, forKey: "nomeUsuario")
-        dictionary.updateOptionalValue(self.gender?.rawValue, forKey: "sexo")
+        
+        let gender  = self.gender.rawValue == 0 ? "M" : "F";
+        
+        dictionary.updateOptionalValue(gender, forKey: "sexo")
         
         dictionary.updateOptionalValue(self.tokenFacebook, forKey: "tokenFacebook")
         dictionary.updateOptionalValue(self.tokenGoogle, forKey: "tokenGoogle")
@@ -144,8 +153,9 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
         }
         self.fullName = aDecoder.decodeObjectForKey("nomeCompleto") as? String
         self.username = aDecoder.decodeObjectForKey("nomeUsuario") as? String
-        if let rawGender = aDecoder.decodeObjectForKey("sexo") as? String {
-            self.gender = Gender(rawValue: rawGender)
+        let genderRaw = aDecoder.decodeIntegerForKey("sexo")
+        if let gender = Gender(rawValue: genderRaw){
+            self.gender = gender
         }
         
         self.tokenFacebook = aDecoder.decodeObjectForKey("tokenFacebook") as? String
@@ -161,16 +171,16 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
         aCoder.encodeInteger(self.cod, forKey: "cod")
         aCoder.encodeObject(self.birthdate, forKey: "dataNascimento")
         aCoder.encodeObject(self.email, forKey: "email")
-        if let unwrappedIsEmailVerified = self.isEmailVerified {
-            aCoder.encodeBool(unwrappedIsEmailVerified, forKey: "emailVerificado")
-        }
+        aCoder.encodeBool(self.isEmailVerified, forKey: "emailVerificado")
+        
         if let unwrappedLocation = self.userLocation {
             aCoder.encodeDouble(unwrappedLocation.latitude, forKey: "latitude")
             aCoder.encodeDouble(unwrappedLocation.longitude, forKey: "longitude")
         }
+        
         aCoder.encodeObject(self.fullName, forKey: "nomeCompleto")
         aCoder.encodeObject(self.username, forKey: "nomeUsuario")
-        aCoder.encodeObject(self.gender?.rawValue, forKey: "sexo")
+        aCoder.encodeObject(self.gender.rawValue, forKey: "sexo")
         
         aCoder.encodeObject(self.tokenFacebook, forKey: "tokenFacebook")
         aCoder.encodeObject(self.tokenGoogle, forKey: "tokenGoogle")
@@ -198,12 +208,12 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
     }
 }
 
-public enum Gender: String {
-    case Male = "M"
-    case Female = "F"
+@objc public enum Gender: Int {
+    case Male
+    case Female
 }
 
-public enum AccountType : Int {
+@objc public enum AccountType : Int {
     case APCAccount
     case TwitterAccount
     case FacebookAccount

@@ -12,6 +12,8 @@ import Alamofire
 public let TokenValidDaysInterval: Int = 7
 public let DayInSeconds : Double = 60 * 60 * 24
 
+typealias ResultBlock = @convention(block)(APCOperationResponse) -> Void
+
 public class APCUserManager: NSObject {
     
     
@@ -23,6 +25,9 @@ public class APCUserManager: NSObject {
     public var isSessionActive: Bool {
         return self.activeSession != nil
     }
+    
+    
+    
     
     //MARK:- Initializers
     private override init() {
@@ -71,6 +76,7 @@ public class APCUserManager: NSObject {
         KeychainWrapper.standardKeychainAccess().removeAllKeys()
     }
     
+
     /**
         Remove a sessão atualmente ativa limpando todos os dados relativos.
      
@@ -82,7 +88,6 @@ public class APCUserManager: NSObject {
         self.activeSession = nil
     }
     
-    
     //MARK:- Authentication methods
     /**
         Autentica usuário com conta padrão do TCU. Se o login for efetuado com sucesso, o método irá preencher automaticamente a propriedade -activeSession
@@ -92,7 +97,7 @@ public class APCUserManager: NSObject {
         - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
         - see APCOperationResponse.swift
     */
-    public func authenticate(email email: String, password: String, appIdentifier: Int?, result: ((operationResponse: APCOperationResponse)-> Void)?) {
+    public func authenticate(email email: String, password: String, appIdentifier: NSNumber?, result: ((operationResponse: APCOperationResponse)-> Void)?) {
         var headers :[String : String] =  ["email" : email, "senha" : password]
         if let unwrapperAppIdentifier = appIdentifier {
             headers.updateValue("\(unwrapperAppIdentifier)", forKey: "appIdentifier")
@@ -110,7 +115,7 @@ public class APCUserManager: NSObject {
      - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
      - see APCOperationResponse.swift
      */
-    public func authenticateFacebook(email email: String, facebookToken: String, appIdentifier: Int?, result: ((operationResponse: APCOperationResponse)-> Void)?) {
+    public func authenticateFacebook(email email: String, facebookToken: String, appIdentifier: NSNumber?, result: ((operationResponse: APCOperationResponse)-> Void)?) {
         var headers :[String : String] =  ["email" : email, "facebookToken" : facebookToken]
         if let unwrapperAppIdentifier = appIdentifier {
             headers.updateValue("\(unwrapperAppIdentifier)", forKey: "appIdentifier")
@@ -127,7 +132,7 @@ public class APCUserManager: NSObject {
     - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
     - see APCOperationResponse.swift
     */
-    public func authenticateTwitter(email email: String, twitterToken: String, appIdentifier: Int?, result: ((operationResponse: APCOperationResponse)-> Void)?) {
+    public func authenticateTwitter(email email: String, twitterToken: String, appIdentifier: NSNumber?, result: ((operationResponse: APCOperationResponse)-> Void)?) {
         var headers :[String : String] =  ["email" : email, "twitterToken" : twitterToken]
         if let unwrapperAppIdentifier = appIdentifier {
             headers.updateValue("\(unwrapperAppIdentifier)", forKey: "appIdentifier")
@@ -196,7 +201,7 @@ public class APCUserManager: NSObject {
         - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e sempre nil no campo data.
         - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    func redefinePassword(email email: String, result: (operationResponse: APCOperationResponse)-> Void){
+    public func redefinePassword(email email: String, result: (operationResponse: APCOperationResponse)-> Void){
         Alamofire.request(.POST, APCURLProvider.redefinePasswordURL(), parameters: ["email" : email], encoding: .URL, headers: nil).responseData { (responseObject) in
             if let unwrappedStatusCode = responseObject.response?.statusCode {
                 switch(unwrappedStatusCode){
@@ -256,14 +261,14 @@ public class APCUserManager: NSObject {
     
     
     //MARK:- Request New Session
-    private func refreshSession(appIdentifier appIdentifier: Int?, result: (operationStatus: APCOperationResultStatus)-> Void){
+    private func refreshSession(appIdentifier appIdentifier: NSNumber?, result: (operationStatus: APCOperationResultStatus)-> Void){
         if let unwrappedSession = self.activeSession, let unwrappedUser = unwrappedSession.currentUser {
             self.backgroundAuthentication(appIdentifier: appIdentifier, user: unwrappedUser, result: result)
         }
     }
     
     //MARK:- Background authentication
-    private func backgroundAuthentication(appIdentifier appIdentifier: Int?, user: APCUser,result: (operationStatus: APCOperationResultStatus)-> Void ){
+    private func backgroundAuthentication(appIdentifier appIdentifier: NSNumber?, user: APCUser,result: (operationStatus: APCOperationResultStatus)-> Void ){
         if let unwrappedAccountType = user.userAccountType {
             switch unwrappedAccountType {
             case .APCAccount:
