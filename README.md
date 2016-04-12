@@ -1,6 +1,7 @@
 # APCSDK2
 ![](https://img.shields.io/badge/APCSDK-1.0.5-orange.svg)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage) 
+![](https://img.shields.io/badge/Platform-iOS%209%2B-green.svg)
 ![](https://img.shields.io/badge/Xcode-7.3-blue.svg)
 ![](https://img.shields.io/badge/Alamofire-3.3.0-red.svg)
 ![](https://img.shields.io/badge/Language-Swift-orange.svg)
