@@ -1,6 +1,13 @@
 # APCSDK2
+![](https://img.shields.io/badge/APCSDK-1.0.5-orange.svg)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage) 
+![](https://img.shields.io/badge/Xcode-7.3-blue.svg)
+![](https://img.shields.io/badge/Alamofire-3.3.0-red.svg)
+![](https://img.shields.io/badge/Language-Swift-orange.svg)
+![](https://img.shields.io/badge/Compatible-ObjC-0055ff.svg)
 
-[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+
+
 
 APC SDK Para desenvolvedores iOS
 
@@ -66,5 +73,10 @@ O seu Run Script vai ficar da seguinte forma
 
     $(SRCROOT)/Carthage/Build/iOS/APCAccessSDK
 
-11 - 
+11 - Remova o Framework APCAccessSDK do Linked Framework
 
+12 - Vá no Build Settings e troque a chave do 'Embeded Content Contains Swift Code' para 'YES'.
+
+<img src="https://ap.imagensbrasil.org/images/ScreenShot2016-04-12at4.49.24PM.png" alt="ScreenShot2016-04-12at4.49.24PM.png" border="1" width="500">
+
+13 - Pronto! Importe a Framework para a sua classe e seja feliz. ;)
