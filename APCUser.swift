@@ -153,8 +153,7 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
         }
         self.fullName = aDecoder.decodeObjectForKey("nomeCompleto") as? String
         self.username = aDecoder.decodeObjectForKey("nomeUsuario") as? String
-        let genderRaw = aDecoder.decodeIntegerForKey("sexo")
-        if let gender = Gender(rawValue: genderRaw){
+        if let genderRaw = aDecoder.decodeObjectForKey("sexo") as? Int, let gender = Gender(rawValue: genderRaw){
             self.gender = gender
         }
         
