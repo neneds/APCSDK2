@@ -16,10 +16,11 @@ Este SDK atualmente na versão 1.0 foi desenvolvido para encapsular a lógica de
 Totalmente desenvolvido em swift, possui a realease 1.0 estável funcionando para qualquer projeto Swift e Objective C. 
 
 # Dependências
-Alamofire ~> 3.3.0. 
+![](https://img.shields.io/badge/Alamofire-3.3.0-red.svg)
 
 # Features
-Métodos provendo: Cadastro, Login primário do TCU, Login com o Facebook,Login com o Twitter, redefinir minha senha e 
+Métodos provendo: 
+Cadastro, Login primário do TCU, Login com o Facebook,Login com o Twitter, redefinir minha senha e 
 validação de Token.
 
 # Instalação
