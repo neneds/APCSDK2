@@ -42,6 +42,7 @@ public class APCUserManager: NSObject {
             let archivedSession = NSKeyedArchiver.archivedDataWithRootObject(unwrappedSession)
             let defaults = NSUserDefaults.standardUserDefaults()
             defaults.setObject(archivedSession, forKey: "current_session")
+            defaults.synchronize()
             if unwrappedSession.currentUser?.userAccountType == .APCAccount {
                 if let unwrappedUser = self.activeSession?.currentUser, let unwrappedPass = unwrappedUser.password {
                     self.saveUserPass(email: unwrappedUser.email, password: unwrappedPass)
@@ -84,6 +85,7 @@ public class APCUserManager: NSObject {
     public func clearSession() {
         let defaults = NSUserDefaults.standardUserDefaults()
         defaults.removeObjectForKey("current_session")
+        defaults.synchronize()
         self.clearPassword()
         self.activeSession = nil
     }
@@ -182,6 +184,160 @@ public class APCUserManager: NSObject {
         }
     }
     
+    //MARK: - Find methods
+    /**
+     Encontra os dados de uma pessoa a partir do cod. Se encontrado o campo data em operationResponse retornará preenchido com um objeto APCUser com os dados do usuário.
+     Relacionado ao endpoint - GET: http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas/{codPessoa}
+     - parameter cod Código do usuário.
+     - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
+     - see APCOperationResponse.swift
+     */
+    public func find(cod cod: Int, result: (operationResponse: APCOperationResponse)-> Void){
+        Alamofire.request(.GET, APCURLProvider.userURL(cod: cod), parameters: nil, encoding: .URLEncodedInURL, headers: nil).responseJSON { (responseObject) in
+            if let unwrappedStatusCode = responseObject.response?.statusCode {
+                switch(unwrappedStatusCode){
+                case 200:
+                    let user = JsonObjectCreator.createObject(dictionary: responseObject.result.value as! [String : AnyObject], objectClass: APCUser.self)
+                    result(operationResponse: APCOperationResponse(data: user, status: .CompletedSuccesfully))
+                    break
+                case 404:
+                    result(operationResponse: APCOperationResponse(data: nil, status: .ResourceNotFound))
+                    break
+                case 500:
+                    result(operationResponse: APCOperationResponse(data: nil, status: .InternalServerError))
+                    break
+                default:
+                    break
+                }
+            }else{
+                result(operationResponse: APCOperationResponse(data: nil, status: .ConnectionError))
+            }
+
+        }
+    }
+    
+    /**
+     Encontra os dados de uma pessoa a partir do email. Se encontrado o campo data em operationResponse retornará preenchido com um objeto APCUser com os dados do usuário.
+     Relacionado ao endpoint - GET: http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas
+     - parameter email email do usuário.
+     - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
+     - see APCOperationResponse.swift
+     */
+    public func find(email email: String, result: (operationResponse: APCOperationResponse)-> Void) {
+        Alamofire.request(.GET, APCURLProvider.userBaserURL(), parameters: nil, encoding: .URLEncodedInURL, headers: ["email" : email]).responseJSON { (responseObject) in
+            self.findResponseHandler(response: responseObject, result: result)
+        }
+    }
+    
+    /**
+     Encontra os dados de uma pessoa a partir do token do Facebook. Se encontrado o campo data em operationResponse retornará preenchido com um objeto APCUser com os dados do usuário.
+     Relacionado ao endpoint - GET: http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas
+     - parameter facebookToken token do facebook do usuário.
+     - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
+     - see APCOperationResponse.swift
+     */
+    public func find(facebookToken facebookToken: String, result: (operationResponse: APCOperationResponse)-> Void){
+        Alamofire.request(.GET, APCURLProvider.userBaserURL(), parameters: nil, encoding: .URLEncodedInURL, headers: ["facebookToken" : facebookToken]).responseJSON { (responseObject) in
+            self.findResponseHandler(response: responseObject, result: result)
+        }
+    }
+    
+    /**
+     Encontra os dados de uma pessoa a partir do token do Twitter. Se encontrado o campo data em operationResponse retornará preenchido com um objeto APCUser com os dados do usuário.
+     Relacionado ao endpoint - GET: http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas
+     - parameter twitterToken token do Twitter do usuário.
+     - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
+     - see APCOperationResponse.swift
+     */
+    public func find(twitterToken twitterToken: String, result: (operationResponse: APCOperationResponse)-> Void){
+        Alamofire.request(.GET, APCURLProvider.userBaserURL(), parameters: nil, encoding: .URLEncodedInURL, headers: ["twitterToken" : twitterToken]).responseJSON { (responseObject) in
+            self.findResponseHandler(response: responseObject, result: result)
+        }
+    }
+    
+    //MARK: - Find Convenience
+    private func findResponseHandler(response responseObject: Response<AnyObject, NSError>, result: (operationResponse: APCOperationResponse)-> Void){
+        if let unwrappedStatusCode = responseObject.response?.statusCode {
+            switch unwrappedStatusCode {
+            case 200:
+                if let users =  responseObject.result.value as? [[String : AnyObject]]{
+                    if !users.isEmpty {
+                        let user = JsonObjectCreator.createObject(dictionary: users[0], objectClass: APCUser.self)
+                        result(operationResponse: APCOperationResponse(data: user, status: .CompletedSuccesfully))
+                    }
+                }
+            case 204:
+                result(operationResponse: APCOperationResponse(data: nil, status: .ResourceNotFound))
+            case 400:
+                result(operationResponse: APCOperationResponse(data: nil, status: .InvalidParamters))
+            case 500:
+                result(operationResponse: APCOperationResponse(data: nil, status: .InternalServerError))
+            default:
+                result(operationResponse: APCOperationResponse(data: nil, status: .ConnectionError))
+            }
+            
+        }
+    }
+    
+    private func existsResponseHandler(response responseObject: Response<AnyObject, NSError>, result: (operationResponse: APCOperationResponse)-> Void){
+        if let unwrappedStatusCode = responseObject.response?.statusCode {
+            switch unwrappedStatusCode {
+            case 200:
+                result(operationResponse: APCOperationResponse(data: true, status: .CompletedSuccesfully))
+                break
+            case 204:
+                result(operationResponse: APCOperationResponse(data: false, status: .ResourceNotFound))
+            case 400:
+                result(operationResponse: APCOperationResponse(data: nil, status: .InvalidParamters))
+            case 500:
+                result(operationResponse: APCOperationResponse(data: nil, status: .InternalServerError))
+            default:
+                result(operationResponse: APCOperationResponse(data: nil, status: .ConnectionError))
+            }
+            
+        }
+    }
+    
+    /**
+     Verifica se um email já se encontra cadastrado. O campo data em operationResponse retornará preenchido com o booleano que indica se ele existe ou não.
+     Relacionado ao endpoint - GET: http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas
+     - parameter twitterToken token do Twitter do usuário.
+     - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
+     - see APCOperationResponse.swift
+     */
+    public func exists(email email: String, result: (operationResponse: APCOperationResponse)-> Void) {
+        Alamofire.request(.GET, APCURLProvider.userBaserURL(), parameters: nil, encoding: .URLEncodedInURL, headers: ["email" : email]).responseJSON { (responseObject) in
+            self.existsResponseHandler(response: responseObject, result: result)
+        }
+    }
+    
+    /**
+     Verifica se um token do facebook já se encontra cadastrado. O campo data em operationResponse retornará preenchido com o booleano que indica se ele existe ou não.
+     Relacionado ao endpoint - GET: http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas
+     - parameter twitterToken token do Twitter do usuário.
+     - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
+     - see APCOperationResponse.swift
+     */
+    public func exists(facebookToken facebookToken: String, result: (operationResponse: APCOperationResponse)-> Void){
+        Alamofire.request(.GET, APCURLProvider.userBaserURL(), parameters: nil, encoding: .URLEncodedInURL, headers: ["facebookToken" : facebookToken]).responseJSON { (responseObject) in
+            self.existsResponseHandler(response: responseObject, result: result)
+        }
+    }
+    
+    
+    /**
+     Verifica se um token do twitter já se encontra cadastrado. O campo data em operationResponse retornará preenchido com o booleano que indica se ele existe ou não.
+     Relacionado ao endpoint - GET: http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas
+     - parameter twitterToken token do Twitter do usuário.
+     - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
+     - see APCOperationResponse.swift
+     */
+    public func exists(twitterToken twitterToken: String, result: (operationResponse: APCOperationResponse)-> Void){
+        Alamofire.request(.GET, APCURLProvider.userBaserURL(), parameters: nil, encoding: .URLEncodedInURL, headers: ["twitterToken" : twitterToken]).responseJSON { (responseObject) in
+            self.existsResponseHandler(response: responseObject, result: result)
+        }
+    }
+    
     private func requestForRegisterUser(user user: APCUser)-> NSURLRequest? {
         let userAsDictionary = user.asDictionary()
         if let jsonData = try? NSJSONSerialization.dataWithJSONObject(userAsDictionary, options: .PrettyPrinted){
@@ -220,8 +376,9 @@ public class APCUserManager: NSObject {
                 default:
                     break
                 }
+            }else{
+                result(operationResponse: APCOperationResponse(data: nil, status: .ConnectionError))
             }
-            result(operationResponse: APCOperationResponse(data: nil, status: .ConnectionError))
         }
         
     }

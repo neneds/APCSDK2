@@ -20,6 +20,10 @@ class APCURLProvider: NSObject {
         return NSURL(string: self.baseAPCService + "/pessoas")!
     }
     
+    class func userURL(cod cod: Int) -> NSURL {
+        return NSURL(string: self.baseAPCService + "/pessoas/\(cod)")!
+    }
+    
     class func authenticateUserURL()-> NSURL {
         return NSURL(string: self.baseAPCService + "/pessoas/autenticar")!
     
