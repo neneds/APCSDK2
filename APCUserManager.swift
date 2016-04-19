@@ -288,11 +288,11 @@ public class APCUserManager: NSObject {
             case 204:
                 result(operationResponse: APCOperationResponse(data: false, status: .ResourceNotFound))
             case 400:
-                result(operationResponse: APCOperationResponse(data: nil, status: .InvalidParamters))
+                result(operationResponse: APCOperationResponse(data: false, status: .InvalidParamters))
             case 500:
-                result(operationResponse: APCOperationResponse(data: nil, status: .InternalServerError))
+                result(operationResponse: APCOperationResponse(data: false, status: .InternalServerError))
             default:
-                result(operationResponse: APCOperationResponse(data: nil, status: .ConnectionError))
+                result(operationResponse: APCOperationResponse(data: false, status: .ConnectionError))
             }
             
         }
@@ -361,7 +361,7 @@ public class APCUserManager: NSObject {
         Alamofire.request(.POST, APCURLProvider.redefinePasswordURL(), parameters: ["email" : email], encoding: .URL, headers: nil).responseData { (responseObject) in
             if let unwrappedStatusCode = responseObject.response?.statusCode {
                 switch(unwrappedStatusCode){
-                case 201:
+                case 200:
                     result(operationResponse: APCOperationResponse(data: nil, status: .CompletedSuccesfully))
                     break
                 case 404:
