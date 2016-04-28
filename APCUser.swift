@@ -13,12 +13,12 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
     //MARK:- Properties
     public var CEP: String?
     public var biography: String?
-    public var cod: Int!
+    public var cod: Int = 0
     public var birthdate: NSDate?
     public var email: String!
     public var isEmailVerified: Bool = false
     
-    public var userLocation: CLLocationCoordinate2D?
+    public var userLocation: CLLocationCoordinate2D = kCLLocationCoordinate2DInvalid
     
     public var fullName: String?
     public var username: String!
@@ -77,7 +77,9 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
     required public init(dictionary: [String : AnyObject]) {
         self.CEP = dictionary["CEP"] as? String
         self.biography = dictionary["biografia"] as? String
-        self.cod = dictionary["cod"] as? Int
+        if let cod = dictionary["cod"] as? Int{
+            self.cod = cod
+        }
         if let dateStr = dictionary["dataNascimento"] as? String{
             let formatter = NSDateFormatter()
             formatter.dateFormat = "yyyy-MM-dd"
@@ -119,8 +121,8 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
         dictionary.updateOptionalValue(self.email, forKey: "email")
         dictionary.updateOptionalValue(self.password, forKey: "senha")
         dictionary.updateOptionalValue(self.isEmailVerified, forKey: "emailVerificado")
-        dictionary.updateOptionalValue(self.userLocation?.latitude, forKey: "latitude")
-        dictionary.updateOptionalValue(self.userLocation?.longitude, forKey: "longitude")
+        dictionary.updateOptionalValue(self.userLocation.latitude, forKey: "latitude")
+        dictionary.updateOptionalValue(self.userLocation.longitude, forKey: "longitude")
         dictionary.updateOptionalValue(self.fullName, forKey: "nomeCompleto")
         dictionary.updateOptionalValue(self.username, forKey: "nomeUsuario")
         
@@ -172,9 +174,9 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
         aCoder.encodeObject(self.email, forKey: "email")
         aCoder.encodeBool(self.isEmailVerified, forKey: "emailVerificado")
         
-        if let unwrappedLocation = self.userLocation {
-            aCoder.encodeDouble(unwrappedLocation.latitude, forKey: "latitude")
-            aCoder.encodeDouble(unwrappedLocation.longitude, forKey: "longitude")
+        if CLLocationCoordinate2DIsValid(self.userLocation) {
+            aCoder.encodeDouble(self.userLocation.latitude, forKey: "latitude")
+            aCoder.encodeDouble(self.userLocation.longitude, forKey: "longitude")
         }
         
         aCoder.encodeObject(self.fullName, forKey: "nomeCompleto")
@@ -196,7 +198,7 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
                 "dataNascimento = \(self.birthdate)\n" +
                 "email = \(self.email)\n" +
                 "emailVerificado = \(self.isEmailVerified)\n" +
-                "location = (\(self.userLocation?.latitude),\(self.userLocation?.longitude))\n" +
+                "location = (\(self.userLocation.latitude),\(self.userLocation.longitude))\n" +
                 "nomeCompleto = \(self.fullName)\n" +
                 "nomeUsuario = \(self.username)\n" +
                 "genero = \(self.gender)\n" +
