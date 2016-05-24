@@ -18,7 +18,7 @@ public class APCUserSession: NSObject, NSCoding {
     public var expirationDate: NSDate?
     
     //MARK:- Computed Properties
-    var isSessionExpired: Bool {
+    public var isSessionExpired: Bool {
         return self.expirationDate?.earlierDate(NSDate()) == self.expirationDate
     }
     
