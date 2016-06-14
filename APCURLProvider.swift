@@ -15,7 +15,7 @@ class APCURLProvider: NSObject {
         return serverDomain + "/appCivicoRS/rest"
     }
     
-    
+    //MARK: - User
     class func userBaserURL() -> NSURL {
         return NSURL(string: self.baseAPCService + "/pessoas")!
     }
@@ -32,4 +32,31 @@ class APCURLProvider: NSObject {
     class func redefinePasswordURL()-> NSURL {
         return NSURL(string: self.baseAPCService + "/pessoas/redefinirSenha")!
     }
+    
+    //MARK: - Profile
+    class func createProfileURL(userCod userCod: Int) -> NSURL{
+        return NSURL(string: self.baseAPCService + "/pessoas/\(userCod)/perfil")!
+    }
 }
+
+//MARK: - Postage
+
+extension APCURLProvider {
+    
+    class func postageBaseURL()-> NSURL{
+        return NSURL(string: self.baseAPCService + "/postagens")!
+    }
+    
+    class func postageURL(postageCod postageCod: Int) -> NSURL {
+        return NSURL(string: self.baseAPCService + "/postagens/\(postageCod)")!
+    }
+    
+    class func postageContentURL(postageCod postageCod: Int)-> NSURL {
+        return NSURL(string: self.baseAPCService + "/postagens/\(postageCod)/conteudos")!
+    }
+    
+    class func postageContentURL(postageCod postageCod: Int, contentCod: Int)-> NSURL {
+        return NSURL(string: self.baseAPCService + "/postagens/\(postageCod)/conteudos/\(contentCod)")!
+    }
+}
+

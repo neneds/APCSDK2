@@ -15,4 +15,10 @@ extension Dictionary {
             self.updateValue(unwrappedValue, forKey: key)
         }
     }
+    
+    mutating func union(other: [Key: Value]){
+        for (k,v) in other {
+            self.updateValue(v, forKey: k)
+        }
+    }
 }

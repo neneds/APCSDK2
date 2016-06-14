@@ -7,7 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B2299A2F1D0F9A6E007CFC69 /* APCManagerUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2299A2E1D0F9A6E007CFC69 /* APCManagerUtils.swift */; };
 		B2958B941CB201F900F5AF76 /* APCProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2958B931CB201F900F5AF76 /* APCProfile.swift */; };
+		B2A064391CFFBEA50014894B /* APCPostage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A064381CFFBEA50014894B /* APCPostage.swift */; };
+		B2A0643B1CFFBEB40014894B /* APCPostageContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A0643A1CFFBEB40014894B /* APCPostageContent.swift */; };
+		B2A0643D1D0064E10014894B /* APCPostageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A0643C1D0064E10014894B /* APCPostageManager.swift */; };
 		B2ADD3951CB04E3900A4662E /* APCUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD3941CB04E3900A4662E /* APCUser.swift */; };
 		B2ADD3991CB0544B00A4662E /* JsonConverteble.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD3971CB0544B00A4662E /* JsonConverteble.swift */; };
 		B2ADD39A1CB0544B00A4662E /* JsonObjectCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2ADD3981CB0544B00A4662E /* JsonObjectCreator.swift */; };
@@ -34,7 +38,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B2299A2E1D0F9A6E007CFC69 /* APCManagerUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCManagerUtils.swift; sourceTree = "<group>"; };
 		B2958B931CB201F900F5AF76 /* APCProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCProfile.swift; sourceTree = "<group>"; };
+		B2A064381CFFBEA50014894B /* APCPostage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCPostage.swift; sourceTree = "<group>"; };
+		B2A0643A1CFFBEB40014894B /* APCPostageContent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCPostageContent.swift; sourceTree = "<group>"; };
+		B2A0643C1D0064E10014894B /* APCPostageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCPostageManager.swift; sourceTree = "<group>"; };
 		B2ADD3891CB04E0C00A4662E /* APCAccessSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = APCAccessSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2ADD38C1CB04E0C00A4662E /* APCAccessSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = APCAccessSDK.h; sourceTree = "<group>"; };
 		B2ADD38E1CB04E0C00A4662E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -98,6 +106,8 @@
 				B2ADD3941CB04E3900A4662E /* APCUser.swift */,
 				B2ADD39C1CB054B000A4662E /* APCUserSession.swift */,
 				B2958B931CB201F900F5AF76 /* APCProfile.swift */,
+				B2A064381CFFBEA50014894B /* APCPostage.swift */,
+				B2A0643A1CFFBEB40014894B /* APCPostageContent.swift */,
 			);
 			name = Entities;
 			sourceTree = "<group>";
@@ -117,6 +127,8 @@
 				B2ADD3A21CB0A18500A4662E /* APCUserManager.swift */,
 				B2ADD3A41CB0A2EB00A4662E /* APCURLProvider.swift */,
 				B2ADD3A61CB1413B00A4662E /* APCOperationResponse.swift */,
+				B2A0643C1D0064E10014894B /* APCPostageManager.swift */,
+				B2299A2E1D0F9A6E007CFC69 /* APCManagerUtils.swift */,
 			);
 			name = Manager;
 			sourceTree = "<group>";
@@ -237,14 +249,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2299A2F1D0F9A6E007CFC69 /* APCManagerUtils.swift in Sources */,
 				B2ADD3951CB04E3900A4662E /* APCUser.swift in Sources */,
 				B2ADD3A71CB1413B00A4662E /* APCOperationResponse.swift in Sources */,
 				B2ADD3A31CB0A18500A4662E /* APCUserManager.swift in Sources */,
 				B2ADD39A1CB0544B00A4662E /* JsonObjectCreator.swift in Sources */,
 				B2958B941CB201F900F5AF76 /* APCProfile.swift in Sources */,
 				B2ADD3A11CB08C5100A4662E /* Dictionary+Util.swift in Sources */,
+				B2A0643D1D0064E10014894B /* APCPostageManager.swift in Sources */,
 				B2ADD39D1CB054B000A4662E /* APCUserSession.swift in Sources */,
 				B2ADD3A51CB0A2EB00A4662E /* APCURLProvider.swift in Sources */,
+				B2A0643B1CFFBEB40014894B /* APCPostageContent.swift in Sources */,
+				B2A064391CFFBEA50014894B /* APCPostage.swift in Sources */,
 				B2ADD3991CB0544B00A4662E /* JsonConverteble.swift in Sources */,
 				B2F5C4261CB3046A00BFAB5A /* KeychainWrapper.swift in Sources */,
 			);

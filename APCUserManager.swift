@@ -159,12 +159,8 @@ public class APCUserManager: NSObject {
                 if let unwrappedResponse = responseObject.response {
                     switch unwrappedResponse.statusCode {
                     case 201:
-                        self.backgroundAuthentication(appIdentifier: nil, user: user, result: { (operationStatus) in
-                            if operationStatus == .CompletedSuccesfully{
-                                result(operationResponse: APCOperationResponse(data: self.activeSession, status: operationStatus))
-                            }else{
-                                result(operationResponse: APCOperationResponse(data: nil, status: operationStatus))
-                            }
+                        self.backgroundAuthentication(user: user, result: { (operationResponse) in
+                           result(operationResponse: operationResponse)
                         })
                         break
                     case 400:
@@ -418,34 +414,34 @@ public class APCUserManager: NSObject {
     
     
     //MARK:- Request New Session
-    private func refreshSession(appIdentifier appIdentifier: NSNumber?, result: (operationStatus: APCOperationResultStatus)-> Void){
+    public func refreshSession(result: (operationResult: APCOperationResponse)-> Void){
         if let unwrappedSession = self.activeSession, let unwrappedUser = unwrappedSession.currentUser {
-            self.backgroundAuthentication(appIdentifier: appIdentifier, user: unwrappedUser, result: result)
+            self.backgroundAuthentication(user: unwrappedUser, result: result)
         }
     }
     
     //MARK:- Background authentication
-    private func backgroundAuthentication(appIdentifier appIdentifier: NSNumber?, user: APCUser,result: (operationStatus: APCOperationResultStatus)-> Void ){
+    private func backgroundAuthentication(user user: APCUser,result: (operationStatus: APCOperationResponse)-> Void ){
         if let unwrappedAccountType = user.userAccountType {
             switch unwrappedAccountType {
             case .APCAccount:
                 if let unwrappedPass = user.password {
-                    self.authenticate(email: user.email, password: unwrappedPass, appIdentifier: appIdentifier, result: { (operationResponse) in
-                        result(operationStatus: operationResponse.status)
+                    self.authenticate(email: user.email, password: unwrappedPass, appIdentifier: nil, result: { (operationResponse) in
+                        result(operationStatus: operationResponse)
                     })
                 }
                 break
             case .FacebookAccount:
                 if let unwrappedFacebookToken = user.tokenFacebook {
-                    self.authenticateFacebook(email: user.email, facebookToken: unwrappedFacebookToken, appIdentifier: appIdentifier, result: { (operationResponse) in
-                        result(operationStatus: operationResponse.status)
+                    self.authenticateFacebook(email: user.email, facebookToken: unwrappedFacebookToken, appIdentifier: nil, result: { (operationResponse) in
+                        result(operationStatus: operationResponse)
                     })
                 }
                 break
             case .TwitterAccount:
                 if let unwrappedTwitterToken = user.tokenTwitter {
-                    self.authenticateTwitter(email: user.email, twitterToken: unwrappedTwitterToken, appIdentifier: appIdentifier, result: { (operationResponse) in
-                        result(operationStatus: operationResponse.status)
+                    self.authenticateTwitter(email: user.email, twitterToken: unwrappedTwitterToken, appIdentifier: nil, result: { (operationResponse) in
+                        result(operationStatus: operationResponse)
                     })
                 }
                 break
@@ -455,6 +451,33 @@ public class APCUserManager: NSObject {
         }
     }
     
+}
+
+//MARK: Profile methods
+extension APCUserManager {
+    
+    public func associateProfile(userCod user: Int, profile: APCProfile, result: (operationResult: APCOperationResponse)-> Void){
+        
+        if let unwrappedSession = self.activeSession {
+            if unwrappedSession.isSessionExpired {
+                self.refreshSession({ (operationResult) in
+                    if operationResult.status == .CompletedSuccesfully {
+                        self.associateProfile(userCod: user, profile: profile, result: result)
+                    }else{
+                        result(operationResult: operationResult)
+                    }
+                })
+            }else{
+                let profileDic = profile.asDictionary()
+                if let jsonData = try? NSJSONSerialization.dataWithJSONObject(profileDic, options: NSJSONWritingOptions.PrettyPrinted) {
+                    print(String(data: jsonData, encoding: NSUTF8StringEncoding))
+                }
+            }
+            
+        }else{
+            result(operationResult: APCOperationResponse(data: nil, status: .OperationUnauthorized))
+        }
+    }
 }
 
 
