@@ -9,11 +9,11 @@
 import UIKit
 
 public class APCPostageContent: NSObject, JsonConvertable{
-    var cod: Int = 0
-    var postageCod: Int = 0
-    private(set) var values: [String: AnyObject] = [:]
-    var text: String?
-    var numericValue: Int?
+    public var cod: Int = 0
+    public var postageCod: Int = 0
+    public private(set) var values: [String: AnyObject] = [:]
+    public var text: String?
+    public var numericValue: Int?
     
     override init(){
         
@@ -91,5 +91,12 @@ public class APCPostageContent: NSObject, JsonConvertable{
         }
         return [:]
     }
+    
+    
+    //MARK: - Overrides
+    public override var description: String{
+        return  "APCPostageContent [additionalFields = \(self.values), text = \(self.text), numericValue = \(self.numericValue)]"
+    }
+    
 }
 

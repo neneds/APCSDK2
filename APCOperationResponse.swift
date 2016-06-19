@@ -18,14 +18,17 @@ public class APCOperationResponse : NSObject{
         self.status = status
     }
     
+    public override var description: String{
+        return "OperationResponse = [data = \(self.data), status = \(self.status.rawValue)]"
+    }
 }
 
 @objc public enum APCOperationResultStatus : Int {
-    case CompletedSuccesfully
-    case OperationUnauthorized
-    case ConnectionError
-    case InternalServerError
-    case InvalidParamters
-    case ResourceNotFound
+    case CompletedSuccesfully = 0
+    case OperationUnauthorized = 1
+    case ConnectionError = 2
+    case InternalServerError = 3
+    case InvalidParamters = 4
+    case ResourceNotFound = 5
     
 }

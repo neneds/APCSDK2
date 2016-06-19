@@ -34,9 +34,11 @@ class APCURLProvider: NSObject {
     }
     
     //MARK: - Profile
-    class func createProfileURL(userCod userCod: Int) -> NSURL{
+    class func userProfileURL(userCod userCod: Int) -> NSURL{
         return NSURL(string: self.baseAPCService + "/pessoas/\(userCod)/perfil")!
     }
+    
+    
 }
 
 //MARK: - Postage

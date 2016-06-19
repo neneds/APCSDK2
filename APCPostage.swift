@@ -10,12 +10,12 @@ import UIKit
 
 public class APCPostage: NSObject, JsonConvertable{
     
-    var cod: Int = 0
-    var codAuthor : Int = 0
-    var codObjetoDestino: Int?
-    var codTipoObjetoDestino: Int?
-    var codTipoPostagem: Int = 0
-    var date: NSDate = NSDate()
+    public var cod: Int = 0
+    public var codAuthor : Int = 0
+    public var codObjetoDestino: Int?
+    public var codTipoObjetoDestino: Int?
+    public var codTipoPostagem: Int = 0
+    public var date: NSDate = NSDate()
     
     
     private override init(){

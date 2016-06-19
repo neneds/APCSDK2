@@ -23,7 +23,7 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
     public var fullName: String?
     public var username: String!
     public var password: String?
-    public var gender: Gender = .Male
+    public var gender: Gender = .None
     public var tokenFacebook: String?
     public var tokenGoogle: String?
     public var tokenInstagram: String?
@@ -121,14 +121,18 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
         dictionary.updateOptionalValue(self.email, forKey: "email")
         dictionary.updateOptionalValue(self.password, forKey: "senha")
         dictionary.updateOptionalValue(self.isEmailVerified, forKey: "emailVerificado")
-        dictionary.updateOptionalValue(self.userLocation.latitude, forKey: "latitude")
-        dictionary.updateOptionalValue(self.userLocation.longitude, forKey: "longitude")
+        
+        if CLLocationCoordinate2DIsValid(self.userLocation) {
+            dictionary.updateOptionalValue(self.userLocation.latitude, forKey: "latitude")
+            dictionary.updateOptionalValue(self.userLocation.longitude, forKey: "longitude")
+        }
         dictionary.updateOptionalValue(self.fullName, forKey: "nomeCompleto")
         dictionary.updateOptionalValue(self.username, forKey: "nomeUsuario")
         
-        let gender  = self.gender.rawValue == 0 ? "M" : "F";
-        
-        dictionary.updateOptionalValue(gender, forKey: "sexo")
+        if self.gender != .None {
+            let gender  = self.gender.rawValue == 0 ? "M" : "F"
+            dictionary.updateOptionalValue(gender, forKey: "sexo")
+        }
         
         dictionary.updateOptionalValue(self.tokenFacebook, forKey: "tokenFacebook")
         dictionary.updateOptionalValue(self.tokenGoogle, forKey: "tokenGoogle")
@@ -210,8 +214,9 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
 }
 
 @objc public enum Gender: Int {
-    case Male
-    case Female
+    case Male = 0
+    case Female = 1
+    case None = 2
 }
 
 @objc public enum AccountType : Int {

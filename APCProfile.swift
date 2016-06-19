@@ -10,8 +10,9 @@ import Foundation
 
 public class APCProfile: NSObject, JsonConvertable{
     
-    private(set) var aditionalFields: [String : AnyObject]? = [:]
+    public private(set) var aditionalFields: [String : AnyObject]? = [:]
     public var profileTypeCod: Int = 0
+    public var profileDescription: String?
     
     public override init() {
         
@@ -24,7 +25,15 @@ public class APCProfile: NSObject, JsonConvertable{
     
     
     
-    
+    public subscript(field: String)-> AnyObject?{
+        get{
+            return self.aditionalFields?[field]
+        }
+        
+        set(value){
+            self.aditionalFields?[field] = value
+        }
+    }
     
     //MARK:- JsonConvertable
     public required init(dictionary: [String : AnyObject]) {
@@ -35,7 +44,9 @@ public class APCProfile: NSObject, JsonConvertable{
         }
         if let profileType = dictionary["tipoPerfil"] as? [String : AnyObject], let profileCod = profileType["codTipoPerfil"] as? Int {
             self.profileTypeCod = profileCod
+            self.profileDescription = profileType["descricao"] as? String
         }
+        
     }
 
     
@@ -54,6 +65,10 @@ public class APCProfile: NSObject, JsonConvertable{
             }
         }
         return dictionary
+    }
+    
+    public override var description: String{
+        return "[aditionalFields = \(self.aditionalFields),\nprofileTypeCod = \(self.profileTypeCod),\nprofileDescription = \(self.profileDescription)]"
     }
 
 }
