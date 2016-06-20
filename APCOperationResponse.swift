@@ -30,5 +30,6 @@ public class APCOperationResponse : NSObject{
     case InternalServerError = 3
     case InvalidParamters = 4
     case ResourceNotFound = 5
+    case NoContentReturned = 6
     
 }

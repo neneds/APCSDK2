@@ -44,6 +44,8 @@ class APCManagerUtils: NSObject {
                 result?(operationResponse: APCOperationResponse(data: onUnauthorized?(responseValue: responseValue, responseHeaders: responseHeaders),status: .OperationUnauthorized))
             case 400:
                 result?(operationResponse: APCOperationResponse(data: onInvalidParameters?(responseValue: responseValue, responseHeaders: responseHeaders),status: .InvalidParamters))
+            case 204:
+                result?(operationResponse: APCOperationResponse(data: nil, status: .NoContentReturned))
             default:
                 result?(operationResponse: APCOperationResponse(data: onConnectionError?(responseValue: responseValue, responseHeaders: responseHeaders),status: .ConnectionError))
                 
