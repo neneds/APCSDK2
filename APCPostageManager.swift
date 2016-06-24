@@ -92,7 +92,7 @@ public class APCPostageManager: NSObject {
     }
     
     
-    public func queryPostages(authorCod: NSNumber?,
+    func queryPostages(authorCod: NSNumber?,
                               relatedPostageCod: NSNumber?,
                               postageTypesCods: [Int]?,
                               hashtag: String?,
