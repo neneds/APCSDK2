@@ -12,27 +12,26 @@ public class APCPostage: NSObject, JsonConvertable{
     
     public var cod: Int = 0
     public var codAuthor : Int = 0
-    public var codObjetoDestino: Int?
-    public var codTipoObjetoDestino: Int?
-    public var codTipoPostagem: Int = 0
+    public var codDestinatedObject: Int = 0
+    public var codDestinatedObjectType: Int = 0
+    public var codPostageType: Int = 0
     public var date: NSDate = NSDate()
     
+    public var contentsCodes: [Int] = []
     
     private override init(){
         
     }
     
-    public convenience init(cod: Int, codAuthor: Int, codTipoPostagem: Int) {
-        self.init()
+    public convenience init(cod: Int, codAuthor: Int, codPostageType: Int) {
+        self.init(codAuthor: codAuthor, codPostageType: codPostageType)
         self.cod = cod
-        self.codAuthor = codAuthor
-        self.codTipoPostagem = codTipoPostagem
     }
     
-    public convenience init(codAuthor: Int, codTipoPostagem: Int) {
+    public convenience init(codAuthor: Int, codPostageType: Int) {
         self.init()
         self.codAuthor = codAuthor
-        self.codTipoPostagem = codTipoPostagem
+        self.codPostageType = codPostageType
     }
     
     
@@ -48,11 +47,23 @@ public class APCPostage: NSObject, JsonConvertable{
                 self.date = date
             }
         }
-        self.codObjetoDestino =  dictionary["codObjetoDestino"] as? Int
-        self.codTipoObjetoDestino = dictionary["codTipoObjetoDestino"] as? Int
+        if let codDestinatedObject = dictionary["codObjetoDestino"] as? Int{
+            self.codDestinatedObject = codDestinatedObject
+        }
+        if let codDestinatedObjectType = dictionary["codTipoObjetoDestino"] as? Int{
+            self.codDestinatedObjectType = codDestinatedObjectType
+        }
         
         if let codTipoPostagem = dictionary["codTipoPostagem"] as? Int{
-            self.codTipoPostagem = codTipoPostagem
+            self.codPostageType = codTipoPostagem
+        }
+        
+        if let contents = dictionary["conteudos"] as? [[String : AnyObject]]{
+            for content in contents {
+                if let codContent = content["codConteudoPostagem"] as? Int{
+                    self.contentsCodes.append(codContent)
+                }
+            }
         }
     }
     
@@ -61,14 +72,14 @@ public class APCPostage: NSObject, JsonConvertable{
         var author : [String : AnyObject] = [:]
         author.updateValue(self.codAuthor, forKey: "codPessoa")
         data.updateValue(author, forKey: "autor")
-        if let unwrappedCodObjDestino = self.codObjetoDestino {
-            data.updateValue(unwrappedCodObjDestino, forKey: "codObjetoDestino")
+        if self.codDestinatedObject != 0 {
+            data.updateValue(self.codDestinatedObject, forKey: "codObjetoDestino")
         }
-        if let unwrappedTipoObjDestino = self.codTipoObjetoDestino {
-            data.updateValue(unwrappedTipoObjDestino, forKey: "codTipoObjetoDestino")
+        if self.codDestinatedObjectType != 0{
+            data.updateValue(self.codDestinatedObjectType, forKey: "codTipoObjetoDestino")
         }
         var tipo : [String : AnyObject] = [:]
-        tipo.updateValue(self.codTipoPostagem, forKey: "codTipoPostagem")
+        tipo.updateValue(self.codPostageType, forKey: "codTipoPostagem")
         data.updateValue(tipo, forKey: "tipo")
         
         return data
@@ -76,7 +87,7 @@ public class APCPostage: NSObject, JsonConvertable{
     
     
     override public var description: String {
-        return "[cod = \(self.cod), codAuthor = \(self.codAuthor), codObjetoDestino = \(self.codObjetoDestino), codTipoObjetoDestino = \(self.codTipoObjetoDestino), codTipoPostagem = \(self.codTipoPostagem), date = \(self.date)]\n"
+        return "[cod = \(self.cod), codAuthor = \(self.codAuthor), codObjetoDestino = \(self.codDestinatedObject), codTipoObjetoDestino = \(self.codDestinatedObjectType), codTipoPostagem = \(self.codPostageType), date = \(self.date), contentsCodes = \(self.contentsCodes)]\n"
     }
     
     

@@ -15,11 +15,13 @@ public class APCPostageContent: NSObject, JsonConvertable{
     public var text: String?
     public var numericValue: Int?
     
+    public var hasBinaryData: Bool = false
+    
     override init(){
         
     }
     
-    public convenience init(text: String,numericValue: Int ,values: [String: AnyObject]) {
+    public convenience init(text: String,numericValue: Int, values: [String: AnyObject]) {
         self.init(values: values)
         self.text = text
         self.numericValue = numericValue

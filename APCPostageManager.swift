@@ -19,17 +19,33 @@ public class APCPostageManager: NSObject {
     /**
      Cria uma postagem na plataforma. Requer autenticação.
      - parameter postage Postagem que será registrada.
-     - parameter relatedPostageCod @opicional Código de uma postagem relacionada que já deve estar registrada na plataforma.
+     - parameter relatedPostageCod Código de uma postagem relacionada que já deve estar registrada na plataforma.
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso a postagem com o campo código preenchido.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func createPostage(postage postage: APCPostage,relatedPostageCod: Int? = nil, result: ((operationResponse: APCOperationResponse)-> Void)?) {
+    public func createPostage(postage postage: APCPostage,relatedPostageCod: Int, result: (operationResponse: APCOperationResponse)-> Void) {
+        self.privateCreatePostage(postage: postage, relatedPostageCod: relatedPostageCod, result: result)
+    }
+    
+    /**
+     Cria uma postagem na plataforma. Requer autenticação.
+     - parameter postage Postagem que será registrada.
+     - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso a postagem com o campo código preenchido.
+     - see APCOperationResponse.swift e APCOperationResultStatus
+     */
+    public func createPostage(postage postage: APCPostage, result: (operationResponse: APCOperationResponse)-> Void) {
+        self.privateCreatePostage(postage: postage, result: result)
+    }
+    
+    
+    // Convenience method to mantain other methods as headers public functions on objc header
+    private func privateCreatePostage(postage postage: APCPostage,relatedPostageCod: Int? = nil, result: ((operationResponse: APCOperationResponse)-> Void)?) {
         if let session = APCUserManager.sharedManager.activeSession {
             if let codApp = APCApplication.sharedApplication.applicationCode {
                 if session.isSessionExpired {
                     APCUserManager.sharedManager.refreshSession({ (operationResult) in
                         if operationResult.status == .CompletedSuccesfully {
-                            self.createPostage(postage: postage, relatedPostageCod: relatedPostageCod, result: result)
+                            self.privateCreatePostage(postage: postage, relatedPostageCod: relatedPostageCod, result: result)
                         }else{
                             result?(operationResponse: operationResult)
                         }
@@ -59,20 +75,51 @@ public class APCPostageManager: NSObject {
     
     
     /**
+     Busca os dados de uma postagem por código. Abstrai o endpoint /rest/postagens/{codPostagem}
+     - parameter postageCod Código da postagem que será buscada.
+     - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso os dados da postagem.
+     - see APCOperationResponse.swift e APCOperationResultStatus
+     */
+    public func findPostage(codPostage cod: Int, result: (operationResponse: APCOperationResponse)-> Void){
+        Alamofire.request(.GET, APCURLProvider.postageURL(postageCod: cod)).responseJSON { (responseObject) in
+            APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
+                if let postageData = responseValue as? [String : AnyObject] {
+                    return JsonObjectCreator.createObject(dictionary: postageData, objectClass: APCPostage.self)
+                }
+                return nil
+                }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
+        }
+    }
+    
+    
+    public func queryPostages(authorCod: NSNumber?,
+                              relatedPostageCod: NSNumber?,
+                              postageTypesCods: [Int]?,
+                              hashtag: String?,
+                              codDestinationObjectType: NSNumber?,
+                              codDestinationObject: NSNumber?,
+                              page: Int,
+                              maxPostageReturned: Int,
+                              result: (operationResponse: APCOperationResponse)-> Void){
+        //TODO: Implement this method
+    }
+    
+    
+    /**
      Exclui uma postagem na plataforma. Ao excluir uma postagem, seus conteúdos são também excluídos. Requer autenticação.
      - parameter postageCod Código da postagem que será excluída.
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e sempre nil no campo data.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
 
-    public func deletePostage(postageCod postageCod: Int, result: ((operationResponse: APCOperationResponse)-> Void)?){
+    public func deletePostage(postageCod postageCod: Int, result: (operationResponse: APCOperationResponse)-> Void){
         if let session = APCUserManager.sharedManager.activeSession {
             if session.isSessionExpired {
                 APCUserManager.sharedManager.refreshSession({ (operationResult) in
                     if operationResult.status == .CompletedSuccesfully {
                         self.deletePostage(postageCod: postageCod, result: result)
                     }else{
-                        result?(operationResponse: operationResult)
+                        result(operationResponse: operationResult)
                     }
                 })
             }else{
@@ -84,10 +131,13 @@ public class APCPostageManager: NSObject {
                 }
             }
         }else{
-            result?(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
+            result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
         }
         
     }
+    
+    
+    
     
     
     //MARK: - Private methods
@@ -151,14 +201,14 @@ extension APCPostageManager {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso a postagem com o campo código preenchido.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func setPostageContent(postageCod postageCod: Int, postageContent: APCPostageContent, result: ((operationResponse: APCOperationResponse)-> Void)?){
+    public func setPostageContent(postageCod postageCod: Int, postageContent: APCPostageContent, result: (operationResponse: APCOperationResponse)-> Void){
         if let session = APCUserManager.sharedManager.activeSession {
             if session.isSessionExpired {
                 APCUserManager.sharedManager.refreshSession({ (operationResult) in
                     if operationResult.status == .CompletedSuccesfully {
                         self.setPostageContent(postageCod: postageCod, postageContent: postageContent, result: result)
                     }else{
-                        result?(operationResponse: operationResult)
+                        result(operationResponse: operationResult)
                     }
                 })
             }else{
@@ -172,7 +222,7 @@ extension APCPostageManager {
                 }
             }
         }else{
-            result?(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
+            result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
         }
     }
     
@@ -184,20 +234,20 @@ extension APCPostageManager {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso a postagem com o campo código preenchido.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func updatePostageContent(postageCod postageCod: Int, postageContent: APCPostageContent, result: ((operationResponse: APCOperationResponse)-> Void)?){
+    public func updatePostageContent(postageCod postageCod: Int, postageContent: APCPostageContent, result: (operationResponse: APCOperationResponse)-> Void){
         if let session = APCUserManager.sharedManager.activeSession {
             if session.isSessionExpired {
                 APCUserManager.sharedManager.refreshSession({ (operationResult) in
                     if operationResult.status == .CompletedSuccesfully {
                         self.updatePostageContent(postageCod: postageCod, postageContent: postageContent, result: result)
                     }else{
-                        result?(operationResponse: operationResult)
+                        result(operationResponse: operationResult)
                     }
                 })
             }else{
                 if let token = session.sessionToken {
                     if postageContent.cod == 0{
-                        result?(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 20, userInfo: [NSLocalizedDescriptionKey : "The content must have a cod != 0 to be updated"]),status: .InvalidParamters))
+                        result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 20, userInfo: [NSLocalizedDescriptionKey : "The content must have a cod != 0 to be updated"]),status: .InvalidParamters))
                     }else{
                         let content = postageContent.asDictionary()
                         let headers = ["appToken" : token]
@@ -209,7 +259,7 @@ extension APCPostageManager {
                 }
             }
         }else{
-            result?(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
+            result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
         }
         
     }
@@ -221,14 +271,14 @@ extension APCPostageManager {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso a postagem com o campo código preenchido.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func deletePostageContent(postageCod postageCod: Int, postageContentCod: Int, result: ((operationResponse: APCOperationResponse)-> Void)?){
+    public func deletePostageContent(postageCod postageCod: Int, postageContentCod: Int, result: (operationResponse: APCOperationResponse)-> Void){
         if let session = APCUserManager.sharedManager.activeSession {
             if session.isSessionExpired {
                 APCUserManager.sharedManager.refreshSession({ (operationResult) in
                     if operationResult.status == .CompletedSuccesfully {
                         self.deletePostageContent(postageCod: postageCod, postageContentCod: postageContentCod, result: result)
                     }else{
-                        result?(operationResponse: operationResult)
+                        result(operationResponse: operationResult)
                     }
                 })
             }else{
@@ -240,13 +290,13 @@ extension APCPostageManager {
                 }
             }
         }else{
-            result?(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
+            result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
         }
     }
     
     
     //MARK: - Postage content handlers
-    private func postageContentCreateResponseHandler(postage postageContent: APCPostageContent,response responseObject: Response<AnyObject, NSError>, result: ((operationResponse: APCOperationResponse)-> Void)?){
+    private func postageContentCreateResponseHandler(postage postageContent: APCPostageContent,response responseObject: Response<AnyObject, NSError>, result: (operationResponse: APCOperationResponse)-> Void){
         
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
             if let location = responseHeaders?["location"] as? String{
@@ -260,7 +310,7 @@ extension APCPostageManager {
             }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
     }
     
-    private func updatePostageContentResponseHandler(postage postageContent: APCPostageContent,response responseObject: Response<AnyObject, NSError>, result: ((operationResponse: APCOperationResponse)-> Void)?){
+    private func updatePostageContentResponseHandler(postage postageContent: APCPostageContent,response responseObject: Response<AnyObject, NSError>, result: (operationResponse: APCOperationResponse)-> Void){
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, reponseHeaders) -> AnyObject? in
             return postageContent
             }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
