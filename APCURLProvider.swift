@@ -11,6 +11,8 @@ import Foundation
 class APCURLProvider: NSObject {
 
     static let serverDomain: String = "http://mobile-aceite.tcu.gov.br"
+    static let healthMapBase: String = "http://mobile-aceite.tcu.gov.br/mapa-da-saude/rest"
+    
     class var baseAPCService: String {
         return serverDomain + "/appCivicoRS/rest"
     }
@@ -59,6 +61,14 @@ extension APCURLProvider {
     
     class func postageContentURL(postageCod postageCod: Int, contentCod: Int)-> NSURL {
         return NSURL(string: self.baseAPCService + "/postagens/\(postageCod)/conteudos/\(contentCod)")!
+    }
+}
+
+//MARK: - Health Map
+
+extension APCURLProvider {
+    class func medicinesURL()-> NSURL{
+        return NSURL(string: self.healthMapBase + "/remedios")!
     }
 }
 

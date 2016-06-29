@@ -10,6 +10,9 @@
 		B2299A2F1D0F9A6E007CFC69 /* APCManagerUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2299A2E1D0F9A6E007CFC69 /* APCManagerUtils.swift */; };
 		B269F64D1D16E9CA007B922C /* APCApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = B269F64C1D16E9CA007B922C /* APCApplication.swift */; };
 		B269F64F1D16F3ED007B922C /* Array+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B269F64E1D16F3ED007B922C /* Array+Utils.swift */; };
+		B2853CBD1D22ED48004FFBF8 /* APCMedicine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2853CBC1D22ED48004FFBF8 /* APCMedicine.swift */; };
+		B2853CC01D22FFAE004FFBF8 /* APCMedicineRetriver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2853CBF1D22FFAE004FFBF8 /* APCMedicineRetriver.swift */; };
+		B2853CC21D230E9B004FFBF8 /* String+Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2853CC11D230E9B004FFBF8 /* String+Util.swift */; };
 		B2958B941CB201F900F5AF76 /* APCProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2958B931CB201F900F5AF76 /* APCProfile.swift */; };
 		B2A064391CFFBEA50014894B /* APCPostage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A064381CFFBEA50014894B /* APCPostage.swift */; };
 		B2A0643B1CFFBEB40014894B /* APCPostageContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A0643A1CFFBEB40014894B /* APCPostageContent.swift */; };
@@ -43,6 +46,9 @@
 		B2299A2E1D0F9A6E007CFC69 /* APCManagerUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCManagerUtils.swift; sourceTree = "<group>"; };
 		B269F64C1D16E9CA007B922C /* APCApplication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCApplication.swift; sourceTree = "<group>"; };
 		B269F64E1D16F3ED007B922C /* Array+Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Utils.swift"; sourceTree = "<group>"; };
+		B2853CBC1D22ED48004FFBF8 /* APCMedicine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCMedicine.swift; sourceTree = "<group>"; };
+		B2853CBF1D22FFAE004FFBF8 /* APCMedicineRetriver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCMedicineRetriver.swift; sourceTree = "<group>"; };
+		B2853CC11D230E9B004FFBF8 /* String+Util.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Util.swift"; sourceTree = "<group>"; };
 		B2958B931CB201F900F5AF76 /* APCProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCProfile.swift; sourceTree = "<group>"; };
 		B2A064381CFFBEA50014894B /* APCPostage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCPostage.swift; sourceTree = "<group>"; };
 		B2A0643A1CFFBEB40014894B /* APCPostageContent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APCPostageContent.swift; sourceTree = "<group>"; };
@@ -73,9 +79,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B2853CBB1D22ECF2004FFBF8 /* Medicine */ = {
+			isa = PBXGroup;
+			children = (
+				B2853CBC1D22ED48004FFBF8 /* APCMedicine.swift */,
+			);
+			name = Medicine;
+			sourceTree = "<group>";
+		};
+		B2853CBE1D22FF97004FFBF8 /* Retriver */ = {
+			isa = PBXGroup;
+			children = (
+				B2853CBF1D22FFAE004FFBF8 /* APCMedicineRetriver.swift */,
+			);
+			name = Retriver;
+			sourceTree = "<group>";
+		};
 		B2ADD37F1CB04E0C00A4662E = {
 			isa = PBXGroup;
 			children = (
+				B2853CBE1D22FF97004FFBF8 /* Retriver */,
 				B2F5C4241CB3045000BFAB5A /* KeyChainWrapper */,
 				B2ADD39F1CB08BAB00A4662E /* Extensions */,
 				B2ADD39E1CB089FD00A4662E /* Manager */,
@@ -107,6 +130,7 @@
 		B2ADD3961CB04E4000A4662E /* Entities */ = {
 			isa = PBXGroup;
 			children = (
+				B2853CBB1D22ECF2004FFBF8 /* Medicine */,
 				B2ADD3941CB04E3900A4662E /* APCUser.swift */,
 				B2ADD39C1CB054B000A4662E /* APCUserSession.swift */,
 				B2958B931CB201F900F5AF76 /* APCProfile.swift */,
@@ -143,6 +167,7 @@
 			children = (
 				B269F64E1D16F3ED007B922C /* Array+Utils.swift */,
 				B2ADD3A01CB08C5100A4662E /* Dictionary+Util.swift */,
+				B2853CC11D230E9B004FFBF8 /* String+Util.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -256,15 +281,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				B2299A2F1D0F9A6E007CFC69 /* APCManagerUtils.swift in Sources */,
+				B2853CC01D22FFAE004FFBF8 /* APCMedicineRetriver.swift in Sources */,
 				B2ADD3951CB04E3900A4662E /* APCUser.swift in Sources */,
 				B2ADD3A71CB1413B00A4662E /* APCOperationResponse.swift in Sources */,
 				B2ADD3A31CB0A18500A4662E /* APCUserManager.swift in Sources */,
 				B2ADD39A1CB0544B00A4662E /* JsonObjectCreator.swift in Sources */,
+				B2853CBD1D22ED48004FFBF8 /* APCMedicine.swift in Sources */,
 				B2958B941CB201F900F5AF76 /* APCProfile.swift in Sources */,
 				B2ADD3A11CB08C5100A4662E /* Dictionary+Util.swift in Sources */,
 				B269F64F1D16F3ED007B922C /* Array+Utils.swift in Sources */,
 				B269F64D1D16E9CA007B922C /* APCApplication.swift in Sources */,
 				B2A0643D1D0064E10014894B /* APCPostageManager.swift in Sources */,
+				B2853CC21D230E9B004FFBF8 /* String+Util.swift in Sources */,
 				B2ADD39D1CB054B000A4662E /* APCUserSession.swift in Sources */,
 				B2ADD3A51CB0A2EB00A4662E /* APCURLProvider.swift in Sources */,
 				B2A0643B1CFFBEB40014894B /* APCPostageContent.swift in Sources */,
@@ -376,6 +404,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -397,6 +426,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;

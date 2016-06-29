@@ -6,7 +6,7 @@
 //  Copyright © 2016 Luciano Almeida. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 public class APCPostage: NSObject, JsonConvertable{
     

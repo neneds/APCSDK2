@@ -271,6 +271,7 @@ public class APCUserManager: NSObject {
         Alamofire.request(.GET, APCURLProvider.userBaserURL(), parameters: nil, encoding: .URLEncodedInURL, headers: ["twitterToken" : twitterToken]).responseJSON { (responseObject) in
             self.findResponseHandler(response: responseObject, result: result)
         }
+        
     }
     
     //MARK: - Find Convenience
