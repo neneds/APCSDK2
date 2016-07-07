@@ -14,19 +14,17 @@ public class APCApplication: NSObject {
     
     //MARK: - Properties
     private(set) var applicationCode: Int?
-    private(set) var applicationSecretToken: String?
     
     private override init() {
         
     }
     
-    public func startWith(applicationCode code: Int, applicationSecretToken: String) {
+    public func startWith(applicationCode code: Int) {
         self.applicationCode = code
-        self.applicationSecretToken = applicationSecretToken
     }
     
     //MARK:- Overrides
     public override var description: String  {
-        return "APCApplication[ applicationCode = \(self.applicationCode), applicationSecretToken = \(self.applicationSecretToken)]"
+        return "APCApplication[ applicationCode = \(self.applicationCode)]"
     }
 }
