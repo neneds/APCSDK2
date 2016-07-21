@@ -211,7 +211,103 @@ public class APCUserManager: NSObject {
         }
     }
     
+    //MARK: - User picture methods
+    /**
+     
+     Busca a foto de perfil do usuário.
+     
+     Relacionado ao endpoint - GET: http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas/27/fotoPerfil
+     - parameter userCod Código do usuário.
+     - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta com a imagem no campo data.
+     - see APCOperationResponse.swift
+     */
+    public func getUserPicture(userCod cod: Int, result: (operationResponse: APCOperationResponse)-> Void) {
+        Alamofire.request(.GET, APCURLProvider.userPictureURL(userCod: cod)).responseData(completionHandler: { (responseData) in
+            self.getUserPictureResponseHandler(response: responseData, result: result)
+        })
+    }
     
+    /**
+     
+     Cadastra a foto de perfil do usuário.
+     
+     Relacionado ao endpoint - POST: http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas/27/fotoPerfil
+     - parameter userCod Código do usuário.
+     - parameter result Bloco chamado após completar a operação. Retornando um objeto com o status da operação.
+     - see APCOperationResponse.swift
+     */
+    public func setUserPicture(userCod cod: Int, picture: UIImage, result: (operationResponse: APCOperationResponse)-> Void){
+        if let unwrappedSession = self.activeSession {
+            if unwrappedSession.isSessionExpired {
+                self.refreshSession({ (operationResult) in
+                    if operationResult.status == .CompletedSuccesfully {
+                        self.setUserPicture(userCod: cod, picture: picture, result: result)
+                    }else{
+                        result(operationResponse: operationResult)
+                    }
+                })
+            }else{
+                if let token = self.activeSession?.sessionToken {
+                    if let imageData = UIImagePNGRepresentation(picture) {
+                        Alamofire.upload(.POST, APCURLProvider.userPictureURL(userCod: cod), headers: ["appToken" : token ], multipartFormData: { (multipartForm) in
+                            multipartForm.appendBodyPart(data: imageData, name: "file", fileName: "picture.png", mimeType: "image/png")
+                        }, encodingMemoryThreshold: 4194304, encodingCompletion: { (encodeResult) in
+                            switch encodeResult {
+                            case .Success(let request, _, _):
+                                request.response(completionHandler: { (_,response, _, _) -> Void in
+                                    if let unwrappedResponse = response{
+                                        self.setPictureResponseHandler(unwrappedResponse, result: result)
+                                    }
+                                })
+                                break
+                            case .Failure(_):
+                                result(operationResponse: APCOperationResponse(data: nil, status: APCOperationResultStatus.NoContentReturned))
+                                break
+                            }
+
+                        })
+                    }
+                }
+            }
+        }else{
+            result(operationResponse: APCOperationResponse(data:  NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
+        }
+
+    }
+    
+    private func setPictureResponseHandler(response: NSHTTPURLResponse , result: (operationResponse: APCOperationResponse)-> Void){
+        
+        switch response.statusCode {
+            case 200,201:
+                result(operationResponse: APCOperationResponse(data: nil, status: .CompletedSuccesfully))
+            case 404:
+                result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 404, userInfo: [NSLocalizedDescriptionKey : "The user with the code provided can't not be founded."]), status: APCOperationResultStatus.ResourceNotFound))
+            case 401:
+                result(operationResponse: APCOperationResponse(data: nil, status: APCOperationResultStatus.OperationUnauthorized))
+            case 400:
+                result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 400, userInfo: [NSLocalizedDescriptionKey : "An error to process the image on the server or the picture sended must have the size larger than max size allowed of 4MB."]), status: APCOperationResultStatus.InvalidParamters))
+            case 403:
+                result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 403, userInfo: [NSLocalizedDescriptionKey : "The user owner of token isn't the same of the cod porvided."]), status: APCOperationResultStatus.OperationUnauthorized))
+            default:
+                break
+        }
+    }
+    
+    private func getUserPictureResponseHandler(response responseObject: Response<NSData, NSError>, result: ((operationResponse: APCOperationResponse)-> Void)?){
+        if let unwrappedStatusCode = responseObject.response?.statusCode{
+            switch unwrappedStatusCode {
+            case 200:
+                if let imageData = responseObject.data {
+                    result?(operationResponse: APCOperationResponse(data: UIImage(data: imageData), status: .CompletedSuccesfully))
+                }
+            case 404:
+                result?(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 404, userInfo: [NSLocalizedDescriptionKey : "The user not have a picture"]), status: APCOperationResultStatus.ResourceNotFound))
+            default:
+                result?(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 56, userInfo: [NSLocalizedDescriptionKey : "Something wrong than expected."]), status: APCOperationResultStatus.ResourceNotFound))
+            }
+        }
+        
+    }
     
     //MARK: - Find methods
     /**

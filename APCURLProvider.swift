@@ -35,6 +35,12 @@ class APCURLProvider: NSObject {
         return NSURL(string: self.baseAPCService + "/pessoas/redefinirSenha")!
     }
     
+    //MARK: - Picture
+    class func userPictureURL(userCod cod: Int) -> NSURL{
+        return NSURL(string: self.baseAPCService + "/pessoas/\(cod)/fotoPerfil")!
+    }
+    
+    
     //MARK: - Profile
     class func userProfileURL(userCod userCod: Int) -> NSURL{
         return NSURL(string: self.baseAPCService + "/pessoas/\(userCod)/perfil")!
