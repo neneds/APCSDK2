@@ -12,12 +12,14 @@ public class APCPostage: NSObject, JsonConvertable{
     
     public var cod: Int = 0
     public var codAuthor : Int = 0
-    public var codDestinatedObject: Int = 0
+    public var codDestinatedObject: Int64 = 0
     public var codDestinatedObjectType: Int = 0
     public var codPostageType: Int = 0
     public var date: NSDate = NSDate()
     
     public var contentsCodes: [Int] = []
+    
+    public var contents: [APCPostageContent]?
     
     private override init(){
         
@@ -47,9 +49,14 @@ public class APCPostage: NSObject, JsonConvertable{
                 self.date = date
             }
         }
-        if let codDestinatedObject = dictionary["codObjetoDestino"] as? Int{
-            self.codDestinatedObject = codDestinatedObject
+        if let codAuthor = dictionary["codAutor"] as? Int {
+            self.codAuthor = codAuthor
         }
+        
+        if let codDestinatedObject = dictionary["codObjetoDestino"] as? NSNumber{
+            self.codDestinatedObject = codDestinatedObject.longLongValue
+        }
+        
         if let codDestinatedObjectType = dictionary["codTipoObjetoDestino"] as? Int{
             self.codDestinatedObjectType = codDestinatedObjectType
         }
@@ -73,7 +80,7 @@ public class APCPostage: NSObject, JsonConvertable{
         author.updateValue(self.codAuthor, forKey: "codPessoa")
         data.updateValue(author, forKey: "autor")
         if self.codDestinatedObject != 0 {
-            data.updateValue(self.codDestinatedObject, forKey: "codObjetoDestino")
+            data.updateValue(String(self.codDestinatedObject), forKey: "codObjetoDestino")
         }
         if self.codDestinatedObjectType != 0{
             data.updateValue(self.codDestinatedObjectType, forKey: "codTipoObjetoDestino")
@@ -87,7 +94,7 @@ public class APCPostage: NSObject, JsonConvertable{
     
     
     override public var description: String {
-        return "[cod = \(self.cod), codAuthor = \(self.codAuthor), codObjetoDestino = \(self.codDestinatedObject), codTipoObjetoDestino = \(self.codDestinatedObjectType), codTipoPostagem = \(self.codPostageType), date = \(self.date), contentsCodes = \(self.contentsCodes)]\n"
+        return "[cod = \(self.cod), codAuthor = \(self.codAuthor), codObjetoDestino = \(self.codDestinatedObject), codTipoObjetoDestino = \(self.codDestinatedObjectType), codTipoPostagem = \(self.codPostageType), date = \(self.date), contentsCodes = \(self.contentsCodes)]\n, contents = \(self.contents)"
     }
     
     

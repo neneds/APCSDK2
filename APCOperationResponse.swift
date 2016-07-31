@@ -19,7 +19,26 @@ public class APCOperationResponse : NSObject{
     }
     
     public override var description: String{
-        return "OperationResponse = [data = \(self.data), status = \(self.status.rawValue)]"
+        return "OperationResponse = [data = \(self.data), status = \(self.statusToString())]"
+    }
+    
+    private func statusToString()-> String{
+        switch status {
+        case .CompletedSuccesfully:
+            return "CompletedSuccesfully"
+        case .OperationUnauthorized:
+            return "OperationUnauthorized"
+        case .ConnectionError:
+            return "ConnectionError"
+        case .InternalServerError:
+            return "InternalServerError"
+        case .InvalidParamters:
+            return "InvalidParamters"
+        case .ResourceNotFound:
+            return "ResourceNotFound"
+        case .NoContentReturned:
+            return "NoContentReturned"
+        }
     }
 }
 
