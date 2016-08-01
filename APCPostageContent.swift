@@ -13,7 +13,7 @@ public class APCPostageContent: NSObject, JsonConvertable{
     public var postageCod: Int = 0
     public private(set) var values: [String: AnyObject] = [:]
     public var text: String?
-    public var numericValue: Int?
+    public var numericValue: Double?
     
     public var hasBinaryData: Bool = false
     
@@ -21,7 +21,7 @@ public class APCPostageContent: NSObject, JsonConvertable{
         
     }
     
-    public convenience init(text: String,numericValue: Int, values: [String: AnyObject]) {
+    public convenience init(text: String,numericValue: Double, values: [String: AnyObject]) {
         self.init(values: values)
         self.text = text
         self.numericValue = numericValue
@@ -71,7 +71,7 @@ public class APCPostageContent: NSObject, JsonConvertable{
             self.text = text
         }
         
-        if let value = dictionary["valor"] as? Int {
+        if let value = dictionary["valor"] as? Double {
             self.numericValue = value
         }
     }

@@ -567,6 +567,7 @@ extension APCUserManager {
                 })
             }else{
                 if let token = self.activeSession?.sessionToken {
+                    
                     let profileData = profile.asDictionary()
                     Alamofire.request(.POST, APCURLProvider.userProfileURL(userCod: user), parameters: profileData, encoding: .JSON, headers: ["appToken" : token]).responseJSON(completionHandler: { (responseObject) in
                         APCManagerUtils.responseHandler(response: responseObject, result: result)
