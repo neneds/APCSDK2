@@ -8,11 +8,12 @@
 
 import Foundation
 
-extension Collection where Iterator.Element : Equatable, Self : _ArrayType{
+extension Array where Element : Equatable{
     
+    @discardableResult
     mutating func removeObject(_ object: Iterator.Element) -> Iterator.Element?{
         if let idx = self.index(of: object) {
-           return self.remove(at: idx)
+            return self.remove(at: idx)
         }
         return nil
     }

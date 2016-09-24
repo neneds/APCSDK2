@@ -101,7 +101,7 @@ open class APCUserManager: NSObject {
     */
     open func authenticate(email: String, password: String, result: ((_ operationResponse: APCOperationResponse)-> Void)?) {
         let headers :[String : String] =  ["email" : email, "senha" : password]
-        Alamofire.request(APCURLProvider.authenticateUserURL(), parameters: nil, encoding: .urlEncodedInURL, headers: headers).responseJSON { (responseObject) in
+        Alamofire.request(APCURLProvider.authenticateUserURL(), method: .get, parameters: nil, encoding: .urlEncodedInURL, headers: headers).responseJSON { (responseObject) in
             self.authenticationResponseHandler(password: password, response: responseObject, result: result)
         }
     }
@@ -116,7 +116,7 @@ open class APCUserManager: NSObject {
      */
     open func authenticateFacebook(email: String, facebookToken: String, result: ((_ operationResponse: APCOperationResponse)-> Void)?) {
         let headers :[String : String] =  ["email" : email, "facebookToken" : facebookToken]
-        Alamofire.request(APCURLProvider.authenticateUserURL(), parameters: nil, encoding: .urlEncodedInURL, headers: headers).responseJSON { (responseObject) in
+        Alamofire.request(APCURLProvider.authenticateUserURL(),method: .get, parameters: nil, encoding: .urlEncodedInURL, headers: headers).responseJSON { (responseObject) in
             self.authenticationResponseHandler(password: nil, response: responseObject, result: result)
         }
     }
@@ -130,7 +130,7 @@ open class APCUserManager: NSObject {
     */
     open func authenticateTwitter(email: String, twitterToken: String, result: ((_ operationResponse: APCOperationResponse)-> Void)?) {
         let headers :[String : String] =  ["email" : email, "twitterToken" : twitterToken]
-        Alamofire.request(APCURLProvider.authenticateUserURL(), parameters: nil, encoding: .urlEncodedInURL, headers: headers).responseJSON { (responseObject) in
+        Alamofire.request(APCURLProvider.authenticateUserURL(),method: .get, parameters: nil, encoding: .urlEncodedInURL, headers: headers).responseJSON { (responseObject) in
             self.authenticationResponseHandler(password: nil, response: responseObject, result: result)
         }
     }
@@ -194,7 +194,7 @@ open class APCUserManager: NSObject {
                         userData.removeValue(forKey: "email")
                         userData.removeValue(forKey: "emailVerificado")
                         let headers = ["appToken" : token]
-                        Alamofire.request(.POST, APCURLProvider.userURL(cod: user.cod), parameters: userData, encoding: .json, headers: headers).responseJSON(completionHandler: { (responseObject) in
+                        Alamofire.request(APCURLProvider.userURL(cod: user.cod), method: .post, parameters: userData, encoding: .json, headers: headers).responseJSON(completionHandler: { (responseObject) in
                    
                             APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
                                 return user
@@ -222,7 +222,7 @@ open class APCUserManager: NSObject {
      - see APCOperationResponse.swift
      */
     open func getUserPicture(userCod cod: Int, result: @escaping (_ operationResponse: APCOperationResponse)-> Void) {
-        Alamofire.request(.GET, APCURLProvider.userPictureURL(userCod: cod)).responseData(completionHandler: { (responseData) in
+        Alamofire.request(APCURLProvider.userPictureURL(userCod: cod), method: .get).responseData(completionHandler: { (responseData) in
             self.getUserPictureResponseHandler(response: responseData, result: result)
         })
     }
@@ -249,7 +249,7 @@ open class APCUserManager: NSObject {
             }else{
                 if let token = self.activeSession?.sessionToken {
                     if let imageData = UIImagePNGRepresentation(picture) {
-                        Alamofire.upload(.POST, APCURLProvider.userPictureURL(userCod: cod), headers: ["appToken" : token ], multipartFormData: { (multipartForm) in
+                        Alamofire.upload(APCURLProvider.userPictureURL(userCod: cod),method: .get, headers: ["appToken" : token ], multipartFormData: { (multipartForm) in
                             multipartForm.appendBodyPart(data: imageData, name: "file", fileName: "picture.png", mimeType: "image/png")
                         }, encodingMemoryThreshold: 4194304, encodingCompletion: { (encodeResult) in
                             switch encodeResult {
@@ -318,7 +318,7 @@ open class APCUserManager: NSObject {
      - see APCOperationResponse.swift
      */
     open func find(cod: Int, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        Alamofire.request(.GET, APCURLProvider.userURL(cod: cod), parameters: nil, encoding: .urlEncodedInURL, headers: nil).responseJSON { (responseObject) in
+        Alamofire.request(APCURLProvider.userURL(cod: cod), method: .get, parameters: nil, encoding: .urlEncodedInURL, headers: nil).responseJSON { (responseObject) in
             
             APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
                 if let userData = responseValue as? [String : AnyObject]{
@@ -338,7 +338,7 @@ open class APCUserManager: NSObject {
      - see APCOperationResponse.swift
      */
     open func find(email: String, result: @escaping (_ operationResponse: APCOperationResponse)-> Void) {
-        Alamofire.request(APCURLProvider.userBaserURL(), parameters: nil, encoding: .urlEncodedInURL, headers: ["email" : email]).responseJSON { (responseObject) in
+        Alamofire.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: .urlEncodedInURL, headers: ["email" : email]).responseJSON { (responseObject) in
             self.findResponseHandler(response: responseObject, result: result)
         }
     }
@@ -351,7 +351,7 @@ open class APCUserManager: NSObject {
      - see APCOperationResponse.swift
      */
     open func find(facebookToken: String, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        Alamofire.request(APCURLProvider.userBaserURL(), parameters: nil, encoding: .urlEncodedInURL, headers: ["facebookToken" : facebookToken]).responseJSON { (responseObject) in
+        Alamofire.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: .urlEncodedInURL, headers: ["facebookToken" : facebookToken]).responseJSON { (responseObject) in
             self.findResponseHandler(response: responseObject, result: result)
         }
     }
@@ -364,7 +364,7 @@ open class APCUserManager: NSObject {
      - see APCOperationResponse.swift
      */
     open func find(twitterToken: String, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        Alamofire.request(APCURLProvider.userBaserURL(), parameters: nil, encoding: .urlEncodedInURL, headers: ["twitterToken" : twitterToken]).responseJSON { (responseObject) in
+        Alamofire.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: .urlEncodedInURL, headers: ["twitterToken" : twitterToken]).responseJSON { (responseObject) in
             self.findResponseHandler(response: responseObject, result: result)
         }
         
@@ -405,7 +405,7 @@ open class APCUserManager: NSObject {
      - see APCOperationResponse.swift
      */
     open func exists(email: String, result: @escaping (_ operationResponse: APCOperationResponse)-> Void) {
-        Alamofire.request(APCURLProvider.userBaserURL(), parameters: nil, encoding: .urlEncodedInURL, headers: ["email" : email]).responseJSON { (responseObject) in
+        Alamofire.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: .urlEncodedInURL, headers: ["email" : email]).responseJSON { (responseObject) in
             self.existsResponseHandler(response: responseObject, result: result)
         }
     }
@@ -418,7 +418,7 @@ open class APCUserManager: NSObject {
      - see APCOperationResponse.swift
      */
     open func exists(facebookToken: String, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        Alamofire.request(APCURLProvider.userBaserURL(), parameters: nil, encoding: .urlEncodedInURL, headers: ["facebookToken" : facebookToken]).responseJSON { (responseObject) in
+        Alamofire.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: .urlEncodedInURL, headers: ["facebookToken" : facebookToken]).responseJSON { (responseObject) in
             self.existsResponseHandler(response: responseObject, result: result)
         }
     }
@@ -432,7 +432,7 @@ open class APCUserManager: NSObject {
      - see APCOperationResponse.swift
      */
     open func exists(twitterToken: String, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        Alamofire.request(APCURLProvider.userBaserURL(), parameters: nil, encoding: .urlEncodedInURL, headers: ["twitterToken" : twitterToken]).responseJSON { (responseObject) in
+        Alamofire.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: .urlEncodedInURL, headers: ["twitterToken" : twitterToken]).responseJSON { (responseObject) in
             self.existsResponseHandler(response: responseObject, result: result)
         }
     }
@@ -457,7 +457,7 @@ open class APCUserManager: NSObject {
         - see APCOperationResponse.swift e APCOperationResultStatus
      */
     open func redefinePassword(email: String, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        Alamofire.request(.POST, APCURLProvider.redefinePasswordURL(), parameters: ["email" : email], encoding: .url, headers: nil).responseData { (responseObject) in
+        Alamofire.request(APCURLProvider.redefinePasswordURL(), method: .post, parameters: ["email" : email], encoding: .url, headers: nil).responseData { (responseObject) in
             if let unwrappedStatusCode = responseObject.response?.statusCode {
                 switch(unwrappedStatusCode){
                 case 200:
@@ -569,7 +569,7 @@ extension APCUserManager {
                 if let token = self.activeSession?.sessionToken {
                     
                     let profileData = profile.asDictionary()
-                    Alamofire.request(.POST, APCURLProvider.userProfileURL(userCod: user), parameters: profileData, encoding: .json, headers: ["appToken" : token]).responseJSON(completionHandler: { (responseObject) in
+                    Alamofire.request(APCURLProvider.userProfileURL(userCod: user), method: .post, parameters: profileData, encoding: .json, headers: ["appToken" : token]).responseJSON(completionHandler: { (responseObject) in
                         APCManagerUtils.responseHandler(response: responseObject, result: result)
                     })
                 }
@@ -588,7 +588,7 @@ extension APCUserManager {
      */
     public func getUserProfile(userCod: Int, result: @escaping (_ operationResult: APCOperationResponse)-> Void){
         if let appCod = APCApplication.sharedApplication.applicationCode {
-            Alamofire.request(APCURLProvider.userProfileURL(userCod: userCod), parameters: nil, encoding: .urlEncodedInURL, headers: ["appIdentifier": String(appCod)]).responseJSON { (responseObject) in
+            Alamofire.request(APCURLProvider.userProfileURL(userCod: userCod), method: .get, parameters: nil, encoding: .urlEncodedInURL, headers: ["appIdentifier": String(appCod)]).responseJSON { (responseObject) in
                 self.getUserProfileResponseHandler(response: responseObject, result: result)
             }
         }
@@ -616,7 +616,7 @@ extension APCUserManager {
                 if let token = self.activeSession?.sessionToken {
                     var profileData = profile.asDictionary()
                     profileData.updateValue(true as AnyObject, forKey: "verificado")
-                    Alamofire.request(.PUT, APCURLProvider.userProfileURL(userCod: user), parameters: profileData, encoding: .json, headers: ["appToken" : token]).responseJSON(completionHandler: { (responseObject) in
+                    Alamofire.request(APCURLProvider.userProfileURL(userCod: user), method: .put, parameters: profileData, encoding: .json, headers: ["appToken" : token]).responseJSON(completionHandler: { (responseObject) in
                         APCManagerUtils.responseHandler(response: responseObject, result: result)
                     })
                 }
@@ -646,7 +646,7 @@ extension APCUserManager {
                 }else{
                     if let token = self.activeSession?.sessionToken {
                         let headers = ["appToken" : token , "appIdentifier" : String(appCod)]
-                        Alamofire.request(.DELETE, APCURLProvider.userProfileURL(userCod: userCod), parameters: nil, encoding: .url, headers: headers).responseJSON(completionHandler: { (responseObject) in
+                        Alamofire.request(APCURLProvider.userProfileURL(userCod: userCod), method: .delete, parameters: nil, encoding: .url, headers: headers).responseJSON(completionHandler: { (responseObject) in
                             APCManagerUtils.responseHandler(response: responseObject, result: result)
                         })
                     }
