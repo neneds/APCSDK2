@@ -22,7 +22,7 @@ class APCManagerUtils: NSObject {
         return nil
     }
     
-    class func responseHandler(response responseObject: Response<AnyObject, NSError>,
+    class func responseHandler(response responseObject: DataResponse<Any>,
                                         onSuccess: ((_ responseValue: AnyObject?, _ responseHeaders: [AnyHashable: Any]?)-> AnyObject?)? = nil,
                                         onNotFound: ((_ responseValue: AnyObject?, _ responseHeaders: [AnyHashable: Any]?)-> AnyObject?)? = nil,
                                         onUnauthorized: ((_ responseValue: AnyObject?, _ responseHeaders: [AnyHashable: Any]?)-> AnyObject?)? = nil,
@@ -35,23 +35,23 @@ class APCManagerUtils: NSObject {
             let responseHeaders = responseObject.response?.allHeaderFields
             switch status {
             case 200, 201:
-                result?(operationResponse: APCOperationResponse(data: onSuccess?(responseValue: responseValue, responseHeaders: responseHeaders),status: .completedSuccesfully))
+                result?(APCOperationResponse(data: onSuccess?(responseValue as AnyObject?, responseHeaders),status: .completedSuccesfully))
             case 404:
-                result?(operationResponse: APCOperationResponse(data: onNotFound?(responseValue: responseValue, responseHeaders: responseHeaders),status: .resourceNotFound))
+                result?(APCOperationResponse(data: onNotFound?(responseValue as AnyObject?, responseHeaders),status: .resourceNotFound))
             case 500:
                 result?(APCOperationResponse(data: nil,status: .internalServerError))
             case 401, 403:
-                result?(operationResponse: APCOperationResponse(data: onUnauthorized?(responseValue: responseValue, responseHeaders: responseHeaders),status: .operationUnauthorized))
+                result?(APCOperationResponse(data: onUnauthorized?(responseValue as AnyObject?, responseHeaders),status: .operationUnauthorized))
             case 400:
-                result?(operationResponse: APCOperationResponse(data: onInvalidParameters?(responseValue: responseValue, responseHeaders: responseHeaders),status: .invalidParamters))
+                result?(APCOperationResponse(data: onInvalidParameters?(responseValue as AnyObject?, responseHeaders),status: .invalidParamters))
             case 204:
                 result?(APCOperationResponse(data: nil, status: .noContentReturned))
             default:
-                result?(operationResponse: APCOperationResponse(data: onConnectionError?(responseValue: responseValue, responseHeaders: responseHeaders),status: .connectionError))
+                result?(APCOperationResponse(data: onConnectionError?(responseValue as AnyObject?, responseHeaders),status: .connectionError))
                 
             }
         }else{
-            result?(operationResponse: APCOperationResponse(data: onConnectionError?(responseValue: responseObject.result.error, responseHeaders: nil),status: .connectionError))
+            result?(APCOperationResponse(data: onConnectionError?(responseObject.result.error as AnyObject?, nil),status: .connectionError))
         }
     }
 

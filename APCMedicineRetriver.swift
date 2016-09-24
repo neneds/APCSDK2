@@ -23,13 +23,13 @@ open class APCMedicineRetriver: NSObject {
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
     open func medicines(product: String?, presentation: String?, fields:[String]?, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        var parameters: [String : AnyObject] = [:]
-        parameters.updateOptionalValue(product as AnyObject?, forKey: "produto")
-        parameters.updateOptionalValue(presentation as AnyObject?, forKey: "apresentacao")
+        var sendParameters: [String : Any] = [:]
+        sendParameters.updateOptionalValue(product as AnyObject?, forKey: "produto")
+        sendParameters.updateOptionalValue(presentation as AnyObject?, forKey: "apresentacao")
         if let unwrappedFields = fields, let concatedFiels = String.concatStringsWithSeparator(strings: unwrappedFields, separator: ","){
-            parameters.updateValue(concatedFiels as AnyObject, forKey: "campos")
+            sendParameters.updateValue(concatedFiels as AnyObject, forKey: "campos")
         }
-        Alamofire.request(APCURLProvider.medicinesURL(), parameters: parameters, encoding: .urlEncodedInURL, headers: nil).responseJSON { (responseObject) in
+        Alamofire.request(APCURLProvider.medicinesURL(), parameters: sendParameters , encoding: .urlEncodedInURL, headers: nil).responseJSON { (responseObject) in
             self.medicinesResponseHandler(response: responseObject, result: result)
         }
     }
@@ -71,7 +71,7 @@ open class APCMedicineRetriver: NSObject {
     }
     
     
-    fileprivate func singleMedicineResponseHandler(response responseObject: Response<AnyObject, NSError>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
+    fileprivate func singleMedicineResponseHandler(response responseObject: DataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
             if let unwrappedValue = responseValue as? [[String : AnyObject]]{
                 if let medicines = JsonObjectCreator.create(dictionaryArray: unwrappedValue, objectClass: APCMedicine.self) as? [APCMedicine] {
@@ -81,10 +81,11 @@ open class APCMedicineRetriver: NSObject {
             return nil
             }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
     }
-    fileprivate func medicinesResponseHandler(response responseObject: Response<AnyObject, NSError>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
+    
+    fileprivate func medicinesResponseHandler(response responseObject: DataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
             if let unwrappedValue = responseValue as? [[String : AnyObject]]{
-                return JsonObjectCreator.create(dictionaryArray: unwrappedValue, objectClass: APCMedicine.self) as? [APCMedicine]
+                return JsonObjectCreator.create(dictionaryArray: unwrappedValue, objectClass: APCMedicine.self) as? [APCMedicine] as AnyObject?
             }
             return nil
             }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)

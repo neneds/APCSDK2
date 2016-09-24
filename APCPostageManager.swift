@@ -205,7 +205,7 @@ open class APCPostageManager: NSObject {
     
     
     //MARK: - Private methods
-    fileprivate func postageCreateResponseHandler(postage: APCPostage,response responseObject: Response<AnyObject, NSError>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
+    fileprivate func postageCreateResponseHandler(postage: APCPostage,response responseObject: DataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
             if let location = responseHeaders?["location"] as? String{
                 if let cod = APCManagerUtils.codFromLocation(location){
@@ -455,7 +455,7 @@ extension APCPostageManager {
     }
     
     //MARK: - Postage content handlers
-    fileprivate func postageContentCreateResponseHandler(postage postageContent: APCPostageContent,response responseObject: Response<AnyObject, NSError>, result: (_ operationResponse: APCOperationResponse)-> Void){
+    fileprivate func postageContentCreateResponseHandler(postage postageContent: APCPostageContent,response responseObject: DataResponse<Any>, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
             if let location = responseHeaders?["location"] as? String{
@@ -469,13 +469,13 @@ extension APCPostageManager {
             }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
     }
     
-    fileprivate func updatePostageContentResponseHandler(postage postageContent: APCPostageContent,response responseObject: Response<AnyObject, NSError>, result: (_ operationResponse: APCOperationResponse)-> Void){
+    fileprivate func updatePostageContentResponseHandler(postage postageContent: APCPostageContent,response responseObject: DataResponse<Any>, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, reponseHeaders) -> AnyObject? in
             return postageContent
             }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
     }
     
-    fileprivate func findPostageContentResponseHandler(response responseObject: Response<AnyObject, NSError>, result: (_ operationResponse: APCOperationResponse)-> Void){
+    fileprivate func findPostageContentResponseHandler(response responseObject: DataResponse<Any>, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
             if let contentDic = responseValue as? [String : AnyObject] {
                 return JsonObjectCreator.createObject(dictionary: contentDic, objectClass: APCPostageContent.self)

@@ -223,7 +223,7 @@ open class APCUserManager: NSObject {
      */
     open func getUserPicture(userCod cod: Int, result: @escaping (_ operationResponse: APCOperationResponse)-> Void) {
         Alamofire.request(APCURLProvider.userPictureURL(userCod: cod), method: .get).responseData(completionHandler: { (responseData) in
-            self.getUserPictureResponseHandler(response: responseData, result: result)
+            self.getUserPictureResponseHandler(response: responseData as! DataResponse<Any>, result: result)
         })
     }
     
@@ -293,12 +293,12 @@ open class APCUserManager: NSObject {
         }
     }
     
-    fileprivate func getUserPictureResponseHandler(response responseObject: Response<Data, NSError>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
+    fileprivate func getUserPictureResponseHandler(response responseObject: DataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
         if let unwrappedStatusCode = responseObject.response?.statusCode{
             switch unwrappedStatusCode {
             case 200:
                 if let imageData = responseObject.data {
-                    result?(operationResponse: APCOperationResponse(data: UIImage(data: imageData), status: .completedSuccesfully))
+                    result?(APCOperationResponse(data: UIImage(data: imageData), status: .completedSuccesfully))
                 }
             case 404:
                 result?(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 404, userInfo: [NSLocalizedDescriptionKey : "The user not have a picture"]), status: APCOperationResultStatus.resourceNotFound))
@@ -371,7 +371,7 @@ open class APCUserManager: NSObject {
     }
     
     //MARK: - Find Convenience
-    fileprivate func findResponseHandler(response responseObject: Response<AnyObject, NSError>, result: (_ operationResponse: APCOperationResponse)-> Void){
+    fileprivate func findResponseHandler(response responseObject: DataResponse<Any>, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
             if let users =  responseValue as? [[String : AnyObject]]{
                 if !users.isEmpty {
@@ -382,18 +382,18 @@ open class APCUserManager: NSObject {
             }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
     }
     
-    fileprivate func existsResponseHandler(response responseObject: Response<AnyObject, NSError>, result: (_ operationResponse: APCOperationResponse)-> Void){
+    fileprivate func existsResponseHandler(response responseObject: DataResponse<Any>, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
 
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
-            return true
+            return true as AnyObject
             }, onNotFound: { (responseValue, responseHeaders) -> AnyObject? in
-                return false
+                return false as AnyObject
             }, onUnauthorized: { (responseValue, responseHeaders) -> AnyObject? in
-                return false
+                return false as AnyObject
             }, onInvalidParameters: { (responseValue, responseHeaders) -> AnyObject? in
-                return false
+                return false as AnyObject
             }, onConnectionError: { (responseValue, responseHeaders) -> AnyObject? in
-                return false
+                return false as AnyObject
             }, result: result)
     }
     
@@ -484,12 +484,12 @@ open class APCUserManager: NSObject {
     
     
     //MARK:- Useful methods
-    fileprivate func authenticationResponseHandler(password passowrd: String?, response responseObject: Response<AnyObject, NSError>, result: ((_ operationResponse: APCOperationResponse)-> Void)?) {
+    fileprivate func authenticationResponseHandler(password passowrd: String?, response responseObject: DataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?) {
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
             if let uwrappedHeaders  = responseHeaders {
                 let appToken = uwrappedHeaders["apptoken"] as! String
                 let fm = DateFormatter()
-                fm.locale = Locale(localeIdentifier: "en_US")
+                fm.locale = Locale(identifier: "en_US")
                 fm.dateFormat = "EEE, dd MMM yyyy HH:mm:ss z"
                 let expirationDate = fm.date(from: uwrappedHeaders["date"] as! String)?.addingTimeInterval(DayInSeconds * (Double(TokenValidDaysInterval) - 1.0))
                 let user = JsonObjectCreator.createObject(dictionary: responseValue as! [String : AnyObject], objectClass: APCUser.self) as! APCUser
@@ -662,7 +662,7 @@ extension APCUserManager {
     
     //MARK: - Profile response handlers
     
-    fileprivate func getUserProfileResponseHandler(response responseObject: Response<AnyObject, NSError>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
+    fileprivate func getUserProfileResponseHandler(response responseObject: DataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, reponseHeaders) -> AnyObject? in
             if let profileData = responseValue as? [String : AnyObject]{
                 return JsonObjectCreator.createObject(dictionary: profileData, objectClass: APCProfile.self)
