@@ -9,22 +9,22 @@
 import Foundation
 
 
-public class APCUserSession: NSObject, NSCoding {
+open class APCUserSession: NSObject, NSCoding {
 
     
     //MARK:- Properties
-    public var currentUser: APCUser?
-    public var sessionToken: String?
-    public var expirationDate: NSDate?
+    open var currentUser: APCUser?
+    open var sessionToken: String?
+    open var expirationDate: Date?
     
     //MARK:- Computed Properties
-    public var isSessionExpired: Bool {
-        return self.expirationDate?.earlierDate(NSDate()) == self.expirationDate
+    open var isSessionExpired: Bool {
+        return (self.expirationDate as NSDate?)?.earlierDate(Date()) == self.expirationDate
     }
     
     //MARK:- Initializers
     
-    override private init() {
+    override fileprivate init() {
         super.init()
     }
     
@@ -34,7 +34,7 @@ public class APCUserSession: NSObject, NSCoding {
      - parameter token Current session token
      - parameter expirationDate Expiration date for this session token.
      */
-    convenience public init(user: APCUser, token: String, expirationDate: NSDate) {
+    convenience public init(user: APCUser, token: String, expirationDate: Date) {
         self.init()
         self.currentUser = user
         self.sessionToken = token
@@ -45,21 +45,21 @@ public class APCUserSession: NSObject, NSCoding {
     
     //MARK:- NSCoding implementation
     required public init(coder aDecoder: NSCoder) {
-        self.currentUser = aDecoder.decodeObjectForKey("current_user") as? APCUser
-        self.expirationDate = aDecoder.decodeObjectForKey("expiration_date") as? NSDate
-        self.sessionToken = aDecoder.decodeObjectForKey("session_token") as? String
+        self.currentUser = aDecoder.decodeObject(forKey: "current_user") as? APCUser
+        self.expirationDate = aDecoder.decodeObject(forKey: "expiration_date") as? Date
+        self.sessionToken = aDecoder.decodeObject(forKey: "session_token") as? String
     }
     
-    public func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(self.currentUser, forKey: "current_user")
-        aCoder.encodeObject(self.expirationDate, forKey: "expiration_date")
-        aCoder.encodeObject(self.sessionToken, forKey: "session_token")
+    open func encode(with aCoder: NSCoder) {
+        aCoder.encode(self.currentUser, forKey: "current_user")
+        aCoder.encode(self.expirationDate, forKey: "expiration_date")
+        aCoder.encode(self.sessionToken, forKey: "session_token")
     }
     
     //MARK: Convenience methods
     
     //MARK:- Overrides
-    public override var description: String  {
+    open override var description: String  {
         return "currentUser = {\(self.currentUser)}, sessionToken = \(self.sessionToken), expirationDate = \(self.expirationDate)"
     }
 

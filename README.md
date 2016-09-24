@@ -1,22 +1,22 @@
 # APCSDK2
-![](https://img.shields.io/badge/APCSDK-1.0.8-orange.svg)
+![](https://img.shields.io/badge/APCSDK-1.2.0-orange.svg)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage) 
 ![](https://img.shields.io/badge/Platform-iOS%209%2B-green.svg)
-![](https://img.shields.io/badge/Xcode-7.3-blue.svg)
-![](https://img.shields.io/badge/Alamofire-3.3.1-red.svg)
+![](https://img.shields.io/badge/Xcode-8.0-blue.svg)
+![](https://img.shields.io/badge/Alamofire-4.0-red.svg)
 ![](https://img.shields.io/badge/Language-Swift-orange.svg)
-![](https://img.shields.io/badge/Compatible-ObjC-0055ff.svg)
+
 
 
 
 
 APC SDK Para desenvolvedores iOS
 
-Este SDK atualmente na versão 1.0.8 foi desenvolvido para encapsular a lógica de acesso aos endpoints dos Aplicativos Cívicos.
-Totalmente desenvolvido em swift, possui a realease 1.0.8 estável funcionando para qualquer projeto Swift e Objective C. 
+Este SDK atualmente na versão 1.2.0 foi desenvolvido para encapsular a lógica de acesso aos endpoints dos Aplicativos Cívicos.
+Totalmente desenvolvido em swift, possui a release 1.2.0 em desenvolvimento funcionando para qualquer projeto Swift 3.0 com o iOS 10. 
 
 # Dependências
-![](https://img.shields.io/badge/Alamofire-3.3.1-red.svg)
+![](https://img.shields.io/badge/Alamofire-4.0-red.svg)
 
 # Features
 Métodos provendo: 
@@ -47,8 +47,8 @@ validação de Token.
 
 5 - Adicione estas duas linhas  no Cartfile criado
 
-    github "Alamofire/Alamofire" ~> 3.3
-    github "neneds/APCSDK2" ~> 1.0.3
+    github "Alamofire/Alamofire" ~> 4.0
+    github "neneds/APCSDK2" ~> 1.2.0
 
 6 - Dê um carthage update
 
@@ -66,20 +66,11 @@ Pronto, você já baixou a framework para a pasta do seu projeto elas estão em:
 9 - Adione este link no 'Input Files'
 
     $(SRCROOT)/Carthage/Build/iOS/Alamofire.framework
+    $(SRCROOT)/Carthage/Build/iOS/APCAccessSDK.framework
 
 O seu Run Script vai ficar da seguinte forma
 
 <img src="https://ap.imagensbrasil.org/images/CapturadeTela2016-04-12as16.41.47.png" alt="CapturadeTela2016-04-12as16.41.47.png" border="1" width="500">
-
-10 - Adicione o Framework APCAccessSDK no Embedded Binaries do seu projeto
-
-    $(SRCROOT)/Carthage/Build/iOS/APCAccessSDK
-
-11 - Remova o Framework APCAccessSDK do Linked Framework
-
-12 - Vá no Build Settings e troque a chave do 'Embeded Content Contains Swift Code' para 'YES'.
-
-<img src="https://ap.imagensbrasil.org/images/ScreenShot2016-04-12at4.49.24PM.png" alt="ScreenShot2016-04-12at4.49.24PM.png" border="1" width="500">
 
 13 - Pronto! Importe a Framework para a sua classe e seja feliz. ;)
 

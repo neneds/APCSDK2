@@ -18,32 +18,32 @@ class APCURLProvider: NSObject {
     }
     
     //MARK: - User
-    class func userBaserURL() -> NSURL {
-        return NSURL(string: self.baseAPCService + "/pessoas")!
+    class func userBaserURL() -> URL {
+        return URL(string: self.baseAPCService + "/pessoas")!
     }
     
-    class func userURL(cod cod: Int) -> NSURL {
-        return NSURL(string: self.baseAPCService + "/pessoas/\(cod)")!
+    class func userURL(cod: Int) -> URL {
+        return URL(string: self.baseAPCService + "/pessoas/\(cod)")!
     }
     
-    class func authenticateUserURL()-> NSURL {
-        return NSURL(string: self.baseAPCService + "/pessoas/autenticar")!
+    class func authenticateUserURL()-> URL {
+        return URL(string: self.baseAPCService + "/pessoas/autenticar")!
     
     }
     
-    class func redefinePasswordURL()-> NSURL {
-        return NSURL(string: self.baseAPCService + "/pessoas/redefinirSenha")!
+    class func redefinePasswordURL()-> URL {
+        return URL(string: self.baseAPCService + "/pessoas/redefinirSenha")!
     }
     
     //MARK: - Picture
-    class func userPictureURL(userCod cod: Int) -> NSURL{
-        return NSURL(string: self.baseAPCService + "/pessoas/\(cod)/fotoPerfil")!
+    class func userPictureURL(userCod cod: Int) -> URL{
+        return URL(string: self.baseAPCService + "/pessoas/\(cod)/fotoPerfil")!
     }
     
     
     //MARK: - Profile
-    class func userProfileURL(userCod userCod: Int) -> NSURL{
-        return NSURL(string: self.baseAPCService + "/pessoas/\(userCod)/perfil")!
+    class func userProfileURL(userCod: Int) -> URL{
+        return URL(string: self.baseAPCService + "/pessoas/\(userCod)/perfil")!
     }
     
     
@@ -53,28 +53,28 @@ class APCURLProvider: NSObject {
 
 extension APCURLProvider {
     
-    class func postageBaseURL()-> NSURL{
-        return NSURL(string: self.baseAPCService + "/postagens")!
+    class func postageBaseURL()-> URL{
+        return URL(string: self.baseAPCService + "/postagens")!
     }
     
-    class func postageURL(postageCod postageCod: Int) -> NSURL {
-        return NSURL(string: self.baseAPCService + "/postagens/\(postageCod)")!
+    class func postageURL(postageCod: Int) -> URL {
+        return URL(string: self.baseAPCService + "/postagens/\(postageCod)")!
     }
     
-    class func postageContentURL(postageCod postageCod: Int)-> NSURL {
-        return NSURL(string: self.baseAPCService + "/postagens/\(postageCod)/conteudos")!
+    class func postageContentURL(postageCod: Int)-> URL {
+        return URL(string: self.baseAPCService + "/postagens/\(postageCod)/conteudos")!
     }
     
-    class func postageContentURL(postageCod postageCod: Int, contentCod: Int)-> NSURL {
-        return NSURL(string: self.baseAPCService + "/postagens/\(postageCod)/conteudos/\(contentCod)")!
+    class func postageContentURL(postageCod: Int, contentCod: Int)-> URL {
+        return URL(string: self.baseAPCService + "/postagens/\(postageCod)/conteudos/\(contentCod)")!
     }
 }
 
 //MARK: - Health Map
 
 extension APCURLProvider {
-    class func medicinesURL()-> NSURL{
-        return NSURL(string: self.healthMapBase + "/remedios")!
+    class func medicinesURL()-> URL{
+        return URL(string: self.healthMapBase + "/remedios")!
     }
 }
 

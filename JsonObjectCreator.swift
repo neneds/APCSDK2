@@ -12,7 +12,7 @@ class JsonObjectCreator: NSObject {
     
     class func create(jsonData: NSData , objectClass: JsonConvertable.Type)-> [AnyObject]?{
         do{
-            if let deserializedData = try NSJSONSerialization.JSONObjectWithData(jsonData, options: NSJSONReadingOptions.MutableContainers) as? [[String : AnyObject]] {
+            if let deserializedData = try JSONSerialization.JSONObjectWithData(jsonData, options: JSONSerialization.ReadingOptions.MutableContainers) as? [[String : AnyObject]] {
             
                 return self.create(dictionaryArray: deserializedData, objectClass: objectClass)
             }
@@ -24,14 +24,14 @@ class JsonObjectCreator: NSObject {
     }
     
     class func createObject(jsonData: NSData , objectClass: JsonConvertable.Type) -> AnyObject?{
-        if let deserializedData = try? NSJSONSerialization.JSONObjectWithData(jsonData, options: .MutableContainers) as? [String : AnyObject]{
+        if let deserializedData = try? JSONSerialization.JSONObjectWithData(jsonData as Data, options: .MutableContainers) as? [String : AnyObject]{
             return objectClass.init(dictionary: deserializedData!)
         }
         
         return nil
     }
     
-   class func create(dictionaryArray dictionaryArray: [[String: AnyObject]] , objectClass: JsonConvertable.Type)-> [AnyObject]?{
+   class func create(dictionaryArray: [[String: AnyObject]] , objectClass: JsonConvertable.Type)-> [AnyObject]?{
         var array : [JsonConvertable] = []
         for value in dictionaryArray {
             let object = objectClass.init(dictionary: value)
@@ -40,7 +40,7 @@ class JsonObjectCreator: NSObject {
         return array
     }
     
-    class func createObject(dictionary dictionary: [String: AnyObject],objectClass: JsonConvertable.Type) -> AnyObject?{
+    class func createObject(dictionary: [String: AnyObject],objectClass: JsonConvertable.Type) -> AnyObject?{
         return objectClass.init(dictionary: dictionary)
     }
 }
