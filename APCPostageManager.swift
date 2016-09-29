@@ -280,7 +280,7 @@ extension APCPostageManager {
                     let content = postageContent.asDictionary()
                     let headers = ["appToken" : token]
                     postageContent.postageCod = postageCod
-                    Alamofire.request(APCURLProvider.postageContentURL(postageCod: postageCod), method: .post, parameters: content, encoding: .json, headers: headers).responseJSON(completionHandler: { (responseObject) in
+                    Alamofire.request(APCURLProvider.postageContentURL(postageCod: postageCod), method: HTTPMethod.post, parameters: content, encoding: .json, headers: headers).responseJSON(completionHandler: { (responseObject) in
                         self.postageContentCreateResponseHandler(postage: postageContent, response: responseObject, result: result)
                     })
                 }

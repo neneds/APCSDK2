@@ -101,7 +101,7 @@ open class APCUserManager: NSObject {
     */
     open func authenticate(email: String, password: String, result: ((_ operationResponse: APCOperationResponse)-> Void)?) {
         let headers :[String : String] =  ["email" : email, "senha" : password]
-        Alamofire.request(APCURLProvider.authenticateUserURL(), method: .get, parameters: nil, encoding: .urlEncodedInURL, headers: headers).responseJSON { (responseObject) in
+        Alamofire.request(APCURLProvider.authenticateUserURL(),parameters: nil, encoding: .urlEncodedInURL, headers: headers).responseJSON { (responseObject) in
             self.authenticationResponseHandler(password: password, response: responseObject, result: result)
         }
     }
@@ -249,7 +249,7 @@ open class APCUserManager: NSObject {
             }else{
                 if let token = self.activeSession?.sessionToken {
                     if let imageData = UIImagePNGRepresentation(picture) {
-                        Alamofire.upload(APCURLProvider.userPictureURL(userCod: cod),method: .get, headers: ["appToken" : token ], multipartFormData: { (multipartForm) in
+                        Alamofire.upload(APCURLProvider.userPictureURL(userCod: cod), headers: ["appToken" : token ], multipartFormData: { (multipartForm) in
                             multipartForm.appendBodyPart(data: imageData, name: "file", fileName: "picture.png", mimeType: "image/png")
                         }, encodingMemoryThreshold: 4194304, encodingCompletion: { (encodeResult) in
                             switch encodeResult {

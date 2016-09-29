@@ -32,6 +32,7 @@ open class APCMedicineRetriver: NSObject {
         Alamofire.request(APCURLProvider.medicinesURL(), parameters: sendParameters , encoding: .urlEncodedInURL, headers: nil).responseJSON { (responseObject) in
             self.medicinesResponseHandler(response: responseObject, result: result)
         }
+  
     }
     
     /**
@@ -63,7 +64,7 @@ open class APCMedicineRetriver: NSObject {
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
     open func medicine(barCodeEAN: UInt64, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        var parameters: [String : AnyObject] = [:]
+        var parameters: [String : Any] = [:]
         parameters.updateOptionalValue(String(barCodeEAN) as AnyObject?, forKey: "codBarraEan")
         Alamofire.request(APCURLProvider.medicinesURL(), parameters: parameters, encoding: .urlEncodedInURL, headers: nil).responseJSON { (responseObject) in
             self.singleMedicineResponseHandler(response: responseObject, result: result)
