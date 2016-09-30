@@ -58,8 +58,9 @@ open class APCPostageManager: NSObject {
                         postageDic.updateValue(relatedDic as AnyObject, forKey: "postagemRelacionada")
                     }
                     if let token = session.sessionToken {
-                        Alamofire.request(APCURLProvider.postageBaseURL(), method: .get, parameters: postageDic, encoding: .json, headers: ["appIdentifier" : String(codApp), "appToken" : token]).responseJSON(completionHandler: { (response) in
-                            self.postageCreateResponseHandler(postage: postage,response: response, result: result)
+                        
+                        Alamofire.request(APCURLProvider.postageBaseURL(), method: .get, parameters: postageDic, encoding: JSONEncoding(), headers: ["appIdentifier" : String(codApp), "appToken" : token]).responseJSON(completionHandler: { (responseObject) in
+                            self.postageCreateResponseHandler(postage: postage,response: responseObject, result: result)
                         })
                     }else{
                         result?(APCOperationResponse(data: nil, status: .operationUnauthorized))
@@ -148,7 +149,8 @@ open class APCPostageManager: NSObject {
                             parameters.updateOptionalValue(page as AnyObject?, forKey: "pagina")
                             parameters.updateOptionalValue(maxPostageReturned as AnyObject?, forKey: "quantidadeDeItens")
 
-                            Alamofire.request(APCURLProvider.postageBaseURL(), method: .get, parameters: parameters, encoding: .urlEncodedInURL, headers: ["appToken" : token]).responseJSON(completionHandler: { (responseObject) in
+                            Alamofire.request(APCURLProvider.postageBaseURL(), method: .get, parameters: parameters, encoding: URLEncoding(), headers: ["appToken" : token]).responseJSON(completionHandler: { (responseObject) in
+                                
                                 APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
                                     if let postagesData = responseValue as? [[String : AnyObject]] {
                                         return JsonObjectCreator.create(dictionaryArray: postagesData, objectClass: APCPostage.self)
@@ -189,7 +191,8 @@ open class APCPostageManager: NSObject {
             }else{
                 if let token = session.sessionToken {
                     let headers = ["appToken" : token]
-                    Alamofire.request(APCURLProvider.postageURL(postageCod: postageCod), method: .delete, parameters: nil, encoding: .url, headers: headers).responseJSON(completionHandler: { (responseObject) in
+                    
+                    Alamofire.request(APCURLProvider.postageURL(postageCod: postageCod), method: .delete, parameters: nil, encoding: URLEncoding(), headers: headers).responseJSON(completionHandler: { (responseObject) in
                         APCManagerUtils.responseHandler(response: responseObject, result: result)
                     })
                 }
@@ -280,7 +283,9 @@ extension APCPostageManager {
                     let content = postageContent.asDictionary()
                     let headers = ["appToken" : token]
                     postageContent.postageCod = postageCod
-                    Alamofire.request(APCURLProvider.postageContentURL(postageCod: postageCod), method: HTTPMethod.post, parameters: content, encoding: .json, headers: headers).responseJSON(completionHandler: { (responseObject) in
+                    
+                    Alamofire.request(APCURLProvider.postageContentURL(postageCod: postageCod), method: .post, parameters: content, encoding: JSONEncoding(), headers: headers).responseJSON(completionHandler: { (responseObject) in
+
                         self.postageContentCreateResponseHandler(postage: postageContent, response: responseObject, result: result)
                     })
                 }
@@ -316,7 +321,8 @@ extension APCPostageManager {
                         let content = postageContent.asDictionary()
                         let headers = ["appToken" : token]
                         postageContent.postageCod = postageCod
-                        Alamofire.request(APCURLProvider.postageContentURL(postageCod: postageCod, contentCod: postageContent.cod), method: .put, parameters: content, encoding: .json, headers: headers).responseJSON(completionHandler: { (responseObject) in
+                        
+                        Alamofire.request(APCURLProvider.postageContentURL(postageCod: postageCod, contentCod: postageContent.cod), method: .put, parameters: content, encoding: JSONEncoding(), headers: headers).responseJSON(completionHandler: { (responseObject) in
                             self.updatePostageContentResponseHandler(postage: postageContent, response: responseObject, result: result)
                         })
                     }
@@ -348,7 +354,8 @@ extension APCPostageManager {
             }else{
                 if let token = session.sessionToken {
                     let headers = ["appToken" : token]
-                    Alamofire.request(APCURLProvider.postageContentURL(postageCod: postageCod, contentCod: postageContentCod), method: .delete, parameters: nil, encoding: .url, headers: headers).responseJSON(completionHandler: { (responseObject) in
+                    
+                    Alamofire.request(APCURLProvider.postageContentURL(postageCod: postageCod, contentCod: postageContentCod), method: .delete, parameters: nil, encoding: URLEncoding(), headers: headers).responseJSON(completionHandler: { (responseObject) in
                         APCManagerUtils.responseHandler(response: responseObject, result: result)
                     })
                 }
@@ -378,7 +385,9 @@ extension APCPostageManager {
             }else{
                 if let token = session.sessionToken {
                     let headers = ["appToken" : token]
-                    Alamofire.request(APCURLProvider.postageContentURL(postageCod: postageCod, contentCod: contentCod), method: .get, parameters: nil, encoding: .urlEncodedInURL, headers: headers).responseJSON(completionHandler: { (responseObject) in
+                    
+                    
+                    Alamofire.request(APCURLProvider.postageContentURL(postageCod: postageCod, contentCod: contentCod), method: .get, parameters: nil, encoding: URLEncoding(), headers: headers).responseJSON(completionHandler: { (responseObject) in
                         self.findPostageContentResponseHandler(response: responseObject, result: result)
                     })
                 }

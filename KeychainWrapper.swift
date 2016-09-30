@@ -297,11 +297,11 @@ open class KeychainWrapper {
     /// - important: This may remove custom keychain entries you did not add via SwiftKeychainWrapper.
     ///
     open class func wipeKeychain() {
-        deleteKeychainSecClass(kSecClassGenericPassword) // Generic password items
-        deleteKeychainSecClass(kSecClassInternetPassword) // Internet password items
-        deleteKeychainSecClass(kSecClassCertificate) // Certificate items
-        deleteKeychainSecClass(kSecClassKey) // Cryptographic key items
-        deleteKeychainSecClass(kSecClassIdentity) // Identity items
+        _ = deleteKeychainSecClass(kSecClassGenericPassword) // Generic password items
+        _ = deleteKeychainSecClass(kSecClassInternetPassword) // Internet password items
+        _ = deleteKeychainSecClass(kSecClassCertificate) // Certificate items
+        _ = deleteKeychainSecClass(kSecClassKey) // Cryptographic key items
+        _ = deleteKeychainSecClass(kSecClassIdentity) // Identity items
     }
 
     // MARK:- Private Methods

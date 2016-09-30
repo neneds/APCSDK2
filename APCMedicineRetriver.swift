@@ -29,10 +29,10 @@ open class APCMedicineRetriver: NSObject {
         if let unwrappedFields = fields, let concatedFiels = String.concatStringsWithSeparator(strings: unwrappedFields, separator: ","){
             sendParameters.updateValue(concatedFiels as AnyObject, forKey: "campos")
         }
-        Alamofire.request(APCURLProvider.medicinesURL(), parameters: sendParameters , encoding: .urlEncodedInURL, headers: nil).responseJSON { (responseObject) in
+        
+        Alamofire.request(APCURLProvider.medicinesURL(), method: .get, parameters: sendParameters, encoding: URLEncoding(), headers: nil).responseJSON { (responseObject) in
             self.medicinesResponseHandler(response: responseObject, result: result)
         }
-  
     }
     
     /**
@@ -52,7 +52,9 @@ open class APCMedicineRetriver: NSObject {
         if let unwrappedFields = fields, let concatedFiels = String.concatStringsWithSeparator(strings: unwrappedFields, separator: ","){
             parameters.updateValue(concatedFiels as AnyObject, forKey: "campos")
         }
-        Alamofire.request(APCURLProvider.medicinesURL(), parameters: parameters, encoding: .urlEncodedInURL, headers: nil).responseJSON { (responseObject) in
+        
+        Alamofire.request(APCURLProvider.medicinesURL(), method: .get, parameters: parameters, encoding: URLEncoding(), headers: nil).responseJSON { (responseObject) in
+            
             self.medicinesResponseHandler(response: responseObject, result: result)
         }
     }
@@ -66,7 +68,8 @@ open class APCMedicineRetriver: NSObject {
     open func medicine(barCodeEAN: UInt64, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         var parameters: [String : Any] = [:]
         parameters.updateOptionalValue(String(barCodeEAN) as AnyObject?, forKey: "codBarraEan")
-        Alamofire.request(APCURLProvider.medicinesURL(), parameters: parameters, encoding: .urlEncodedInURL, headers: nil).responseJSON { (responseObject) in
+        
+        Alamofire.request(APCURLProvider.medicinesURL(), method: .get, parameters: parameters, encoding: URLEncoding(), headers: nil).responseJSON { (responseObject) in
             self.singleMedicineResponseHandler(response: responseObject, result: result)
         }
     }
