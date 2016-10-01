@@ -254,26 +254,30 @@ open class APCUserManager: NSObject {
                 if let token = self.activeSession?.sessionToken {
                     if let imageData = UIImagePNGRepresentation(picture) {
                         
-                        //
-                        //Dennis não faço a mínima idéia de como usa isso. MultipartForm
-                        //
-                        Alamofire.upload(APCURLProvider.userPictureURL(userCod: cod), headers: ["appToken" : token ], multipartFormData: { (multipartForm) in
-                            multipartForm.appendBodyPart(data: imageData, name: "file", fileName: "picture.png", mimeType: "image/png")
-                        }, encodingMemoryThreshold: 4194304, encodingCompletion: { (encodeResult) in
-                            switch encodeResult {
-                            case .success(let request, _, _):
-                                request.response(completionHandler: { (_,response, _, _) -> Void in
-                                    if let unwrappedResponse = response{
-                                        self.setPictureResponseHandler(unwrappedResponse, result: result)
+                        Alamofire.upload(
+                            multipartFormData: { multipartFormData in
+                                multipartFormData.append(imageData, withName: "file", fileName: "picture.png", mimeType: "image/png")
+                                
+                            },
+                            usingThreshold: 4194304,
+                            to: APCURLProvider.userPictureURL(userCod: cod),
+                            headers: ["appToken" : token ],
+                            encodingCompletion: { encodingResult in
+                                switch encodingResult {
+                                case .success(let upload, _, _):
+                                    upload.responseJSON { response in
+                                        if let unwrappedResponse = response.response{
+                                            self.setPictureResponseHandler(unwrappedResponse, result: result)
+                                        }
                                     }
-                                })
-                                break
-                            case .failure(_):
-                                result(operationResponse: APCOperationResponse(data: nil, status: APCOperationResultStatus.noContentReturned))
-                                break
+                                case .failure(let encodingError):
+                                    let _ = encodingError
+                                    result(APCOperationResponse(data: nil, status: APCOperationResultStatus.noContentReturned))
+                                    break
+                                }
                             }
-
-                        })
+                        )
+                    
                     }
                 }
             }

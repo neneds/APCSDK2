@@ -152,8 +152,8 @@ open class APCPostageManager: NSObject {
                             Alamofire.request(APCURLProvider.postageBaseURL(), method: .get, parameters: parameters, encoding: URLEncoding(), headers: ["appToken" : token]).responseJSON(completionHandler: { (responseObject) in
                                 
                                 APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
-                                    if let postagesData = responseValue as? [[String : AnyObject]] {
-                                        return JsonObjectCreator.create(dictionaryArray: postagesData, objectClass: APCPostage.self)
+                                    if let postagesData : [[String : AnyObject]] = responseValue as? [[String : AnyObject]] {
+                                        return JsonObjectCreator.create(dictionaryArray: postagesData, objectClass: APCPostage.self) as AnyObject?
                                     }
                                     return nil
                                 }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
