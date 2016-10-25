@@ -65,10 +65,19 @@ public class APCPostage: NSObject, JsonConvertable{
             self.codPostageType = codTipoPostagem
         }
         
+        if(self.contents == nil) {
+            self.contents = [APCPostageContent]()
+        }
+        
         if let contents = dictionary["conteudos"] as? [[String : AnyObject]]{
             for content in contents {
                 if let codContent = content["codConteudoPostagem"] as? Int{
                     self.contentsCodes.append(codContent)
+                }
+                
+                if let codContent = content["codConteudoPost"] as? Int{
+                    let apcPostageContent = JsonObjectCreator.createObject(dictionary: content, objectClass: APCPostageContent.self) as! APCPostageContent
+                    self.contents?.append(apcPostageContent)
                 }
             }
         }
