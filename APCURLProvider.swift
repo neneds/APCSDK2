@@ -57,6 +57,10 @@ extension APCURLProvider {
         return NSURL(string: self.baseAPCService + "/postagens")!
     }
     
+    class func postageTimelineURL()-> NSURL{
+        return NSURL(string: self.baseAPCService + "/postagens/timeline")!
+    }
+    
     class func postageURL(postageCod postageCod: Int) -> NSURL {
         return NSURL(string: self.baseAPCService + "/postagens/\(postageCod)")!
     }

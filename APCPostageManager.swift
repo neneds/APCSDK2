@@ -97,6 +97,83 @@ public class APCPostageManager: NSObject {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso um array com as postagens de resultado.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
+    public func queryPostagesTimeline(authorCod: Int?,
+                              destinatedGroupCod: Int?,
+                              destinatedPersonCod: Int?,
+                              relatedPostageCod: Int?,
+                              postageTypesCods: [Int]?,
+                              hashtag: String?,
+                              codDestinationObjectType: Int?,
+                              codDestinationObject: NSNumber?,
+                              page: Int?,
+                              maxPostageReturned: Int?,
+                              result: (operationResponse: APCOperationResponse)-> Void){
+        
+        if let session = APCUserManager.sharedManager.activeSession {
+            if let codApp = APCApplication.sharedApplication.applicationCode {
+                if session.isSessionExpired {
+                    APCUserManager.sharedManager.refreshSession({ (operationResult) in
+                        if operationResult.status == .CompletedSuccesfully {
+                            self.queryPostages(authorCod, destinatedGroupCod: destinatedGroupCod,
+                                destinatedPersonCod:  destinatedPersonCod, relatedPostageCod: relatedPostageCod,
+                                postageTypesCods: postageTypesCods, hashtag: hashtag, codDestinationObjectType:codDestinationObjectType,
+                                codDestinationObject: codDestinationObject, page: page, maxPostageReturned: maxPostageReturned, result: result)
+                        }else{
+                            result(operationResponse: operationResult)
+                        }
+                    })
+                }else{
+                    if let token = session.sessionToken {
+                        var parameters : [String: AnyObject] = [:]
+                        parameters.updateValue(codApp, forKey: "codAplicativo")
+                        parameters.updateOptionalValue(authorCod, forKey: "codAutor")
+                        parameters.updateOptionalValue(destinatedPersonCod, forKey: "codPessoaDestino")
+                        parameters.updateOptionalValue(destinatedGroupCod, forKey: "codGrupoDestino")
+                        parameters.updateOptionalValue(relatedPostageCod, forKey: "codPostagemRelacionada")
+                        if let unwrappedTypesCods = postageTypesCods {
+                            if !unwrappedTypesCods.isEmpty {
+                                let types = unwrappedTypesCods.reduce("", combine: { (string, value) -> String in
+                                    if(string.isEmpty){
+                                        return String(value)
+                                    }
+                                    return "\(string),\(value)"
+                                })
+                                parameters.updateValue(types, forKey: "codTiposPostagem")
+                            }
+                            
+                        }
+                        parameters.updateOptionalValue(hashtag, forKey: "hashtag")
+                        parameters.updateOptionalValue(codDestinationObjectType, forKey: "codTipoObjetoDestino")
+                        parameters.updateOptionalValue(codDestinationObject, forKey: "codObjetoDestino")
+                        parameters.updateOptionalValue(page, forKey: "pagina")
+                        parameters.updateOptionalValue(maxPostageReturned, forKey: "quantidadeDeItens")
+                        
+                        Alamofire.request(.GET, APCURLProvider.postageTimelineURL(), parameters: parameters, encoding: .URLEncodedInURL, headers: ["appToken" : token]).responseJSON(completionHandler: { (responseObject) in
+                            APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
+                                if let postagesData = responseValue as? [[String : AnyObject]] {
+                                    return JsonObjectCreator.create(dictionaryArray: postagesData, objectClass: APCPostage.self)
+                                }
+                                return nil
+                                }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
+                        })
+                    }else{
+                        result(operationResponse: APCOperationResponse(data: nil, status: .OperationUnauthorized))
+                    }
+                }
+            }else{
+                result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have an aplication configured to perform this operation. See APCApplication.sharedApplication"]), status: .OperationUnauthorized))
+            }
+        }else{
+            result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
+        }
+    }
+    
+    
+    /**
+     Método de busca de postagens. Esse método é apenas uma abstração do endpoint GET - /rest/postagens. Você pode ver documentação completa no link : [GET - /rest/postagens](https://github.com/AppCivicoPlataforma/AppCivico/blob/master/MetamodeloAPI.md#buscar-postagens)
+     - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso um array com as postagens de resultado.
+     - see APCOperationResponse.swift e APCOperationResultStatus
+     */
     public func queryPostages(authorCod: Int?,
                        destinatedGroupCod: Int?,
                        destinatedPersonCod: Int?,
