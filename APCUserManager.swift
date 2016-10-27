@@ -222,7 +222,7 @@ public class APCUserManager: NSObject {
      - see APCOperationResponse.swift
      */
     public func getUserPicture(userCod cod: Int, result: (operationResponse: APCOperationResponse)-> Void) {
-        Alamofire.request(.GET, APCURLProvider.userPictureURL(userCod: cod)).responseData(completionHandler: { (responseData) in
+        Alamofire.request(.GET, APCURLProvider.userPictureURL(userCod: cod), parameters: nil, encoding: .JSON, headers: ["Accept": "image/webp;q=0.8"]).responseData(completionHandler: { (responseData) in
             self.getUserPictureResponseHandler(response: responseData, result: result)
         })
     }
