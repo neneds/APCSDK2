@@ -82,3 +82,19 @@ O seu Run Script vai ficar da seguinte forma
 <img src="https://ap.imagensbrasil.org/images/ScreenShot2016-04-12at4.49.24PM.png" alt="ScreenShot2016-04-12at4.49.24PM.png" border="1" width="500">
 
 13 - Pronto! Importe a Framework para a sua classe e seja feliz. ;)
+
+
+# Como usar 
+
+Após importar o framework para seu projeto, basta apenas configurar o contexto do seu aplicativo no seu AppDelegate com o código do seu aplicativo cadastrado no metamodelo.
+
+````
+func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        
+        APCApplication.sharedApplication.startWith(applicationCode: 38)
+        
+}
+```
+
+Com essa configuração inicial feitas você poderá usuar as classes e métodos de conveniência para acesso aos endpoints do metamodelo.
+
