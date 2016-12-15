@@ -448,6 +448,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.bepid.APCAccessSDK;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

@@ -502,25 +502,28 @@ open class APCUserManager: NSObject {
         }
         
     }
-    
+   
     
     //MARK:- Useful methods
-    fileprivate func authenticationResponseHandler(password passowrd: String?, response responseObject: DataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?) {
+    fileprivate func authenticationResponseHandler(password passowrd: String?, response responseObject: Alamofire.DataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?) {
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
-            if let uwrappedHeaders  = responseHeaders {
-                let appToken = uwrappedHeaders["apptoken"] as! String
+
+            if let uwrappedHeaders : [String : AnyObject] = responseHeaders as? [String : AnyObject] {
+                let appToken = uwrappedHeaders["appToken"] as! String
                 let fm = DateFormatter()
                 fm.locale = Locale(identifier: "en_US")
                 fm.dateFormat = "EEE, dd MMM yyyy HH:mm:ss z"
-                let expirationDate = fm.date(from: uwrappedHeaders["date"] as! String)?.addingTimeInterval(DayInSeconds * (Double(TokenValidDaysInterval) - 1.0))
+                let expirationDate = fm.date(from: uwrappedHeaders["Date"] as! String)?.addingTimeInterval(DayInSeconds * (Double(TokenValidDaysInterval) - 1.0))
                 let user = JsonObjectCreator.createObject(dictionary: responseValue as! [String : AnyObject], objectClass: APCUser.self) as! APCUser
                 let session = APCUserSession(user: user, token: appToken, expirationDate: expirationDate!)
                 session.currentUser?.password = passowrd
                 self.activeSession = session
                 self.saveCurrentSession()
                 return session
+            }else{
+                return nil
             }
-            return nil
+            //return nil
             }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
     }
     

@@ -33,7 +33,10 @@ class APCManagerUtils: NSObject {
         if let status = responseObject.response?.statusCode {
             let responseValue = responseObject.result.value
             let responseHeaders = responseObject.response?.allHeaderFields
+            
+            
             switch status {
+                
             case 200, 201:
                 result?(APCOperationResponse(data: onSuccess?(responseValue as AnyObject?, responseHeaders),status: .completedSuccesfully))
             case 404:
