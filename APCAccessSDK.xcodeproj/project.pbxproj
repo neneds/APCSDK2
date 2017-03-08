@@ -221,7 +221,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = APC;
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "Luciano Almeida";
 				TargetAttributes = {
 					B2ADD3881CB04E0C00A4662E = {
@@ -448,7 +448,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.bepid.APCAccessSDK;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
