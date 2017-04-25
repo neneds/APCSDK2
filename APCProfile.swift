@@ -68,7 +68,7 @@ open class APCProfile: NSObject, JsonConvertable{
     }
     
     open override var description: String{
-        return "[aditionalFields = \(self.aditionalFields),\nprofileTypeCod = \(self.profileTypeCod),\nprofileDescription = \(self.profileDescription)]"
+        return "[aditionalFields = \(String(describing: self.aditionalFields)),\nprofileTypeCod = \(self.profileTypeCod),\nprofileDescription = \(String(describing: self.profileDescription))]"
     }
 
 }

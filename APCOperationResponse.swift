@@ -19,7 +19,7 @@ open class APCOperationResponse : NSObject{
     }
     
     open override var description: String{
-        return "OperationResponse = [data = \(self.data), status = \(self.statusToString())]"
+        return "OperationResponse = [data = \(String(describing: self.data)), status = \(self.statusToString())]"
     }
     
     fileprivate func statusToString()-> String{

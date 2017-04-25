@@ -94,7 +94,7 @@ open class APCPostage: NSObject, JsonConvertable{
     
     
     override open var description: String {
-        return "[cod = \(self.cod), codAuthor = \(self.codAuthor), codObjetoDestino = \(self.codDestinatedObject), codTipoObjetoDestino = \(self.codDestinatedObjectType), codTipoPostagem = \(self.codPostageType), date = \(self.date), contentsCodes = \(self.contentsCodes)]\n, contents = \(self.contents)"
+        return "[cod = \(self.cod), codAuthor = \(self.codAuthor), codObjetoDestino = \(self.codDestinatedObject), codTipoObjetoDestino = \(self.codDestinatedObjectType), codTipoPostagem = \(self.codPostageType), date = \(self.date), contentsCodes = \(self.contentsCodes)]\n, contents = \(String(describing: self.contents))"
     }
     
     

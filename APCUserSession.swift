@@ -60,7 +60,7 @@ open class APCUserSession: NSObject, NSCoding {
     
     //MARK:- Overrides
     open override var description: String  {
-        return "currentUser = {\(self.currentUser)}, sessionToken = \(self.sessionToken), expirationDate = \(self.expirationDate)"
+        return "currentUser = {\(String(describing: self.currentUser))}, sessionToken = \(String(describing: self.sessionToken)), expirationDate = \(String(describing: self.expirationDate))"
     }
 
 }

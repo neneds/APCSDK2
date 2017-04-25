@@ -97,7 +97,7 @@ open class APCPostageContent: NSObject, JsonConvertable{
     
     //MARK: - Overrides
     open override var description: String{
-        return  "APCPostageContent [additionalFields = \(self.values), text = \(self.text), numericValue = \(self.numericValue)]"
+        return  "APCPostageContent [additionalFields = \(self.values), text = \(String(describing: self.text)), numericValue = \(String(describing: self.numericValue))]"
     }
     
 }

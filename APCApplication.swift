@@ -25,6 +25,6 @@ open class APCApplication: NSObject {
     
     //MARK:- Overrides
     open override var description: String  {
-        return "APCApplication[ applicationCode = \(self.applicationCode)]"
+        return "APCApplication[ applicationCode = \(String(describing: self.applicationCode))]"
     }
 }

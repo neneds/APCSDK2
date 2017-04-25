@@ -196,20 +196,20 @@ open class APCUser: NSObject, NSCoding, JsonConvertable {
     //MARK: Overrides
     open override var description: String  {
     
-        return  "CEP = \(self.CEP)\n" +
-                "biografia = \(self.biography)\n" +
+        return  "CEP = \(String(describing: self.CEP))\n" +
+                "biografia = \(String(describing: self.biography))\n" +
                 "cod = \(self.cod)\n" +
-                "dataNascimento = \(self.birthdate)\n" +
+                "dataNascimento = \(String(describing: self.birthdate))\n" +
                 "email = \(self.email)\n" +
                 "emailVerificado = \(self.isEmailVerified)\n" +
                 "location = (\(self.userLocation.latitude),\(self.userLocation.longitude))\n" +
-                "nomeCompleto = \(self.fullName)\n" +
+                "nomeCompleto = \(String(describing: self.fullName))\n" +
                 "nomeUsuario = \(self.username)\n" +
                 "genero = \(self.gender)\n" +
-                "tokenFacebook = \(self.tokenFacebook)\n" +
-                "tokenGoogle = \(self.tokenGoogle)\n" +
-                "tokenTwitter = \(self.tokenTwitter)\n" +
-                "tokenInstagram  = \(self.tokenInstagram)\n" 
+                "tokenFacebook = \(String(describing: self.tokenFacebook))\n" +
+                "tokenGoogle = \(String(describing: self.tokenGoogle))\n" +
+                "tokenTwitter = \(String(describing: self.tokenTwitter))\n" +
+                "tokenInstagram  = \(String(describing: self.tokenInstagram))\n" 
     }
 }
 
