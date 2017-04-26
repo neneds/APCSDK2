@@ -2,8 +2,8 @@
 ![](https://img.shields.io/badge/APCSDK-1.2.0-orange.svg)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage) 
 ![](https://img.shields.io/badge/Platform-iOS%209%2B-green.svg)
-![](https://img.shields.io/badge/Xcode-8.0-blue.svg)
-![](https://img.shields.io/badge/Alamofire-4.0-red.svg)
+![](https://img.shields.io/badge/Xcode-8.3-blue.svg)
+![](https://img.shields.io/badge/Alamofire-4.4-red.svg)
 ![](https://img.shields.io/badge/Language-Swift-orange.svg)
 
 
@@ -13,10 +13,10 @@
 APC SDK Para desenvolvedores iOS
 
 Este SDK atualmente na versão 1.2.0 foi desenvolvido para encapsular a lógica de acesso aos endpoints dos Aplicativos Cívicos.
-Totalmente desenvolvido em swift, possui a release 1.2.0 em desenvolvimento funcionando para qualquer projeto Swift 3.0 com o iOS 10. 
+Totalmente desenvolvido em swift, possui a release 1.2.0 em desenvolvimento funcionando para qualquer projeto Swift 3.1 com o iOS 10.3 
 
 # Dependências
-![](https://img.shields.io/badge/Alamofire-4.0-red.svg)
+![](https://img.shields.io/badge/Alamofire-4.4-red.svg)
 
 # Features
 Métodos provendo: 
@@ -47,7 +47,7 @@ validação de Token.
 
 5 - Adicione estas duas linhas  no Cartfile criado
 
-    github "Alamofire/Alamofire" ~> 4.0
+    github "Alamofire/Alamofire" ~> 4.4
     github "neneds/APCSDK2" ~> 1.2.0
 
 6 - Dê um carthage update
