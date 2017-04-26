@@ -8,14 +8,14 @@
 
 import Foundation
 
-public class APCPostageContent: NSObject, JsonConvertable{
-    public var cod: Int = 0
-    public var postageCod: Int = 0
-    public private(set) var values: [String: AnyObject] = [:]
-    public var text: String?
-    public var numericValue: Double?
+open class APCPostageContent: NSObject, JsonConvertable{
+    open var cod: Int = 0
+    open var postageCod: Int = 0
+    open fileprivate(set) var values: [String: AnyObject] = [:]
+    open var text: String?
+    open var numericValue: Double?
     
-    public var hasBinaryData: Bool = false
+    open var hasBinaryData: Bool = false
     
     override init(){
         
@@ -40,11 +40,11 @@ public class APCPostageContent: NSObject, JsonConvertable{
     
  
     
-    public func setValue(value: AnyObject, toField field: String) {
+    open func setValue(_ value: AnyObject, toField field: String) {
        self.values[field] = value
     }
     
-    public subscript(field: String)-> AnyObject?{
+    open subscript(field: String)-> AnyObject?{
         get{
            return self.values[field]
         }
@@ -61,8 +61,8 @@ public class APCPostageContent: NSObject, JsonConvertable{
         }
         
         if let json = dictionary["JSON"] as? String {
-            if let data = json.dataUsingEncoding(NSUTF8StringEncoding){
-                if let jsonObject = try? NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers), let dicJson = jsonObject as? [String : AnyObject]{
+            if let data = json.data(using: String.Encoding.utf8){
+                if let jsonObject = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.mutableContainers), let dicJson = jsonObject as? [String : AnyObject]{
                     self.values = dicJson
                 }
             }
@@ -76,17 +76,17 @@ public class APCPostageContent: NSObject, JsonConvertable{
         }
     }
     
-    public func asDictionary() -> [String : AnyObject] {
-        if let jsonData = try? NSJSONSerialization.dataWithJSONObject(self.values, options: NSJSONWritingOptions.PrettyPrinted){
+    open func asDictionary() -> [String : AnyObject] {
+        if let jsonData = try? JSONSerialization.data(withJSONObject: self.values, options: JSONSerialization.WritingOptions.prettyPrinted){
             var data : [String : AnyObject] = [:]
-            if let string = String(data: jsonData, encoding: NSUTF8StringEncoding){
-                data.updateValue(string, forKey: "JSON")
+            if let string = String(data: jsonData, encoding: String.Encoding.utf8){
+                data.updateValue(string as AnyObject, forKey: "JSON")
             }
             if let unwrappedText = self.text {
-                data.updateValue(unwrappedText, forKey: "texto")
+                data.updateValue(unwrappedText as AnyObject, forKey: "texto")
             }
             if let unwrappedValue = self.numericValue {
-                data.updateValue(unwrappedValue, forKey: "valor")
+                data.updateValue(unwrappedValue as AnyObject, forKey: "valor")
 
             }
             return data
@@ -96,8 +96,8 @@ public class APCPostageContent: NSObject, JsonConvertable{
     
     
     //MARK: - Overrides
-    public override var description: String{
-        return  "APCPostageContent [additionalFields = \(self.values), text = \(self.text), numericValue = \(self.numericValue)]"
+    open override var description: String{
+        return  "APCPostageContent [additionalFields = \(self.values), text = \(String(describing: self.text)), numericValue = \(String(describing: self.numericValue))]"
     }
     
 }

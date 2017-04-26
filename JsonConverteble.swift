@@ -10,5 +10,5 @@ import Foundation
 
 @objc protocol JsonConvertable {
     init(dictionary: [String : AnyObject])
-    optional func asDictionary() -> [String : AnyObject]
+    @objc optional func asDictionary() -> [String : AnyObject]
 }

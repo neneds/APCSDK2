@@ -8,39 +8,39 @@
 
 import Foundation
 import CoreLocation
-public class APCUser: NSObject, NSCoding, JsonConvertable {
+open class APCUser: NSObject, NSCoding, JsonConvertable {
     
     //MARK:- Properties
-    public var CEP: String?
-    public var biography: String?
-    public var cod: Int = 0
-    public var birthdate: NSDate?
-    public var email: String!
-    public var isEmailVerified: Bool = false
+    open var CEP: String?
+    open var biography: String?
+    open var cod: Int = 0
+    open var birthdate: Date?
+    open var email: String!
+    open var isEmailVerified: Bool = false
     
-    public var userLocation: CLLocationCoordinate2D = kCLLocationCoordinate2DInvalid
+    open var userLocation: CLLocationCoordinate2D = kCLLocationCoordinate2DInvalid
     
-    public var fullName: String?
-    public var username: String!
-    public var password: String?
-    public var gender: Gender = .None
-    public var tokenFacebook: String?
-    public var tokenGoogle: String?
-    public var tokenInstagram: String?
-    public var tokenTwitter: String?
+    open var fullName: String?
+    open var username: String!
+    open var password: String?
+    open var gender: Gender = .none
+    open var tokenFacebook: String?
+    open var tokenGoogle: String?
+    open var tokenInstagram: String?
+    open var tokenTwitter: String?
     
     //MARK:- Computed Properties
-    public var userAccountType: AccountType? {
+    open var userAccountType: AccountType? {
         if self.tokenFacebook != nil {
-           return AccountType.FacebookAccount
+           return AccountType.facebookAccount
         }else if self.tokenTwitter != nil {
-            return AccountType.TwitterAccount
+            return AccountType.twitterAccount
         }else if self.tokenGoogle != nil{
-            return AccountType.GoogleAccount
+            return AccountType.googleAccount
         }else if self.tokenInstagram != nil {
-            return AccountType.InstagramAcount
+            return AccountType.instagramAcount
         }else {
-            return AccountType.APCAccount
+            return AccountType.apcAccount
         }
     }
     
@@ -81,9 +81,9 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
             self.cod = cod
         }
         if let dateStr = dictionary["dataNascimento"] as? String{
-            let formatter = NSDateFormatter()
+            let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd"
-            self.birthdate =  formatter.dateFromString(dateStr)
+            self.birthdate =  formatter.date(from: dateStr)
         }
         self.email = dictionary["email"] as? String
         if let emailVerificado = dictionary["emailVerificado"] as? Bool{
@@ -96,7 +96,7 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
         self.username = dictionary["nomeUsuario"] as? String
         
         if let rawGender = dictionary["sexo"] as? String {
-            let intergerRepresentation = rawGender.uppercaseString == "M" ? 0 : 1
+            let intergerRepresentation = rawGender.uppercased() == "M" ? 0 : 1
             if let gender = Gender(rawValue: intergerRepresentation){
                 self.gender = gender
             }
@@ -108,36 +108,36 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
         self.tokenTwitter = dictionary["tokenTwitter"] as? String
     }
     
-    public func asDictionary() -> [String : AnyObject] {
+    open func asDictionary() -> [String : AnyObject] {
         var dictionary : [String : AnyObject] = [:]
-        dictionary.updateOptionalValue(self.CEP, forKey: "CEP")
-        dictionary.updateOptionalValue(self.biography, forKey: "biografia")
-        dictionary.updateOptionalValue(self.cod, forKey: "cod")
+        dictionary.updateOptionalValue(self.CEP as AnyObject?, forKey: "CEP")
+        dictionary.updateOptionalValue(self.biography as AnyObject?, forKey: "biografia")
+        dictionary.updateOptionalValue(self.cod as AnyObject?, forKey: "cod")
         if let unwrappedBirthdate = self.birthdate {
-            let formatter = NSDateFormatter()
+            let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd"
-            dictionary.updateOptionalValue(formatter.stringFromDate(unwrappedBirthdate), forKey: "dataNascimento")
+            dictionary.updateOptionalValue(formatter.string(from: unwrappedBirthdate) as AnyObject?, forKey: "dataNascimento")
         }
-        dictionary.updateOptionalValue(self.email, forKey: "email")
-        dictionary.updateOptionalValue(self.password, forKey: "senha")
-        dictionary.updateOptionalValue(self.isEmailVerified, forKey: "emailVerificado")
+        dictionary.updateOptionalValue(self.email as AnyObject?, forKey: "email")
+        dictionary.updateOptionalValue(self.password as AnyObject?, forKey: "senha")
+        dictionary.updateOptionalValue(self.isEmailVerified as AnyObject?, forKey: "emailVerificado")
         
         if CLLocationCoordinate2DIsValid(self.userLocation) {
-            dictionary.updateOptionalValue(self.userLocation.latitude, forKey: "latitude")
-            dictionary.updateOptionalValue(self.userLocation.longitude, forKey: "longitude")
+            dictionary.updateOptionalValue(self.userLocation.latitude as AnyObject?, forKey: "latitude")
+            dictionary.updateOptionalValue(self.userLocation.longitude as AnyObject?, forKey: "longitude")
         }
-        dictionary.updateOptionalValue(self.fullName, forKey: "nomeCompleto")
-        dictionary.updateOptionalValue(self.username, forKey: "nomeUsuario")
+        dictionary.updateOptionalValue(self.fullName as AnyObject?, forKey: "nomeCompleto")
+        dictionary.updateOptionalValue(self.username as AnyObject?, forKey: "nomeUsuario")
         
-        if self.gender != .None {
+        if self.gender != .none {
             let gender  = self.gender.rawValue == 0 ? "M" : "F"
-            dictionary.updateOptionalValue(gender, forKey: "sexo")
+            dictionary.updateOptionalValue(gender as AnyObject?, forKey: "sexo")
         }
         
-        dictionary.updateOptionalValue(self.tokenFacebook, forKey: "tokenFacebook")
-        dictionary.updateOptionalValue(self.tokenGoogle, forKey: "tokenGoogle")
-        dictionary.updateOptionalValue(self.tokenInstagram, forKey: "tokenInstagram")
-        dictionary.updateOptionalValue(self.tokenTwitter, forKey: "tokenTwitter")
+        dictionary.updateOptionalValue(self.tokenFacebook as AnyObject?, forKey: "tokenFacebook")
+        dictionary.updateOptionalValue(self.tokenGoogle as AnyObject?, forKey: "tokenGoogle")
+        dictionary.updateOptionalValue(self.tokenInstagram as AnyObject?, forKey: "tokenInstagram")
+        dictionary.updateOptionalValue(self.tokenTwitter as AnyObject?, forKey: "tokenTwitter")
     
         
         return dictionary
@@ -146,83 +146,83 @@ public class APCUser: NSObject, NSCoding, JsonConvertable {
     
     //MARK:- NSCoding implementation
     required public init(coder aDecoder: NSCoder) {
-        self.CEP = aDecoder.decodeObjectForKey("CEP") as? String
-        self.biography = aDecoder.decodeObjectForKey("biografia") as? String
-        self.cod = aDecoder.decodeIntegerForKey("cod")
-        self.birthdate = aDecoder.decodeObjectForKey("dataNascimento") as? NSDate
-        self.email = aDecoder.decodeObjectForKey("email") as? String
-        self.isEmailVerified = aDecoder.decodeBoolForKey("emailVerificado")
-        let lat = aDecoder.decodeDoubleForKey("latitude")
-        let long = aDecoder.decodeDoubleForKey("longitude")
+        self.CEP = aDecoder.decodeObject(forKey: "CEP") as? String
+        self.biography = aDecoder.decodeObject(forKey: "biografia") as? String
+        self.cod = aDecoder.decodeInteger(forKey: "cod")
+        self.birthdate = aDecoder.decodeObject(forKey: "dataNascimento") as? Date
+        self.email = aDecoder.decodeObject(forKey: "email") as? String
+        self.isEmailVerified = aDecoder.decodeBool(forKey: "emailVerificado")
+        let lat = aDecoder.decodeDouble(forKey: "latitude")
+        let long = aDecoder.decodeDouble(forKey: "longitude")
         if lat != 0 && long != 0 {
             self.userLocation = CLLocationCoordinate2D(latitude: lat, longitude: long)
         }
-        self.fullName = aDecoder.decodeObjectForKey("nomeCompleto") as? String
-        self.username = aDecoder.decodeObjectForKey("nomeUsuario") as? String
-        if let genderRaw = aDecoder.decodeObjectForKey("sexo") as? Int, let gender = Gender(rawValue: genderRaw){
+        self.fullName = aDecoder.decodeObject(forKey: "nomeCompleto") as? String
+        self.username = aDecoder.decodeObject(forKey: "nomeUsuario") as? String
+        if let genderRaw = aDecoder.decodeObject(forKey: "sexo") as? Int, let gender = Gender(rawValue: genderRaw){
             self.gender = gender
         }
         
-        self.tokenFacebook = aDecoder.decodeObjectForKey("tokenFacebook") as? String
-        self.tokenGoogle = aDecoder.decodeObjectForKey("tokenGoogle") as? String
-        self.tokenInstagram = aDecoder.decodeObjectForKey("tokenInstagram") as? String
-        self.tokenTwitter = aDecoder.decodeObjectForKey("tokenTwitter") as? String
+        self.tokenFacebook = aDecoder.decodeObject(forKey: "tokenFacebook") as? String
+        self.tokenGoogle = aDecoder.decodeObject(forKey: "tokenGoogle") as? String
+        self.tokenInstagram = aDecoder.decodeObject(forKey: "tokenInstagram") as? String
+        self.tokenTwitter = aDecoder.decodeObject(forKey: "tokenTwitter") as? String
 
     }
     
-    public func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(self.CEP, forKey: "CEP")
-        aCoder.encodeObject(self.biography, forKey: "biografia")
-        aCoder.encodeInteger(self.cod, forKey: "cod")
-        aCoder.encodeObject(self.birthdate, forKey: "dataNascimento")
-        aCoder.encodeObject(self.email, forKey: "email")
-        aCoder.encodeBool(self.isEmailVerified, forKey: "emailVerificado")
+    open func encode(with aCoder: NSCoder) {
+        aCoder.encode(self.CEP, forKey: "CEP")
+        aCoder.encode(self.biography, forKey: "biografia")
+        aCoder.encode(self.cod, forKey: "cod")
+        aCoder.encode(self.birthdate, forKey: "dataNascimento")
+        aCoder.encode(self.email, forKey: "email")
+        aCoder.encode(self.isEmailVerified, forKey: "emailVerificado")
         
         if CLLocationCoordinate2DIsValid(self.userLocation) {
-            aCoder.encodeDouble(self.userLocation.latitude, forKey: "latitude")
-            aCoder.encodeDouble(self.userLocation.longitude, forKey: "longitude")
+            aCoder.encode(self.userLocation.latitude, forKey: "latitude")
+            aCoder.encode(self.userLocation.longitude, forKey: "longitude")
         }
         
-        aCoder.encodeObject(self.fullName, forKey: "nomeCompleto")
-        aCoder.encodeObject(self.username, forKey: "nomeUsuario")
-        aCoder.encodeObject(self.gender.rawValue, forKey: "sexo")
+        aCoder.encode(self.fullName, forKey: "nomeCompleto")
+        aCoder.encode(self.username, forKey: "nomeUsuario")
+        aCoder.encode(self.gender.rawValue, forKey: "sexo")
         
-        aCoder.encodeObject(self.tokenFacebook, forKey: "tokenFacebook")
-        aCoder.encodeObject(self.tokenGoogle, forKey: "tokenGoogle")
-        aCoder.encodeObject(self.tokenTwitter, forKey: "tokenTwitter")
-        aCoder.encodeObject(self.tokenInstagram, forKey: "tokenInstagram")
+        aCoder.encode(self.tokenFacebook, forKey: "tokenFacebook")
+        aCoder.encode(self.tokenGoogle, forKey: "tokenGoogle")
+        aCoder.encode(self.tokenTwitter, forKey: "tokenTwitter")
+        aCoder.encode(self.tokenInstagram, forKey: "tokenInstagram")
     }
     
     //MARK: Overrides
-    public override var description: String  {
+    open override var description: String  {
     
-        return  "CEP = \(self.CEP)\n" +
-                "biografia = \(self.biography)\n" +
+        return  "CEP = \(String(describing: self.CEP))\n" +
+                "biografia = \(String(describing: self.biography))\n" +
                 "cod = \(self.cod)\n" +
-                "dataNascimento = \(self.birthdate)\n" +
+                "dataNascimento = \(String(describing: self.birthdate))\n" +
                 "email = \(self.email)\n" +
                 "emailVerificado = \(self.isEmailVerified)\n" +
                 "location = (\(self.userLocation.latitude),\(self.userLocation.longitude))\n" +
-                "nomeCompleto = \(self.fullName)\n" +
+                "nomeCompleto = \(String(describing: self.fullName))\n" +
                 "nomeUsuario = \(self.username)\n" +
                 "genero = \(self.gender)\n" +
-                "tokenFacebook = \(self.tokenFacebook)\n" +
-                "tokenGoogle = \(self.tokenGoogle)\n" +
-                "tokenTwitter = \(self.tokenTwitter)\n" +
-                "tokenInstagram  = \(self.tokenInstagram)\n" 
+                "tokenFacebook = \(String(describing: self.tokenFacebook))\n" +
+                "tokenGoogle = \(String(describing: self.tokenGoogle))\n" +
+                "tokenTwitter = \(String(describing: self.tokenTwitter))\n" +
+                "tokenInstagram  = \(String(describing: self.tokenInstagram))\n" 
     }
 }
 
 @objc public enum Gender: Int {
-    case Male = 0
-    case Female = 1
-    case None = 2
+    case male = 0
+    case female = 1
+    case none = 2
 }
 
 @objc public enum AccountType : Int {
-    case APCAccount
-    case TwitterAccount
-    case FacebookAccount
-    case InstagramAcount
-    case GoogleAccount
+    case apcAccount
+    case twitterAccount
+    case facebookAccount
+    case instagramAcount
+    case googleAccount
 }

@@ -8,20 +8,20 @@
 
 import Foundation
 
-public class APCPostage: NSObject, JsonConvertable{
+open class APCPostage: NSObject, JsonConvertable{
     
-    public var cod: Int = 0
-    public var codAuthor : Int = 0
-    public var codDestinatedObject: Int64 = 0
-    public var codDestinatedObjectType: Int = 0
-    public var codPostageType: Int = 0
-    public var date: NSDate = NSDate()
+    open var cod: Int = 0
+    open var codAuthor : Int = 0
+    open var codDestinatedObject: Int64 = 0
+    open var codDestinatedObjectType: Int = 0
+    open var codPostageType: Int = 0
+    open var date: Date = Date()
     
-    public var contentsCodes: [Int] = []
+    open var contentsCodes: [Int] = []
     
-    public var contents: [APCPostageContent]?
+    open var contents: [APCPostageContent]?
     
-    private override init(){
+    fileprivate override init(){
         
     }
     
@@ -43,9 +43,9 @@ public class APCPostage: NSObject, JsonConvertable{
             self.cod = cod
         }
         if let dataHoraPostagem = dictionary["dataHoraPostagem"] as? String {
-            let formatter = NSDateFormatter()
+            let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssz"
-            if let date = formatter.dateFromString(dataHoraPostagem) {
+            if let date = formatter.date(from: dataHoraPostagem) {
                 self.date = date
             }
         }
@@ -54,7 +54,7 @@ public class APCPostage: NSObject, JsonConvertable{
         }
         
         if let codDestinatedObject = dictionary["codObjetoDestino"] as? NSNumber{
-            self.codDestinatedObject = codDestinatedObject.longLongValue
+            self.codDestinatedObject = codDestinatedObject.int64Value
         }
         
         if let codDestinatedObjectType = dictionary["codTipoObjetoDestino"] as? Int{
@@ -75,7 +75,7 @@ public class APCPostage: NSObject, JsonConvertable{
                     self.contentsCodes.append(codContent)
                 }
                 
-                if let codContent = content["codConteudoPost"] as? Int{
+                if (content["codConteudoPost"] as? Int) != nil{
                     let apcPostageContent = JsonObjectCreator.createObject(dictionary: content, objectClass: APCPostageContent.self) as! APCPostageContent
                     self.contents?.append(apcPostageContent)
                 }
@@ -83,27 +83,27 @@ public class APCPostage: NSObject, JsonConvertable{
         }
     }
     
-    public func asDictionary() -> [String : AnyObject] {
+    open func asDictionary() -> [String : AnyObject] {
         var data : [String : AnyObject] = [:]
         var author : [String : AnyObject] = [:]
-        author.updateValue(self.codAuthor, forKey: "codPessoa")
-        data.updateValue(author, forKey: "autor")
+        author.updateValue(self.codAuthor as AnyObject, forKey: "codPessoa")
+        data.updateValue(author as AnyObject, forKey: "autor")
         if self.codDestinatedObject != 0 {
-            data.updateValue(String(self.codDestinatedObject), forKey: "codObjetoDestino")
+            data.updateValue(String(self.codDestinatedObject) as AnyObject, forKey: "codObjetoDestino")
         }
         if self.codDestinatedObjectType != 0{
-            data.updateValue(self.codDestinatedObjectType, forKey: "codTipoObjetoDestino")
+            data.updateValue(self.codDestinatedObjectType as AnyObject, forKey: "codTipoObjetoDestino")
         }
         var tipo : [String : AnyObject] = [:]
-        tipo.updateValue(self.codPostageType, forKey: "codTipoPostagem")
-        data.updateValue(tipo, forKey: "tipo")
+        tipo.updateValue(self.codPostageType as AnyObject, forKey: "codTipoPostagem")
+        data.updateValue(tipo as AnyObject, forKey: "tipo")
         
         return data
     }
     
     
-    override public var description: String {
-        return "[cod = \(self.cod), codAuthor = \(self.codAuthor), codObjetoDestino = \(self.codDestinatedObject), codTipoObjetoDestino = \(self.codDestinatedObjectType), codTipoPostagem = \(self.codPostageType), date = \(self.date), contentsCodes = \(self.contentsCodes)]\n, contents = \(self.contents)"
+    override open var description: String {
+        return "[cod = \(self.cod), codAuthor = \(self.codAuthor), codObjetoDestino = \(self.codDestinatedObject), codTipoObjetoDestino = \(self.codDestinatedObjectType), codTipoPostagem = \(self.codPostageType), date = \(self.date), contentsCodes = \(self.contentsCodes)]\n, contents = \(String(describing: self.contents))"
     }
     
     

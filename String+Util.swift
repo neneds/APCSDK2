@@ -10,18 +10,18 @@ import Foundation
 
 extension String {
     
-    static func concatStringsWithSeparator(strings strings: [String], separator: String) -> String? {
+    static func concatStringsWithSeparator(strings: [String], separator: String) -> String? {
         if strings.isEmpty {
             return nil
         }
         var ret : String = ""
         for str in strings {
-            ret.appendContentsOf(str)
-            ret.appendContentsOf(separator)
+            ret.append(str)
+            ret.append(separator)
         }
         
         if !ret.isEmpty {
-            ret.removeAtIndex(ret.characters.endIndex)
+            ret.remove(at: ret.characters.endIndex)
         }
         
         return ret

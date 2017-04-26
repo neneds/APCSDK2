@@ -8,47 +8,47 @@
 
 import Foundation
 
-public class APCOperationResponse : NSObject{
+open class APCOperationResponse : NSObject{
     
-    public var data: AnyObject?
-    public var status: APCOperationResultStatus
+    open var data: AnyObject?
+    open var status: APCOperationResultStatus
     
     public init(data: AnyObject?, status: APCOperationResultStatus) {
         self.data = data
         self.status = status
     }
     
-    public override var description: String{
-        return "OperationResponse = [data = \(self.data), status = \(self.statusToString())]"
+    open override var description: String{
+        return "OperationResponse = [data = \(String(describing: self.data)), status = \(self.statusToString())]"
     }
     
-    private func statusToString()-> String{
+    fileprivate func statusToString()-> String{
         switch status {
-        case .CompletedSuccesfully:
+        case .completedSuccesfully:
             return "CompletedSuccesfully"
-        case .OperationUnauthorized:
+        case .operationUnauthorized:
             return "OperationUnauthorized"
-        case .ConnectionError:
+        case .connectionError:
             return "ConnectionError"
-        case .InternalServerError:
+        case .internalServerError:
             return "InternalServerError"
-        case .InvalidParamters:
+        case .invalidParamters:
             return "InvalidParamters"
-        case .ResourceNotFound:
+        case .resourceNotFound:
             return "ResourceNotFound"
-        case .NoContentReturned:
+        case .noContentReturned:
             return "NoContentReturned"
         }
     }
 }
 
 @objc public enum APCOperationResultStatus : Int {
-    case CompletedSuccesfully = 0
-    case OperationUnauthorized = 1
-    case ConnectionError = 2
-    case InternalServerError = 3
-    case InvalidParamters = 4
-    case ResourceNotFound = 5
-    case NoContentReturned = 6
+    case completedSuccesfully = 0
+    case operationUnauthorized = 1
+    case connectionError = 2
+    case internalServerError = 3
+    case invalidParamters = 4
+    case resourceNotFound = 5
+    case noContentReturned = 6
     
 }

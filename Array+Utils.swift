@@ -8,16 +8,17 @@
 
 import Foundation
 
-extension CollectionType where Generator.Element : Equatable, Self : _ArrayType{
+extension Array where Element : Equatable{
     
-    mutating func removeObject(object: Generator.Element) -> Generator.Element?{
-        if let idx = self.indexOf(object) {
-           return self.removeAtIndex(idx)
+    @discardableResult
+    mutating func removeObject(_ object: Iterator.Element) -> Iterator.Element?{
+        if let idx = self.index(of: object) {
+            return self.remove(at: idx)
         }
         return nil
     }
     
-    mutating func removeObjects(objects: [Generator.Element]) {
+    mutating func removeObjects(_ objects: [Iterator.Element]) {
         for value in objects {
             self.removeObject(value)
         }

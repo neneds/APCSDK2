@@ -8,11 +8,11 @@
 
 import UIKit
 import Alamofire
-public class APCPostageManager: NSObject {
+open class APCPostageManager: NSObject {
 
-    public static let sharedManager: APCPostageManager = APCPostageManager()
+    open static let sharedManager: APCPostageManager = APCPostageManager()
     
-    private override init() {
+    fileprivate override init() {
         
     }
     
@@ -23,7 +23,7 @@ public class APCPostageManager: NSObject {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso a postagem com o campo código preenchido.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func createPostage(postage postage: APCPostage,relatedPostageCod: Int, result: (operationResponse: APCOperationResponse)-> Void) {
+    open func createPostage(postage: APCPostage,relatedPostageCod: Int, result: @escaping (_ operationResponse: APCOperationResponse)-> Void) {
         self.privateCreatePostage(postage: postage, relatedPostageCod: relatedPostageCod, result: result)
     }
     
@@ -33,43 +33,44 @@ public class APCPostageManager: NSObject {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso a postagem com o campo código preenchido.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func createPostage(postage postage: APCPostage, result: (operationResponse: APCOperationResponse)-> Void) {
+    open func createPostage(postage: APCPostage, result: @escaping (_ operationResponse: APCOperationResponse)-> Void) {
         self.privateCreatePostage(postage: postage, result: result)
     }
     
     
     // Convenience method to mantain other methods as headers public functions on objc header
-    private func privateCreatePostage(postage postage: APCPostage,relatedPostageCod: Int? = nil, result: ((operationResponse: APCOperationResponse)-> Void)?) {
+    fileprivate func privateCreatePostage(postage: APCPostage,relatedPostageCod: Int? = nil, result: ((_ operationResponse: APCOperationResponse)-> Void)?) {
         if let session = APCUserManager.sharedManager.activeSession {
             if let codApp = APCApplication.sharedApplication.applicationCode {
                 if session.isSessionExpired {
                     APCUserManager.sharedManager.refreshSession({ (operationResult) in
-                        if operationResult.status == .CompletedSuccesfully {
+                        if operationResult.status == .completedSuccesfully {
                             self.privateCreatePostage(postage: postage, relatedPostageCod: relatedPostageCod, result: result)
                         }else{
-                            result?(operationResponse: operationResult)
+                            result?(operationResult)
                         }
                     })
                 }else{
                     var postageDic = postage.asDictionary()
                     if let unwrappedRelatedPostageCod = relatedPostageCod {
                         var relatedDic : [String : AnyObject] = [:]
-                        relatedDic.updateValue(unwrappedRelatedPostageCod, forKey: "codPostagem")
-                        postageDic.updateValue(relatedDic, forKey: "postagemRelacionada")
+                        relatedDic.updateValue(unwrappedRelatedPostageCod as AnyObject, forKey: "codPostagem")
+                        postageDic.updateValue(relatedDic as AnyObject, forKey: "postagemRelacionada")
                     }
                     if let token = session.sessionToken {
-                        Alamofire.request(.POST, APCURLProvider.postageBaseURL(), parameters: postageDic, encoding: .JSON, headers: ["appIdentifier" : String(codApp), "appToken" : token]).responseJSON(completionHandler: { (response) in
-                            self.postageCreateResponseHandler(postage: postage,response: response, result: result)
+                        
+                        Alamofire.request(APCURLProvider.postageBaseURL(), method: .get, parameters: postageDic, encoding: JSONEncoding(), headers: ["appIdentifier" : String(codApp), "appToken" : token]).responseJSON(completionHandler: { (responseObject) in
+                            self.postageCreateResponseHandler(postage: postage,response: responseObject, result: result)
                         })
                     }else{
-                        result?(operationResponse: APCOperationResponse(data: nil, status: .OperationUnauthorized))
+                        result?(APCOperationResponse(data: nil, status: .operationUnauthorized))
                     }
                 }
             }else{
-                result?(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have an aplication configured to perform this operation. See APCApplication.sharedApplication"]), status: .OperationUnauthorized))
+                result?(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have an aplication configured to perform this operation. See APCApplication.sharedApplication"]), status: .operationUnauthorized))
             }
         }else{
-            result?(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
+            result?(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .operationUnauthorized))
         }
     }
     
@@ -80,8 +81,8 @@ public class APCPostageManager: NSObject {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso os dados da postagem.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func findPostage(codPostage cod: Int, result: (operationResponse: APCOperationResponse)-> Void){
-        Alamofire.request(.GET, APCURLProvider.postageURL(postageCod: cod)).responseJSON { (responseObject) in
+    open func findPostage(codPostage cod: Int, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
+        Alamofire.request(APCURLProvider.postageURL(postageCod: cod),method: .get).responseJSON { (responseObject) in
             APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
                 if let postageData = responseValue as? [String : AnyObject] {
                     return JsonObjectCreator.createObject(dictionary: postageData, objectClass: APCPostage.self)
@@ -97,7 +98,7 @@ public class APCPostageManager: NSObject {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso um array com as postagens de resultado.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func queryPostagesTimeline(authorCod: Int?,
+    open func queryPostagesTimeline(authorCod: Int?,
                               destinatedGroupCod: Int?,
                               destinatedPersonCod: Int?,
                               relatedPostageCod: Int?,
@@ -107,64 +108,64 @@ public class APCPostageManager: NSObject {
                               codDestinationObject: NSNumber?,
                               page: Int?,
                               maxPostageReturned: Int?,
-                              result: (operationResponse: APCOperationResponse)-> Void){
+                              result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         
         if let session = APCUserManager.sharedManager.activeSession {
             if let codApp = APCApplication.sharedApplication.applicationCode {
                 if session.isSessionExpired {
                     APCUserManager.sharedManager.refreshSession({ (operationResult) in
-                        if operationResult.status == .CompletedSuccesfully {
+                        if operationResult.status == .completedSuccesfully {
                             self.queryPostages(authorCod, destinatedGroupCod: destinatedGroupCod,
                                 destinatedPersonCod:  destinatedPersonCod, relatedPostageCod: relatedPostageCod,
                                 postageTypesCods: postageTypesCods, hashtag: hashtag, codDestinationObjectType:codDestinationObjectType,
                                 codDestinationObject: codDestinationObject, page: page, maxPostageReturned: maxPostageReturned, result: result)
                         }else{
-                            result(operationResponse: operationResult)
+                            result(operationResult)
                         }
                     })
                 }else{
                     if let token = session.sessionToken {
                         var parameters : [String: AnyObject] = [:]
-                        parameters.updateValue(codApp, forKey: "codAplicativo")
-                        parameters.updateOptionalValue(authorCod, forKey: "codAutor")
-                        parameters.updateOptionalValue(destinatedPersonCod, forKey: "codPessoaDestino")
-                        parameters.updateOptionalValue(destinatedGroupCod, forKey: "codGrupoDestino")
-                        parameters.updateOptionalValue(relatedPostageCod, forKey: "codPostagemRelacionada")
+                        parameters.updateValue(codApp as AnyObject, forKey: "codAplicativo")
+                        parameters.updateOptionalValue(authorCod as AnyObject, forKey: "codAutor")
+                        parameters.updateOptionalValue(destinatedPersonCod as AnyObject, forKey: "codPessoaDestino")
+                        parameters.updateOptionalValue(destinatedGroupCod as AnyObject, forKey: "codGrupoDestino")
+                        parameters.updateOptionalValue(relatedPostageCod as AnyObject, forKey: "codPostagemRelacionada")
                         if let unwrappedTypesCods = postageTypesCods {
                             if !unwrappedTypesCods.isEmpty {
-                                let types = unwrappedTypesCods.reduce("", combine: { (string, value) -> String in
+                                let types = unwrappedTypesCods.reduce("", { (string, value) -> String in
                                     if(string.isEmpty){
                                         return String(value)
                                     }
                                     return "\(string),\(value)"
                                 })
-                                parameters.updateValue(types, forKey: "codTiposPostagem")
+                                parameters.updateValue(types as AnyObject, forKey: "codTiposPostagem")
                             }
                             
                         }
-                        parameters.updateOptionalValue(hashtag, forKey: "hashtag")
-                        parameters.updateOptionalValue(codDestinationObjectType, forKey: "codTipoObjetoDestino")
+                        parameters.updateOptionalValue(hashtag as AnyObject, forKey: "hashtag")
+                        parameters.updateOptionalValue(codDestinationObjectType as AnyObject, forKey: "codTipoObjetoDestino")
                         parameters.updateOptionalValue(codDestinationObject, forKey: "codObjetoDestino")
-                        parameters.updateOptionalValue(page, forKey: "pagina")
-                        parameters.updateOptionalValue(maxPostageReturned, forKey: "quantidadeDeItens")
+                        parameters.updateOptionalValue(page as AnyObject, forKey: "pagina")
+                        parameters.updateOptionalValue(maxPostageReturned as AnyObject, forKey: "quantidadeDeItens")
                         
-                        Alamofire.request(.GET, APCURLProvider.postageTimelineURL(), parameters: parameters, encoding: .URLEncodedInURL, headers: ["appToken" : token]).responseJSON(completionHandler: { (responseObject) in
+                        Alamofire.request(APCURLProvider.postageBaseURL(), method: .get, parameters: parameters, encoding: URLEncoding(), headers: ["appToken" : token]).responseJSON(completionHandler: { (responseObject) in
                             APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
                                 if let postagesData = responseValue as? [[String : AnyObject]] {
-                                    return JsonObjectCreator.create(dictionaryArray: postagesData, objectClass: APCPostage.self)
+                                    return JsonObjectCreator.create(dictionaryArray: postagesData, objectClass: APCPostage.self) as AnyObject
                                 }
                                 return nil
                                 }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
                         })
                     }else{
-                        result(operationResponse: APCOperationResponse(data: nil, status: .OperationUnauthorized))
+                        result(APCOperationResponse(data: nil, status: .operationUnauthorized))
                     }
                 }
             }else{
-                result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have an aplication configured to perform this operation. See APCApplication.sharedApplication"]), status: .OperationUnauthorized))
+                result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have an aplication configured to perform this operation. See APCApplication.sharedApplication"]), status: .operationUnauthorized))
             }
         }else{
-            result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
+            result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .operationUnauthorized))
         }
     }
     
@@ -174,7 +175,7 @@ public class APCPostageManager: NSObject {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso um array com as postagens de resultado.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func queryPostages(authorCod: Int?,
+    open func queryPostages(_ authorCod: Int?,
                        destinatedGroupCod: Int?,
                        destinatedPersonCod: Int?,
                        relatedPostageCod: Int?,
@@ -184,64 +185,65 @@ public class APCPostageManager: NSObject {
                        codDestinationObject: NSNumber?,
                        page: Int?,
                        maxPostageReturned: Int?,
-                       result: (operationResponse: APCOperationResponse)-> Void){
+                       result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         
             if let session = APCUserManager.sharedManager.activeSession {
                 if let codApp = APCApplication.sharedApplication.applicationCode {
                     if session.isSessionExpired {
                         APCUserManager.sharedManager.refreshSession({ (operationResult) in
-                            if operationResult.status == .CompletedSuccesfully {
+                            if operationResult.status == .completedSuccesfully {
                                 self.queryPostages(authorCod, destinatedGroupCod: destinatedGroupCod,
                                                     destinatedPersonCod:  destinatedPersonCod, relatedPostageCod: relatedPostageCod,
                                                     postageTypesCods: postageTypesCods, hashtag: hashtag, codDestinationObjectType:codDestinationObjectType,
                                                     codDestinationObject: codDestinationObject, page: page, maxPostageReturned: maxPostageReturned, result: result)
                             }else{
-                                result(operationResponse: operationResult)
+                                result(operationResult)
                             }
                         })
                     }else{
                         if let token = session.sessionToken {
                             var parameters : [String: AnyObject] = [:]
-                            parameters.updateValue(codApp, forKey: "codAplicativo")
-                            parameters.updateOptionalValue(authorCod, forKey: "codAutor")
-                            parameters.updateOptionalValue(destinatedPersonCod, forKey: "codPessoaDestino")
-                            parameters.updateOptionalValue(destinatedGroupCod, forKey: "codGrupoDestino")
-                            parameters.updateOptionalValue(relatedPostageCod, forKey: "codPostagemRelacionada")
+                            parameters.updateValue(codApp as AnyObject, forKey: "codAplicativo")
+                            parameters.updateOptionalValue(authorCod as AnyObject?, forKey: "codAutor")
+                            parameters.updateOptionalValue(destinatedPersonCod as AnyObject?, forKey: "codPessoaDestino")
+                            parameters.updateOptionalValue(destinatedGroupCod as AnyObject?, forKey: "codGrupoDestino")
+                            parameters.updateOptionalValue(relatedPostageCod as AnyObject?, forKey: "codPostagemRelacionada")
                             if let unwrappedTypesCods = postageTypesCods {
                                 if !unwrappedTypesCods.isEmpty {
-                                    let types = unwrappedTypesCods.reduce("", combine: { (string, value) -> String in
+                                    let types = unwrappedTypesCods.reduce("", { (string, value) -> String in
                                         if(string.isEmpty){
                                             return String(value)
                                         }
                                         return "\(string),\(value)"
                                     })
-                                    parameters.updateValue(types, forKey: "codTiposPostagem")
+                                    parameters.updateValue(types as AnyObject, forKey: "codTiposPostagem")
                                 }
 
                             }
-                            parameters.updateOptionalValue(hashtag, forKey: "hashtag")
-                            parameters.updateOptionalValue(codDestinationObjectType, forKey: "codTipoObjetoDestino")
+                            parameters.updateOptionalValue(hashtag as AnyObject?, forKey: "hashtag")
+                            parameters.updateOptionalValue(codDestinationObjectType as AnyObject?, forKey: "codTipoObjetoDestino")
                             parameters.updateOptionalValue(codDestinationObject, forKey: "codObjetoDestino")
-                            parameters.updateOptionalValue(page, forKey: "pagina")
-                            parameters.updateOptionalValue(maxPostageReturned, forKey: "quantidadeDeItens")
+                            parameters.updateOptionalValue(page as AnyObject?, forKey: "pagina")
+                            parameters.updateOptionalValue(maxPostageReturned as AnyObject?, forKey: "quantidadeDeItens")
 
-                            Alamofire.request(.GET, APCURLProvider.postageBaseURL(), parameters: parameters, encoding: .URLEncodedInURL, headers: ["appToken" : token]).responseJSON(completionHandler: { (responseObject) in
+                            Alamofire.request(APCURLProvider.postageBaseURL(), method: .get, parameters: parameters, encoding: URLEncoding(), headers: ["appToken" : token]).responseJSON(completionHandler: { (responseObject) in
+                                
                                 APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
-                                    if let postagesData = responseValue as? [[String : AnyObject]] {
-                                        return JsonObjectCreator.create(dictionaryArray: postagesData, objectClass: APCPostage.self)
+                                    if let postagesData : [[String : AnyObject]] = responseValue as? [[String : AnyObject]] {
+                                        return JsonObjectCreator.create(dictionaryArray: postagesData, objectClass: APCPostage.self) as AnyObject?
                                     }
                                     return nil
                                 }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
                             })
                         }else{
-                            result(operationResponse: APCOperationResponse(data: nil, status: .OperationUnauthorized))
+                            result(APCOperationResponse(data: nil, status: .operationUnauthorized))
                         }
                     }
                 }else{
-                    result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have an aplication configured to perform this operation. See APCApplication.sharedApplication"]), status: .OperationUnauthorized))
+                    result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have an aplication configured to perform this operation. See APCApplication.sharedApplication"]), status: .operationUnauthorized))
                 }
             }else{
-                result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
+                result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .operationUnauthorized))
             }
     }
     
@@ -253,26 +255,27 @@ public class APCPostageManager: NSObject {
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
 
-    public func deletePostage(postageCod postageCod: Int, result: (operationResponse: APCOperationResponse)-> Void){
+    open func deletePostage(postageCod: Int, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         if let session = APCUserManager.sharedManager.activeSession {
             if session.isSessionExpired {
                 APCUserManager.sharedManager.refreshSession({ (operationResult) in
-                    if operationResult.status == .CompletedSuccesfully {
+                    if operationResult.status == .completedSuccesfully {
                         self.deletePostage(postageCod: postageCod, result: result)
                     }else{
-                        result(operationResponse: operationResult)
+                        result(operationResult)
                     }
                 })
             }else{
                 if let token = session.sessionToken {
                     let headers = ["appToken" : token]
-                    Alamofire.request(.DELETE, APCURLProvider.postageURL(postageCod: postageCod), parameters: nil, encoding: .URL, headers: headers).responseJSON(completionHandler: { (responseObject) in
+                    
+                    Alamofire.request(APCURLProvider.postageURL(postageCod: postageCod), method: .delete, parameters: nil, encoding: URLEncoding(), headers: headers).responseJSON(completionHandler: { (responseObject) in
                         APCManagerUtils.responseHandler(response: responseObject, result: result)
                     })
                 }
             }
         }else{
-            result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
+            result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .operationUnauthorized))
         }
         
     }
@@ -282,7 +285,7 @@ public class APCPostageManager: NSObject {
     
     
     //MARK: - Private methods
-    private func postageCreateResponseHandler(postage postage: APCPostage,response responseObject: Response<AnyObject, NSError>, result: ((operationResponse: APCOperationResponse)-> Void)?){
+    fileprivate func postageCreateResponseHandler(postage: APCPostage,response responseObject: DataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
             if let location = responseHeaders?["location"] as? String{
                 if let cod = APCManagerUtils.codFromLocation(location){
@@ -342,14 +345,14 @@ extension APCPostageManager {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso a postagem com o campo código preenchido.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func setPostageContent(postageCod postageCod: Int, postageContent: APCPostageContent, result: (operationResponse: APCOperationResponse)-> Void){
+    public func setPostageContent(postageCod: Int, postageContent: APCPostageContent, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         if let session = APCUserManager.sharedManager.activeSession {
             if session.isSessionExpired {
                 APCUserManager.sharedManager.refreshSession({ (operationResult) in
-                    if operationResult.status == .CompletedSuccesfully {
+                    if operationResult.status == .completedSuccesfully {
                         self.setPostageContent(postageCod: postageCod, postageContent: postageContent, result: result)
                     }else{
-                        result(operationResponse: operationResult)
+                        result(operationResult)
                     }
                 })
             }else{
@@ -357,13 +360,15 @@ extension APCPostageManager {
                     let content = postageContent.asDictionary()
                     let headers = ["appToken" : token]
                     postageContent.postageCod = postageCod
-                    Alamofire.request(.POST, APCURLProvider.postageContentURL(postageCod: postageCod), parameters: content, encoding: .JSON, headers: headers).responseJSON(completionHandler: { (responseObject) in
+                    
+                    Alamofire.request(APCURLProvider.postageContentURL(postageCod: postageCod), method: .post, parameters: content, encoding: JSONEncoding(), headers: headers).responseJSON(completionHandler: { (responseObject) in
+
                         self.postageContentCreateResponseHandler(postage: postageContent, response: responseObject, result: result)
                     })
                 }
             }
         }else{
-            result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
+            result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .operationUnauthorized))
         }
     }
     
@@ -375,32 +380,33 @@ extension APCPostageManager {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso a postagem com o campo código preenchido.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func updatePostageContent(postageCod postageCod: Int, postageContent: APCPostageContent, result: (operationResponse: APCOperationResponse)-> Void){
+    public func updatePostageContent(postageCod: Int, postageContent: APCPostageContent, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         if let session = APCUserManager.sharedManager.activeSession {
             if session.isSessionExpired {
                 APCUserManager.sharedManager.refreshSession({ (operationResult) in
-                    if operationResult.status == .CompletedSuccesfully {
+                    if operationResult.status == .completedSuccesfully {
                         self.updatePostageContent(postageCod: postageCod, postageContent: postageContent, result: result)
                     }else{
-                        result(operationResponse: operationResult)
+                        result(operationResult)
                     }
                 })
             }else{
                 if let token = session.sessionToken {
                     if postageContent.cod == 0{
-                        result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 20, userInfo: [NSLocalizedDescriptionKey : "The content must have a cod != 0 to be updated"]),status: .InvalidParamters))
+                        result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 20, userInfo: [NSLocalizedDescriptionKey : "The content must have a cod != 0 to be updated"]),status: .invalidParamters))
                     }else{
                         let content = postageContent.asDictionary()
                         let headers = ["appToken" : token]
                         postageContent.postageCod = postageCod
-                        Alamofire.request(.PUT, APCURLProvider.postageContentURL(postageCod: postageCod, contentCod: postageContent.cod), parameters: content, encoding: .JSON, headers: headers).responseJSON(completionHandler: { (responseObject) in
+                        
+                        Alamofire.request(APCURLProvider.postageContentURL(postageCod: postageCod, contentCod: postageContent.cod), method: .put, parameters: content, encoding: JSONEncoding(), headers: headers).responseJSON(completionHandler: { (responseObject) in
                             self.updatePostageContentResponseHandler(postage: postageContent, response: responseObject, result: result)
                         })
                     }
                 }
             }
         }else{
-            result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
+            result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .operationUnauthorized))
         }
         
     }
@@ -412,26 +418,27 @@ extension APCPostageManager {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func deletePostageContent(postageCod postageCod: Int, postageContentCod: Int, result: (operationResponse: APCOperationResponse)-> Void){
+    public func deletePostageContent(postageCod: Int, postageContentCod: Int, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         if let session = APCUserManager.sharedManager.activeSession {
             if session.isSessionExpired {
                 APCUserManager.sharedManager.refreshSession({ (operationResult) in
-                    if operationResult.status == .CompletedSuccesfully {
+                    if operationResult.status == .completedSuccesfully {
                         self.deletePostageContent(postageCod: postageCod, postageContentCod: postageContentCod, result: result)
                     }else{
-                        result(operationResponse: operationResult)
+                        result(operationResult)
                     }
                 })
             }else{
                 if let token = session.sessionToken {
                     let headers = ["appToken" : token]
-                    Alamofire.request(.DELETE, APCURLProvider.postageContentURL(postageCod: postageCod, contentCod: postageContentCod), parameters: nil, encoding: .URL, headers: headers).responseJSON(completionHandler: { (responseObject) in
+                    
+                    Alamofire.request(APCURLProvider.postageContentURL(postageCod: postageCod, contentCod: postageContentCod), method: .delete, parameters: nil, encoding: URLEncoding(), headers: headers).responseJSON(completionHandler: { (responseObject) in
                         APCManagerUtils.responseHandler(response: responseObject, result: result)
                     })
                 }
             }
         }else{
-            result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
+            result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .operationUnauthorized))
         }
     }
     
@@ -442,26 +449,28 @@ extension APCPostageManager {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso um objeto de APCPostageContent no campo data.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func findPostageContent(postageCod postageCod: Int,contentCod: Int,result: (operationResponse: APCOperationResponse)-> Void){
+    public func findPostageContent(postageCod: Int,contentCod: Int,result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         if let session = APCUserManager.sharedManager.activeSession {
             if session.isSessionExpired {
                 APCUserManager.sharedManager.refreshSession({ (operationResult) in
-                    if operationResult.status == .CompletedSuccesfully {
+                    if operationResult.status == .completedSuccesfully {
                         self.findPostageContent(postageCod: postageCod, contentCod: contentCod, result: result)
                     }else{
-                        result(operationResponse: operationResult)
+                        result(operationResult)
                     }
                 })
             }else{
                 if let token = session.sessionToken {
                     let headers = ["appToken" : token]
-                    Alamofire.request(.GET, APCURLProvider.postageContentURL(postageCod: postageCod, contentCod: contentCod), parameters: nil, encoding: .URLEncodedInURL, headers: headers).responseJSON(completionHandler: { (responseObject) in
+                    
+                    
+                    Alamofire.request(APCURLProvider.postageContentURL(postageCod: postageCod, contentCod: contentCod), method: .get, parameters: nil, encoding: URLEncoding(), headers: headers).responseJSON(completionHandler: { (responseObject) in
                         self.findPostageContentResponseHandler(response: responseObject, result: result)
                     })
                 }
             }
         }else{
-            result(operationResponse: APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .OperationUnauthorized))
+            result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .operationUnauthorized))
         }
 
     }
@@ -471,14 +480,14 @@ extension APCPostageManager {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso um array com os conteúdos da postagem como resultado além de popular a propriedade contents no objeto de postagem enviado como parâmetro.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func postageContents(postage postage: APCPostage, result: (operationResponse: APCOperationResponse)-> Void){
+    public func postageContents(postage: APCPostage, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         let contents = [APCPostageContent]()
         if !postage.contentsCodes.isEmpty {
             self.postageContents(contents, postageCod: postage.cod, contentsCods: postage.contentsCodes, index: 0,  result: {(operationResponse) in
                 if let pcontents = operationResponse.data as? [APCPostageContent]{
                     postage.contents = pcontents
                 }
-                result(operationResponse: operationResponse)
+                result(operationResponse)
             })
         }
     }
@@ -488,51 +497,51 @@ extension APCPostageManager {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e se sucesso irá popular a propriedade contents nos objetos de postagem enviados como parâmetro.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func postagesContents(postages postages: [APCPostage], result: (operationResponse: APCOperationResponse)-> Void){
+    public func postagesContents(postages: [APCPostage], result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         self.postagensContents(postages: postages, index: 0, result: result)
     }
     
     
-    private func postagensContents(postages postages: [APCPostage], index: Int, result: (operationResponse: APCOperationResponse)-> Void){
+    fileprivate func postagensContents(postages: [APCPostage], index: Int, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         if index >= postages.count {
-            result(operationResponse: APCOperationResponse(data: nil, status: .CompletedSuccesfully))
+            result(APCOperationResponse(data: nil, status: .completedSuccesfully))
         }else{
             self.postageContents(postage: postages[index], result: { (operationResponse) in
                 
                 switch operationResponse.status{
-                case .CompletedSuccesfully, .ResourceNotFound, .NoContentReturned:
+                case .completedSuccesfully, .resourceNotFound, .noContentReturned:
                     self.postagensContents(postages: postages, index: index + 1, result: result)
                 default:
-                    result(operationResponse: operationResponse)
+                    result(operationResponse)
                 }
             })
         }
     }
     
     
-    private func postageContents(contents: [APCPostageContent],postageCod: Int, contentsCods: [Int], index: Int, result: (operationResponse: APCOperationResponse)-> Void ){
+    fileprivate func postageContents(_ contents: [APCPostageContent],postageCod: Int, contentsCods: [Int], index: Int, result: @escaping (_ operationResponse: APCOperationResponse)-> Void ){
         var localContents : [APCPostageContent] = []
-        localContents.appendContentsOf(contents)
+        localContents.append(contentsOf: contents)
         if index >= contentsCods.count {
-            result(operationResponse: APCOperationResponse(data: localContents, status: .CompletedSuccesfully))
+            result(APCOperationResponse(data: localContents as AnyObject?, status: .completedSuccesfully))
         }else{
             self.findPostageContent(postageCod: postageCod, contentCod: contentsCods[index], result: { (operationResponse) in
                 
                 switch operationResponse.status{
-                case .CompletedSuccesfully, .ResourceNotFound, .NoContentReturned:
+                case .completedSuccesfully, .resourceNotFound, .noContentReturned:
                     if let content = operationResponse.data as? APCPostageContent {
                         localContents.append(content)
                     }
                     self.postageContents(localContents, postageCod: postageCod, contentsCods: contentsCods, index: index + 1, result: result)
                 default:
-                    result(operationResponse: operationResponse)
+                    result(operationResponse)
                 }
             })
         }
     }
     
     //MARK: - Postage content handlers
-    private func postageContentCreateResponseHandler(postage postageContent: APCPostageContent,response responseObject: Response<AnyObject, NSError>, result: (operationResponse: APCOperationResponse)-> Void){
+    fileprivate func postageContentCreateResponseHandler(postage postageContent: APCPostageContent,response responseObject: DataResponse<Any>, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
             if let location = responseHeaders?["location"] as? String{
@@ -546,13 +555,13 @@ extension APCPostageManager {
             }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
     }
     
-    private func updatePostageContentResponseHandler(postage postageContent: APCPostageContent,response responseObject: Response<AnyObject, NSError>, result: (operationResponse: APCOperationResponse)-> Void){
+    fileprivate func updatePostageContentResponseHandler(postage postageContent: APCPostageContent,response responseObject: DataResponse<Any>, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, reponseHeaders) -> AnyObject? in
             return postageContent
             }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
     }
     
-    private func findPostageContentResponseHandler(response responseObject: Response<AnyObject, NSError>, result: (operationResponse: APCOperationResponse)-> Void){
+    fileprivate func findPostageContentResponseHandler(response responseObject: DataResponse<Any>, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
             if let contentDic = responseValue as? [String : AnyObject] {
                 return JsonObjectCreator.createObject(dictionary: contentDic, objectClass: APCPostageContent.self)
