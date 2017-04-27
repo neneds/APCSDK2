@@ -102,7 +102,7 @@ open class APCUserManager: NSObject {
     open func authenticate(email: String, password: String, result: ((_ operationResponse: APCOperationResponse)-> Void)?) {
         let headers :[String : String] =  ["email" : email, "senha" : password]
         
-        Alamofire.request(APCURLProvider.authenticateUserURL(), method: .post, parameters: nil, encoding: URLEncoding(), headers: headers).responseJSON { (responseObject) in
+        Alamofire.request(APCURLProvider.authenticateUserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: headers).responseJSON { (responseObject) in
             self.authenticationResponseHandler(password: password, response: responseObject, result: result)
         }
     }
@@ -424,6 +424,7 @@ open class APCUserManager: NSObject {
     open func exists(email: String, result: @escaping (_ operationResponse: APCOperationResponse)-> Void) {
         
         Alamofire.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: ["email" : email]).responseJSON { (responseObject) in
+            
             self.existsResponseHandler(response: responseObject, result: result)
         }
     }
@@ -507,6 +508,7 @@ open class APCUserManager: NSObject {
     
     //MARK:- Useful methods
     fileprivate func authenticationResponseHandler(password passowrd: String?, response responseObject: Alamofire.DataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?) {
+        
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
 
             if let uwrappedHeaders : [String : AnyObject] = responseHeaders as? [String : AnyObject] {
