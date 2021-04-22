@@ -10,22 +10,21 @@ import Foundation
 
 public class APCApplication: NSObject {
 
-    public static let sharedApplication : APCApplication = APCApplication()
-    
-    //MARK: - Properties
+    public static let sharedApplication: APCApplication = APCApplication()
+
+    // MARK: - Properties
     fileprivate(set) var applicationCode: Int?
-    
+
     fileprivate override init() {
-        
+
     }
-    
+
     public func startWith(applicationCode code: Int) {
         self.applicationCode = code
     }
-    
-    //MARK:- Overrides
-    public override var description: String  {
+
+    // MARK: - Overrides
+    public override var description: String {
         return "APCApplication[ applicationCode = \(String(describing: self.applicationCode))]"
     }
 }
-

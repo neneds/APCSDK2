@@ -22,19 +22,19 @@ public class APCMedicineRetriver: NSObject {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e sempre os remédios no campo data.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func medicines(product: String?, presentation: String?, fields:[String]?, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        var sendParameters: [String : Any] = [:]
+    public func medicines(product: String?, presentation: String?, fields: [String]?, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
+        var sendParameters: [String: Any] = [:]
         sendParameters.updateOptionalValue(product as AnyObject?, forKey: "produto")
         sendParameters.updateOptionalValue(presentation as AnyObject?, forKey: "apresentacao")
-        if let unwrappedFields = fields, let concatedFiels = String.concatStringsWithSeparator(strings: unwrappedFields, separator: ","){
+        if let unwrappedFields = fields, let concatedFiels = String.concatStringsWithSeparator(strings: unwrappedFields, separator: ",") {
             sendParameters.updateValue(concatedFiels as AnyObject, forKey: "campos")
         }
-        
+
         AF.request(APCURLProvider.medicinesURL(), method: .get, parameters: sendParameters, encoding: URLEncoding(), headers: nil).responseJSON { (responseObject) in
             self.medicinesResponseHandler(response: responseObject, result: result)
         }
     }
-    
+
     /**
      Busca remédios por parte do nome, apresentação, retornando os campos passados como parâmetros com um limite definido pelo parâmetro numberOfMedicines.
      - parameter product Parte do nome para busca.
@@ -44,40 +44,39 @@ public class APCMedicineRetriver: NSObject {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e sempre os remédios no campo data.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func medicines(product:String?, presentation: String?, fields:[String]?, numberOfMedicines: Int, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        var parameters: [String : AnyObject] = [:]
+    public func medicines(product: String?, presentation: String?, fields: [String]?, numberOfMedicines: Int, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
+        var parameters: [String: AnyObject] = [:]
         parameters.updateOptionalValue(product as AnyObject?, forKey: "produto")
         parameters.updateOptionalValue(presentation as AnyObject?, forKey: "apresentacao")
         parameters.updateValue(numberOfMedicines as AnyObject, forKey: "quantidade")
-        if let unwrappedFields = fields, let concatedFiels = String.concatStringsWithSeparator(strings: unwrappedFields, separator: ","){
+        if let unwrappedFields = fields, let concatedFiels = String.concatStringsWithSeparator(strings: unwrappedFields, separator: ",") {
             parameters.updateValue(concatedFiels as AnyObject, forKey: "campos")
         }
-        
+
         AF.request(APCURLProvider.medicinesURL(), method: .get, parameters: parameters, encoding: URLEncoding(), headers: nil).responseJSON { (responseObject) in
-            
+
             self.medicinesResponseHandler(response: responseObject, result: result)
         }
     }
-    
+
     /**
      Busca um remédio por código de barras.
      - parameter barCodeEAN Busca um remédio por código de barras.
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e sempre nil no campo data.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func medicine(barCodeEAN: UInt64, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        var parameters: [String : Any] = [:]
+    public func medicine(barCodeEAN: UInt64, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
+        var parameters: [String: Any] = [:]
         parameters.updateOptionalValue(String(barCodeEAN) as AnyObject?, forKey: "codBarraEan")
-        
+
         AF.request(APCURLProvider.medicinesURL(), method: .get, parameters: parameters, encoding: URLEncoding(), headers: nil).responseJSON { (responseObject) in
             self.singleMedicineResponseHandler(response: responseObject, result: result)
         }
     }
-    
-    
-    fileprivate func singleMedicineResponseHandler(response responseObject: AFDataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
-        APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
-            if let unwrappedValue = responseValue as? [[String : AnyObject]]{
+
+    fileprivate func singleMedicineResponseHandler(response responseObject: AFDataResponse<Any>, result: ((_ operationResponse: APCOperationResponse) -> Void)?) {
+        APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, _) -> AnyObject? in
+            if let unwrappedValue = responseValue as? [[String: AnyObject]] {
                 if let medicines = JsonObjectCreator.create(dictionaryArray: unwrappedValue, objectClass: APCMedicine.self) as? [APCMedicine] {
                     return medicines.first
                 }
@@ -85,10 +84,10 @@ public class APCMedicineRetriver: NSObject {
             return nil
             }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
     }
-    
-    fileprivate func medicinesResponseHandler(response responseObject: AFDataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
-        APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
-            if let unwrappedValue = responseValue as? [[String : AnyObject]]{
+
+    fileprivate func medicinesResponseHandler(response responseObject: AFDataResponse<Any>, result: ((_ operationResponse: APCOperationResponse) -> Void)?) {
+        APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, _) -> AnyObject? in
+            if let unwrappedValue = responseValue as? [[String: AnyObject]] {
                 return JsonObjectCreator.create(dictionaryArray: unwrappedValue, objectClass: APCMedicine.self) as? [APCMedicine] as AnyObject?
             }
             return nil

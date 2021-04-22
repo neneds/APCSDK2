@@ -9,22 +9,21 @@
 import Foundation
 
 extension String {
-    
+
     static func concatStringsWithSeparator(strings: [String], separator: String) -> String? {
         if strings.isEmpty {
             return nil
         }
-        var ret : String = ""
+        var ret: String = ""
         for str in strings {
             ret.append(str)
             ret.append(separator)
         }
-        
+
         if !ret.isEmpty {
             ret.remove(at: ret.endIndex)
         }
-        
+
         return ret
     }
 }
-

@@ -8,57 +8,54 @@
 
 import Foundation
 
-public class APCProfile: NSObject, JsonConvertable{
-    
-    public fileprivate(set) var aditionalFields: [String : AnyObject]? = [:]
+public class APCProfile: NSObject, JsonConvertable {
+
+    public fileprivate(set) var aditionalFields: [String: AnyObject]? = [:]
     public var profileTypeCod: Int = 0
     public var profileDescription: String?
-    
+
     public override init() {
-        
+
     }
-    
+
     public convenience init(profileTypeCod: Int) {
         self.init()
         self.profileTypeCod = profileTypeCod
     }
-    
-    
-    
-    public subscript(field: String)-> AnyObject?{
-        get{
+
+    public subscript(field: String) -> AnyObject? {
+        get {
             return self.aditionalFields?[field]
         }
-        
-        set(value){
+
+        set(value) {
             self.aditionalFields?[field] = value
         }
     }
-    
-    //MARK:- JsonConvertable
-    public required init(dictionary: [String : AnyObject]) {
+
+    // MARK: - JsonConvertable
+    public required init(dictionary: [String: AnyObject]) {
         if let aditionalFieldsStr = dictionary["camposAdicionais"] as? String {
-            if let data = aditionalFieldsStr.data(using: String.Encoding.utf8), let aditionalFieldsDic = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.mutableContainers) as? [String : AnyObject]{
+            if let data = aditionalFieldsStr.data(using: String.Encoding.utf8), let aditionalFieldsDic = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.mutableContainers) as? [String: AnyObject] {
                 self.aditionalFields = aditionalFieldsDic
             }
         }
-        if let profileType = dictionary["tipoPerfil"] as? [String : AnyObject], let profileCod = profileType["codTipoPerfil"] as? Int {
+        if let profileType = dictionary["tipoPerfil"] as? [String: AnyObject], let profileCod = profileType["codTipoPerfil"] as? Int {
             self.profileTypeCod = profileCod
             self.profileDescription = profileType["descricao"] as? String
         }
-        
+
     }
 
-    
-    func asDictionary() -> [String : AnyObject] {
-        var dictionary : [String : AnyObject] = [:]
-        var profileType: [String : AnyObject] = [:]
+    func asDictionary() -> [String: AnyObject] {
+        var dictionary: [String: AnyObject] = [:]
+        var profileType: [String: AnyObject] = [:]
         profileType.updateValue(self.profileTypeCod as AnyObject, forKey: "codTipoPerfil")
         dictionary.updateValue(profileType as AnyObject, forKey: "tipoPerfil")
         if let unwrappedFields = self.aditionalFields {
             if !unwrappedFields.isEmpty {
-                if let jsonFields = try? JSONSerialization.data(withJSONObject: unwrappedFields, options: JSONSerialization.WritingOptions.prettyPrinted){
-                    if let string = String(data: jsonFields, encoding: String.Encoding.utf8){
+                if let jsonFields = try? JSONSerialization.data(withJSONObject: unwrappedFields, options: JSONSerialization.WritingOptions.prettyPrinted) {
+                    if let string = String(data: jsonFields, encoding: String.Encoding.utf8) {
                         dictionary.updateValue(string as AnyObject, forKey: "camposAdicionais")
                     }
                 }
@@ -66,11 +63,9 @@ public class APCProfile: NSObject, JsonConvertable{
         }
         return dictionary
     }
-    
-    public override var description: String{
+
+    public override var description: String {
         return "[aditionalFields = \(String(describing: self.aditionalFields)),\nprofileTypeCod = \(self.profileTypeCod),\nprofileDescription = \(String(describing: self.profileDescription))]"
     }
 
 }
-
-

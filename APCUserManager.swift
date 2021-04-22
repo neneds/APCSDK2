@@ -10,36 +10,31 @@ import Foundation
 import Alamofire
 
 public let TokenValidDaysInterval: Int = 7
-public let DayInSeconds : Double = 60 * 60 * 24
+public let DayInSeconds: Double = 60 * 60 * 24
 
 typealias ResultBlock = @convention(block)(APCOperationResponse) -> Void
 
 public class APCUserManager: NSObject {
-    
-    
+
     static public let sharedManager = APCUserManager()
-    
-    
+
     public fileprivate(set) var activeSession: APCUserSession?
-    
+
     public var isSessionActive: Bool {
         return self.activeSession != nil
     }
-    
-    
-    
-    
-    //MARK:- Initializers
+
+    // MARK: - Initializers
     fileprivate override init() {
         super.init()
         self.loadCurrentSession()
     }
-    
-    
-    //MARK:- Control methods
-    fileprivate func saveCurrentSession(){
+
+    // MARK: - Control methods
+    fileprivate func saveCurrentSession() {
         if let unwrappedSession = self.activeSession {
-            let archivedSession = NSKeyedArchiver.archivedData(withRootObject: unwrappedSession)
+            //let archivedSession = NSKeyedArchiver.archivedData(withRootObject: unwrappedSession)
+            let archivedSession = try? NSKeyedArchiver.archivedData(withRootObject: unwrappedSession, requiringSecureCoding: false)
             let defaults = UserDefaults.standard
             defaults.set(archivedSession, forKey: "current_session")
             defaults.synchronize()
@@ -50,10 +45,10 @@ public class APCUserManager: NSObject {
             }
         }
     }
-    
+
     fileprivate func loadCurrentSession() {
         let defaults = UserDefaults.standard
-        if let sessionData = defaults.object(forKey: "current_session") as? Data,let unachivedSession = NSKeyedUnarchiver.unarchiveObject(with: sessionData) as? APCUserSession {
+        if let sessionData = defaults.object(forKey: "current_session") as? Data, let unachivedSession = try? NSKeyedUnarchiver.unarchivedObject(ofClass: APCUserSession.self, from: sessionData) {
             self.activeSession = unachivedSession
             if let unwrappedUser = activeSession?.currentUser {
                 if unwrappedUser.userAccountType == .apcAccount {
@@ -61,23 +56,21 @@ public class APCUserManager: NSObject {
                 }
             }
         }
-        
-        
+
     }
-    
-    fileprivate func saveUserPass(email: String, password: String) -> Bool{
+
+    fileprivate func saveUserPass(email: String, password: String) -> Bool {
         return KeychainWrapper.standardKeychainAccess().setString(password, forKey: email)
     }
-    
-    fileprivate func loadUserPass(email: String)-> String? {
+
+    fileprivate func loadUserPass(email: String) -> String? {
         return KeychainWrapper.standardKeychainAccess().stringForKey(email)
     }
-    
+
     fileprivate func clearPassword() {
         _ = KeychainWrapper.standardKeychainAccess().removeAllKeys()
     }
-    
-    
+
     /**
      Remove a sessão atualmente ativa limpando todos os dados relativos.
      
@@ -89,8 +82,8 @@ public class APCUserManager: NSObject {
         self.clearPassword()
         self.activeSession = nil
     }
-    
-    //MARK:- Authentication methods
+
+    // MARK: - Authentication methods
     /**
      Autentica usuário com conta padrão do TCU. Se o login for efetuado com sucesso, o método irá preencher automaticamente a propriedade -activeSession
      - parameter email E-mail do usuário.
@@ -99,14 +92,14 @@ public class APCUserManager: NSObject {
      - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
      - see APCOperationResponse.swift
      */
-    public func authenticate(email: String, password: String, result: ((_ operationResponse: APCOperationResponse)-> Void)?) {
-        let headers : HTTPHeaders =  ["email" : email, "senha" : password]
-        
+    public func authenticate(email: String, password: String, result: ((_ operationResponse: APCOperationResponse) -> Void)?) {
+        let headers: HTTPHeaders =  ["email": email, "senha": password]
+
         AF.request(APCURLProvider.authenticateUserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: headers).responseJSON { (responseObject) in
             self.authenticationResponseHandler(password: password, response: responseObject, result: result)
         }
     }
-    
+
     /**
      Autentica usuário com o facebook. Se o login for efetuado com sucesso, o método irá preencher automaticamente a propriedade -activeSession
      - parameter email E-mail do usuário.
@@ -115,9 +108,9 @@ public class APCUserManager: NSObject {
      - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
      - see APCOperationResponse.swift
      */
-    public func authenticateFacebook(email: String, facebookToken: String, result: ((_ operationResponse: APCOperationResponse)-> Void)?) {
-        let headers : HTTPHeaders =  ["email" : email, "facebookToken" : facebookToken]
-        
+    public func authenticateFacebook(email: String, facebookToken: String, result: ((_ operationResponse: APCOperationResponse) -> Void)?) {
+        let headers: HTTPHeaders =  ["email": email, "facebookToken": facebookToken]
+
         AF.request(APCURLProvider.authenticateUserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: headers).responseJSON { (responseObject) in
             self.authenticationResponseHandler(password: nil, response: responseObject, result: result)
         }
@@ -130,17 +123,16 @@ public class APCUserManager: NSObject {
      - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
      - see APCOperationResponse.swift
      */
-    public func authenticateTwitter(email: String, twitterToken: String, result: ((_ operationResponse: APCOperationResponse)-> Void)?) {
-        let headers : HTTPHeaders =  ["email" : email, "twitterToken" : twitterToken]
-        
+    public func authenticateTwitter(email: String, twitterToken: String, result: ((_ operationResponse: APCOperationResponse) -> Void)?) {
+        let headers: HTTPHeaders =  ["email": email, "twitterToken": twitterToken]
+
         AF.request(APCURLProvider.authenticateUserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: headers).responseJSON { (responseObject) in
             self.authenticationResponseHandler(password: nil, response: responseObject, result: result)
         }
     }
-    
-    
-    //MARK:- Register Method
-    
+
+    // MARK: - Register Method
+
     /**
      Cadastra um usuário. Se o cadastro for efetuado com sucesso, o método irá authenticar e preencher automaticamente  propriedade -activeSession
      Caso o e-mail já esteja cadastrado na plataforma o resultado será APCOperationResultStatus.InvalidParamters.
@@ -148,7 +140,7 @@ public class APCUserManager: NSObject {
      - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
      - see APCOperationResponse.swift
      */
-    public func registerUser(user: APCUser,  result: @escaping (_ operationResponse: APCOperationResponse)-> Void) {
+    public func registerUser(user: APCUser, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
         if let request = self.requestForRegisterUser(user: user) {
             AF.request(request).responseData(completionHandler: { (responseObject) in
                 if let unwrappedResponse = responseObject.response {
@@ -158,64 +150,63 @@ public class APCUserManager: NSObject {
                     case 400:
                         result(APCOperationResponse(data: nil, status: .invalidParamters))
                     case 500:
-                        result(APCOperationResponse(data: nil, status:.internalServerError))
+                        result(APCOperationResponse(data: nil, status: .internalServerError))
                     default:
                         result(APCOperationResponse(data: nil, status: .connectionError))
                     }
                 }
             })
-        }else{
+        } else {
             result(APCOperationResponse(data: nil, status: .invalidParamters))
         }
     }
-    
-    
-    //MARK:- Update Method
-    
+
+    // MARK: - Update Method
+
     /**
      Atualiza dados de um usuário.
      - parameter user Objeto de usuário. A propriedade cod do objeto deve estar preenchida para que a operação de atualização seja realizada.
      - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
      - see APCOperationResponse.swift
      */
-    public func updateUser(user: APCUser,  result: @escaping (_ operationResponse: APCOperationResponse)-> Void) {
+    public func updateUser(user: APCUser, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
         if user.cod != 0 {
             if let unwrappedSession = self.activeSession {
                 if unwrappedSession.isSessionExpired {
                     self.refreshSession({ (operationResult) in
                         if operationResult.status == .completedSuccesfully {
                             self.updateUser(user: user, result: result)
-                        }else{
+                        } else {
                             result(operationResult)
                         }
                     })
-                }else{
+                } else {
                     if let token = self.activeSession?.sessionToken {
                         var userData = user.asDictionary()
                         userData.removeValue(forKey: "cod")
                         userData.removeValue(forKey: "senha")
                         userData.removeValue(forKey: "email")
                         userData.removeValue(forKey: "emailVerificado")
-                        let headers: HTTPHeaders = ["appToken" : token]
-                        
+                        let headers: HTTPHeaders = ["appToken": token]
+
                         AF.request(APCURLProvider.userURL(cod: user.cod), method: .post, parameters: userData, encoding: JSONEncoding(), headers: headers).responseJSON(completionHandler: { (responseObject) in
-                            
-                            APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
+
+                            APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (_, _) -> AnyObject? in
                                 return user
                             }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
                         })
                     }
                 }
-            }else{
-                result(APCOperationResponse(data:  NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .operationUnauthorized))
+            } else {
+                result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey: "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .operationUnauthorized))
             }
-            
-        }else{
-            result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 20, userInfo: [NSLocalizedDescriptionKey : "The user must have a cod != 0 to be updated"]),status: .invalidParamters))
+
+        } else {
+            result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 20, userInfo: [NSLocalizedDescriptionKey: "The user must have a cod != 0 to be updated"]), status: .invalidParamters))
         }
     }
-    
-    //MARK: - User picture methods
+
+    // MARK: - User picture methods
     /**
      
      Busca a foto de perfil do usuário.
@@ -225,13 +216,13 @@ public class APCUserManager: NSObject {
      - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta com a imagem no campo data.
      - see APCOperationResponse.swift
      */
-    
-    public func getUserPicture(userCod cod: Int, result: @escaping (_ operationResponse: APCOperationResponse)-> Void) {
+
+    public func getUserPicture(userCod cod: Int, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
         AF.request(APCURLProvider.userPictureURL(userCod: cod), method: .get).responseData(completionHandler: { (responseData) in
             self.getUserPictureResponseHandler(response: responseData, result: result)
         })
     }
-    
+
     /**
      
      Cadastra a foto de perfil do usuário.
@@ -241,28 +232,28 @@ public class APCUserManager: NSObject {
      - parameter result Bloco chamado após completar a operação. Retornando um objeto com o status da operação.
      - see APCOperationResponse.swift
      */
-    public func setUserPicture(userCod cod: Int, picture: UIImage, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
+    public func setUserPicture(userCod cod: Int, picture: UIImage, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
         if let unwrappedSession = self.activeSession {
             if unwrappedSession.isSessionExpired {
                 self.refreshSession({ (operationResult) in
                     if operationResult.status == .completedSuccesfully {
                         self.setUserPicture(userCod: cod, picture: picture, result: result)
-                    }else{
+                    } else {
                         result(operationResult)
                     }
                 })
-            }else{
+            } else {
                 if let token = self.activeSession?.sessionToken {
                     if let imageData = picture.pngData() {
-                        
+
                         AF.upload(
                             multipartFormData: { multipartFormData in
                                 multipartFormData.append(imageData, withName: "file", fileName: "picture.png", mimeType: "image/png")
-                                
+
                             },
                             to: APCURLProvider.userPictureURL(userCod: cod),
                             usingThreshold: 4194304,
-                            headers: ["appToken" : token ])
+                            headers: ["appToken": token ])
                             .responseJSON(completionHandler: { response in
                                 if response.error != nil {
                                     result(APCOperationResponse(data: nil, status: APCOperationResultStatus.noContentReturned))
@@ -270,51 +261,51 @@ public class APCUserManager: NSObject {
                                 if let unwrappedResponse = response.response {
                                     self.setPictureResponseHandler(unwrappedResponse, result: result)
                                 }
-                            })                        
+                            })
                     }
                 }
             }
-        }else{
-            result(APCOperationResponse(data:  NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .operationUnauthorized))
+        } else {
+            result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey: "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .operationUnauthorized))
         }
-        
+
     }
-    
-    fileprivate func setPictureResponseHandler(_ response: HTTPURLResponse , result: (_ operationResponse: APCOperationResponse)-> Void){
-        
+
+    fileprivate func setPictureResponseHandler(_ response: HTTPURLResponse, result: (_ operationResponse: APCOperationResponse) -> Void) {
+
         switch response.statusCode {
-        case 200,201:
+        case 200, 201:
             result(APCOperationResponse(data: nil, status: .completedSuccesfully))
         case 404:
-            result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 404, userInfo: [NSLocalizedDescriptionKey : "The user with the code provided can't not be founded."]), status: APCOperationResultStatus.resourceNotFound))
+            result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 404, userInfo: [NSLocalizedDescriptionKey: "The user with the code provided can't not be founded."]), status: APCOperationResultStatus.resourceNotFound))
         case 401:
             result(APCOperationResponse(data: nil, status: APCOperationResultStatus.operationUnauthorized))
         case 400:
-            result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 400, userInfo: [NSLocalizedDescriptionKey : "An error to process the image on the server or the picture sended must have the size larger than max size allowed of 4MB."]), status: APCOperationResultStatus.invalidParamters))
+            result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 400, userInfo: [NSLocalizedDescriptionKey: "An error to process the image on the server or the picture sended must have the size larger than max size allowed of 4MB."]), status: APCOperationResultStatus.invalidParamters))
         case 403:
-            result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 403, userInfo: [NSLocalizedDescriptionKey : "The user owner of token isn't the same of the cod porvided."]), status: APCOperationResultStatus.operationUnauthorized))
+            result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 403, userInfo: [NSLocalizedDescriptionKey: "The user owner of token isn't the same of the cod porvided."]), status: APCOperationResultStatus.operationUnauthorized))
         default:
             break
         }
     }
-    
-    fileprivate func getUserPictureResponseHandler(response responseObject: AFDataResponse<Data>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
-        if let unwrappedStatusCode = responseObject.response?.statusCode{
+
+    fileprivate func getUserPictureResponseHandler(response responseObject: AFDataResponse<Data>, result: ((_ operationResponse: APCOperationResponse) -> Void)?) {
+        if let unwrappedStatusCode = responseObject.response?.statusCode {
             switch unwrappedStatusCode {
             case 200:
                 if let imageData = responseObject.data {
                     result?(APCOperationResponse(data: UIImage(data: imageData), status: .completedSuccesfully))
                 }
             case 404:
-                result?(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 404, userInfo: [NSLocalizedDescriptionKey : "The user not have a picture"]), status: APCOperationResultStatus.resourceNotFound))
+                result?(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 404, userInfo: [NSLocalizedDescriptionKey: "The user not have a picture"]), status: APCOperationResultStatus.resourceNotFound))
             default:
-                result?(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 56, userInfo: [NSLocalizedDescriptionKey : "Something wrong than expected."]), status: APCOperationResultStatus.resourceNotFound))
+                result?(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 56, userInfo: [NSLocalizedDescriptionKey: "Something wrong than expected."]), status: APCOperationResultStatus.resourceNotFound))
             }
         }
-        
+
     }
-    
-    //MARK: - Find methods
+
+    // MARK: - Find methods
     /**
      Encontra os dados de uma pessoa a partir do cod. Se encontrado o campo data em operationResponse retornará preenchido com um objeto APCUser com os dados do usuário.
      Relacionado ao endpoint - GET: http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas/{codPessoa}
@@ -322,20 +313,20 @@ public class APCUserManager: NSObject {
      - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
      - see APCOperationResponse.swift
      */
-    public func find(cod: Int, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        
+    public func find(cod: Int, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
+
         AF.request(APCURLProvider.userURL(cod: cod), method: .get, parameters: nil, encoding: URLEncoding(), headers: nil).responseJSON { (responseObject) in
-            
-            APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
-                if let userData = responseValue as? [String : AnyObject]{
+
+            APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, _) -> AnyObject? in
+                if let userData = responseValue as? [String: AnyObject] {
                     return JsonObjectCreator.createObject(dictionary: userData, objectClass: APCUser.self)
                 }
                 return nil
-                
+
             }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
         }
     }
-    
+
     /**
      Encontra os dados de uma pessoa a partir do email. Se encontrado o campo data em operationResponse retornará preenchido com um objeto APCUser com os dados do usuário.
      Relacionado ao endpoint - GET: http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas
@@ -343,13 +334,13 @@ public class APCUserManager: NSObject {
      - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
      - see APCOperationResponse.swift
      */
-    public func find(email: String, result: @escaping (_ operationResponse: APCOperationResponse)-> Void) {
-        
-        AF.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: ["email" : email]).responseJSON { (responseObject) in
+    public func find(email: String, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
+
+        AF.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: ["email": email]).responseJSON { (responseObject) in
             self.findResponseHandler(response: responseObject, result: result)
         }
     }
-    
+
     /**
      Encontra os dados de uma pessoa a partir do token do Facebook. Se encontrado o campo data em operationResponse retornará preenchido com um objeto APCUser com os dados do usuário.
      Relacionado ao endpoint - GET: http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas
@@ -357,13 +348,13 @@ public class APCUserManager: NSObject {
      - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
      - see APCOperationResponse.swift
      */
-    public func find(facebookToken: String, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        
-        AF.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: ["facebookToken" : facebookToken]).responseJSON { (responseObject) in
+    public func find(facebookToken: String, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
+
+        AF.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: ["facebookToken": facebookToken]).responseJSON { (responseObject) in
             self.findResponseHandler(response: responseObject, result: result)
         }
     }
-    
+
     /**
      Encontra os dados de uma pessoa a partir do token do Twitter. Se encontrado o campo data em operationResponse retornará preenchido com um objeto APCUser com os dados do usuário.
      Relacionado ao endpoint - GET: http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas
@@ -371,18 +362,18 @@ public class APCUserManager: NSObject {
      - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
      - see APCOperationResponse.swift
      */
-    public func find(twitterToken: String, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        
-        AF.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: ["twitterToken" : twitterToken]).responseJSON { (responseObject) in
+    public func find(twitterToken: String, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
+
+        AF.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: ["twitterToken": twitterToken]).responseJSON { (responseObject) in
             self.findResponseHandler(response: responseObject, result: result)
         }
-        
+
     }
-    
-    //MARK: - Find Convenience
-    fileprivate func findResponseHandler(response responseObject: AFDataResponse<Any>, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
-            if let users =  responseValue as? [[String : AnyObject]]{
+
+    // MARK: - Find Convenience
+    fileprivate func findResponseHandler(response responseObject: AFDataResponse<Any>, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
+        APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, _) -> AnyObject? in
+            if let users =  responseValue as? [[String: AnyObject]] {
                 if !users.isEmpty {
                     return JsonObjectCreator.createObject(dictionary: users[0], objectClass: APCUser.self)
                 }
@@ -390,9 +381,9 @@ public class APCUserManager: NSObject {
             return nil
         }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
     }
-    
-    fileprivate func existsResponseHandler(response responseObject: AFDataResponse<Any>, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        
+
+    fileprivate func existsResponseHandler(response responseObject: AFDataResponse<Any>, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
+
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
             return true as AnyObject
         }, onNotFound: { (responseValue, responseHeaders) -> AnyObject? in
@@ -401,11 +392,11 @@ public class APCUserManager: NSObject {
             return false as AnyObject
         }, onInvalidParameters: { (responseValue, responseHeaders) -> AnyObject? in
             return false as AnyObject
-        }, onConnectionError: { (responseValue, responseHeaders) -> AnyObject? in
+        }, onConnectionError: { (_, _) -> AnyObject? in
             return false as AnyObject
         }, result: result)
     }
-    
+
     /**
      Verifica se um email já se encontra cadastrado. O campo data em operationResponse retornará preenchido com o booleano que indica se ele existe ou não.
      Relacionado ao endpoint - GET: http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas
@@ -413,14 +404,14 @@ public class APCUserManager: NSObject {
      - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
      - see APCOperationResponse.swift
      */
-    public func exists(email: String, result: @escaping (_ operationResponse: APCOperationResponse)-> Void) {
-        
-        AF.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: ["email" : email]).responseJSON { (responseObject) in
-            
+    public func exists(email: String, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
+
+        AF.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: ["email": email]).responseJSON { (responseObject) in
+
             self.existsResponseHandler(response: responseObject, result: result)
         }
     }
-    
+
     /**
      Verifica se um token do facebook já se encontra cadastrado. O campo data em operationResponse retornará preenchido com o booleano que indica se ele existe ou não.
      Relacionado ao endpoint - GET: http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas
@@ -428,14 +419,13 @@ public class APCUserManager: NSObject {
      - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
      - see APCOperationResponse.swift
      */
-    public func exists(facebookToken: String, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        
-        AF.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: ["facebookToken" : facebookToken]).responseJSON { (responseObject) in
+    public func exists(facebookToken: String, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
+
+        AF.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: ["facebookToken": facebookToken]).responseJSON { (responseObject) in
             self.existsResponseHandler(response: responseObject, result: result)
         }
     }
-    
-    
+
     /**
      Verifica se um token do twitter já se encontra cadastrado. O campo data em operationResponse retornará preenchido com o booleano que indica se ele existe ou não.
      Relacionado ao endpoint - GET: http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas
@@ -443,16 +433,16 @@ public class APCUserManager: NSObject {
      - parameter result Bloco chamado após completar a operação. Retornando um objeto de resposta.
      - see APCOperationResponse.swift
      */
-    public func exists(twitterToken: String, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        
-        AF.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: ["twitterToken" : twitterToken]).responseJSON { (responseObject) in
+    public func exists(twitterToken: String, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
+
+        AF.request(APCURLProvider.userBaserURL(), method: .get, parameters: nil, encoding: URLEncoding(), headers: ["twitterToken": twitterToken]).responseJSON { (responseObject) in
             self.existsResponseHandler(response: responseObject, result: result)
         }
     }
-    
-    fileprivate func requestForRegisterUser(user: APCUser)-> URLRequest? {
+
+    fileprivate func requestForRegisterUser(user: APCUser) -> URLRequest? {
         let userAsDictionary = user.asDictionary()
-        if let jsonData = try? JSONSerialization.data(withJSONObject: userAsDictionary, options: .prettyPrinted){
+        if let jsonData = try? JSONSerialization.data(withJSONObject: userAsDictionary, options: .prettyPrinted) {
             let request = NSMutableURLRequest(url: APCURLProvider.userBaserURL() as URL)
             request.httpMethod = "POST"
             request.httpBody = jsonData
@@ -461,20 +451,20 @@ public class APCUserManager: NSObject {
         }
         return nil
     }
-    
-    //MARK:- Redefine Password
+
+    // MARK: - Redefine Password
     /**
      Gera uma senha aleatória e a envia por email para o usuário. Requer autenticação.
      - parameter email E-mail do usuário que irá resetar a senha.
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e sempre nil no campo data.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func redefinePassword(email: String, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
-        
-        AF.request(APCURLProvider.redefinePasswordURL(), method: .post, parameters: ["email" : email], encoding: URLEncoding(), headers: nil).responseJSON { (responseObject) in
-            
+    public func redefinePassword(email: String, result: @escaping (_ operationResponse: APCOperationResponse) -> Void) {
+
+        AF.request(APCURLProvider.redefinePasswordURL(), method: .post, parameters: ["email": email], encoding: URLEncoding(), headers: nil).responseJSON { (responseObject) in
+
             if let unwrappedStatusCode = responseObject.response?.statusCode {
-                switch(unwrappedStatusCode){
+                switch unwrappedStatusCode {
                 case 200:
                     result(APCOperationResponse(data: nil, status: .completedSuccesfully))
                     break
@@ -490,48 +480,46 @@ public class APCUserManager: NSObject {
                 default:
                     break
                 }
-            }else{
+            } else {
                 result(APCOperationResponse(data: nil, status: .connectionError))
             }
         }
-        
+
     }
-    
-    
-    //MARK:- Useful methods
-    fileprivate func authenticationResponseHandler(password passowrd: String?, response responseObject: Alamofire.AFDataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?) {
-        
+
+    // MARK: - Useful methods
+    fileprivate func authenticationResponseHandler(password passowrd: String?, response responseObject: Alamofire.AFDataResponse<Any>, result: ((_ operationResponse: APCOperationResponse) -> Void)?) {
+
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
-            
-            if let uwrappedHeaders : [String : AnyObject] = responseHeaders as? [String : AnyObject] {
+
+            if let uwrappedHeaders: [String: AnyObject] = responseHeaders as? [String: AnyObject] {
                 let appToken = uwrappedHeaders["appToken"] as! String
                 let fm = DateFormatter()
                 fm.locale = Locale(identifier: "en_US")
                 fm.dateFormat = "EEE, dd MMM yyyy HH:mm:ss z"
                 let expirationDate = fm.date(from: uwrappedHeaders["Date"] as! String)?.addingTimeInterval(DayInSeconds * (Double(TokenValidDaysInterval) - 1.0))
-                let user = JsonObjectCreator.createObject(dictionary: responseValue as! [String : AnyObject], objectClass: APCUser.self) as! APCUser
+                let user = JsonObjectCreator.createObject(dictionary: responseValue as! [String: AnyObject], objectClass: APCUser.self) as! APCUser
                 let session = APCUserSession(user: user, token: appToken, expirationDate: expirationDate!)
                 session.currentUser?.password = passowrd
                 self.activeSession = session
                 self.saveCurrentSession()
                 return session
-            }else{
+            } else {
                 return nil
             }
             //return nil
         }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
     }
-    
-    
-    //MARK:- Request New Session
-    public func refreshSession(_ result: @escaping (_ operationResult: APCOperationResponse)-> Void){
+
+    // MARK: - Request New Session
+    public func refreshSession(_ result: @escaping (_ operationResult: APCOperationResponse) -> Void) {
         if let unwrappedSession = self.activeSession, let unwrappedUser = unwrappedSession.currentUser {
             self.backgroundAuthentication(user: unwrappedUser, result: result)
         }
     }
-    
-    //MARK:- Background authentication
-    fileprivate func backgroundAuthentication(user: APCUser,result: @escaping (_ operationStatus: APCOperationResponse)-> Void ){
+
+    // MARK: - Background authentication
+    fileprivate func backgroundAuthentication(user: APCUser, result: @escaping (_ operationStatus: APCOperationResponse) -> Void ) {
         if let unwrappedAccountType = user.userAccountType {
             switch unwrappedAccountType {
             case .apcAccount:
@@ -560,90 +548,86 @@ public class APCUserManager: NSObject {
             }
         }
     }
-    
+
 }
 
-//MARK: Profile methods
+// MARK: Profile methods
 extension APCUserManager {
-    
-    
+
     /**
      Cria um perfil e associa à um usuário no aplicativo. Requer autenticação.
      - parameter userCod Código do usuário à que será associado o perfil.
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e sempre nil no campo data.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func associateProfile(userCod user: Int, profile: APCProfile, result: @escaping (_ operationResult: APCOperationResponse)-> Void){
-        
+    public func associateProfile(userCod user: Int, profile: APCProfile, result: @escaping (_ operationResult: APCOperationResponse) -> Void) {
+
         if let unwrappedSession = self.activeSession {
             if unwrappedSession.isSessionExpired {
                 self.refreshSession({ (operationResult) in
                     if operationResult.status == .completedSuccesfully {
                         self.associateProfile(userCod: user, profile: profile, result: result)
-                    }else{
+                    } else {
                         result(operationResult)
                     }
                 })
-            }else{
+            } else {
                 if let token = self.activeSession?.sessionToken {
-                    
+
                     let profileData = profile.asDictionary()
-                    
-                    AF.request(APCURLProvider.userProfileURL(userCod: user), method: .post, parameters: profileData, encoding: JSONEncoding(), headers: ["appToken" : token]).responseJSON(completionHandler: { (responseObject) in
+
+                    AF.request(APCURLProvider.userProfileURL(userCod: user), method: .post, parameters: profileData, encoding: JSONEncoding(), headers: ["appToken": token]).responseJSON(completionHandler: { (responseObject) in
                         APCManagerUtils.responseHandler(response: responseObject, result: result)
                     })
                 }
             }
-        }else{
-            result(APCOperationResponse(data:  NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .operationUnauthorized))
+        } else {
+            result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey: "You must have a active session to perform this operation. See APCUserManager.sharedManager.authenticate(...)"]), status: .operationUnauthorized))
         }
     }
-    
-    
+
     /**
      Busca o perfil do usuário no aplicativo.
      - parameter userCod Código do usuário à que será buscado o perfil.
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e sempre nil no campo data.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func getUserProfile(userCod: Int, result: @escaping (_ operationResult: APCOperationResponse)-> Void){
+    public func getUserProfile(userCod: Int, result: @escaping (_ operationResult: APCOperationResponse) -> Void) {
         if let appCod = APCApplication.sharedApplication.applicationCode {
-            
+
             AF.request(APCURLProvider.userProfileURL(userCod: userCod), method: .get, parameters: nil, encoding: URLEncoding(), headers: ["appIdentifier": String(appCod)]).responseJSON(completionHandler: { (responseObject) in
                 self.getUserProfileResponseHandler(response: responseObject, result: result)
             })
         }
     }
-    
-    
-    
+
     /**
      Altera os dados do perfil de um usuário associado à um usuário no aplicativo. Requer autenticação.
      - parameter userCod Código do usuário à que será atualizado o perfil.
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e sempre nil no campo data.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func updateUserProfile(userCod user: Int, profile: APCProfile, result: @escaping (_ operationResult: APCOperationResponse)-> Void){
+    public func updateUserProfile(userCod user: Int, profile: APCProfile, result: @escaping (_ operationResult: APCOperationResponse) -> Void) {
         if let session = APCUserManager.sharedManager.activeSession {
             if session.isSessionExpired {
                 APCUserManager.sharedManager.refreshSession({ (operationResult) in
                     if operationResult.status == .completedSuccesfully {
                         self.updateUserProfile(userCod: user, profile: profile, result: result)
-                    }else{
+                    } else {
                         result(operationResult)
                     }
                 })
-            }else{
+            } else {
                 if let token = self.activeSession?.sessionToken {
                     var profileData = profile.asDictionary()
                     profileData.updateValue(true as AnyObject, forKey: "verificado")
-                    
-                    AF.request(APCURLProvider.userProfileURL(userCod: user), method: .put, parameters: profileData, encoding: JSONEncoding(), headers: ["appToken" : token]).responseJSON(completionHandler: { (responseObject) in
+
+                    AF.request(APCURLProvider.userProfileURL(userCod: user), method: .put, parameters: profileData, encoding: JSONEncoding(), headers: ["appToken": token]).responseJSON(completionHandler: { (responseObject) in
                         APCManagerUtils.responseHandler(response: responseObject, result: result)
                     })
                 }
             }
-        }else{
+        } else {
             result(APCOperationResponse(data: nil, status: .operationUnauthorized))
         }
     }
@@ -653,49 +637,43 @@ extension APCUserManager {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e sempre nil no campo data.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    public func deleteUserProfile(userCod: Int, result: @escaping (_ operationResult: APCOperationResponse)-> Void){
+    public func deleteUserProfile(userCod: Int, result: @escaping (_ operationResult: APCOperationResponse) -> Void) {
         if let session = APCUserManager.sharedManager.activeSession {
             if let appCod = APCApplication.sharedApplication.applicationCode {
                 if session.isSessionExpired {
                     APCUserManager.sharedManager.refreshSession({ (operationResult) in
                         if operationResult.status == .completedSuccesfully {
                             self.deleteUserProfile(userCod: userCod, result: result)
-                        }else{
+                        } else {
                             result(operationResult)
                         }
                     })
-                }else{
+                } else {
                     if let token = self.activeSession?.sessionToken {
-                        let headers: HTTPHeaders = ["appToken" : token , "appIdentifier" : String(appCod)]
-                        
-                        
+                        let headers: HTTPHeaders = ["appToken": token, "appIdentifier": String(appCod)]
+
                         AF.request(APCURLProvider.userProfileURL(userCod: userCod), method: .delete, parameters: nil, encoding: URLEncoding(), headers: headers).responseJSON(completionHandler: { (responseObject) in
                             APCManagerUtils.responseHandler(response: responseObject, result: result)
                         })
                     }
                 }
-            }else{
-                result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey : "You must have an aplication configured to perform this operation. See APCApplication.sharedApplication"]), status: .operationUnauthorized))
+            } else {
+                result(APCOperationResponse(data: NSError(domain: "com.bepid.APCAccessSDK", code: 10, userInfo: [NSLocalizedDescriptionKey: "You must have an aplication configured to perform this operation. See APCApplication.sharedApplication"]), status: .operationUnauthorized))
             }
-        }else{
+        } else {
             result(APCOperationResponse(data: nil, status: .operationUnauthorized))
         }
     }
-    
-    
-    //MARK: - Profile response handlers
-    
-    fileprivate func getUserProfileResponseHandler(response responseObject: AFDataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
-        APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, reponseHeaders) -> AnyObject? in
-            if let profileData = responseValue as? [String : AnyObject]{
+
+    // MARK: - Profile response handlers
+
+    fileprivate func getUserProfileResponseHandler(response responseObject: AFDataResponse<Any>, result: ((_ operationResponse: APCOperationResponse) -> Void)?) {
+        APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, _) -> AnyObject? in
+            if let profileData = responseValue as? [String: AnyObject] {
                 return JsonObjectCreator.createObject(dictionary: profileData, objectClass: APCProfile.self)
             }
             return nil
         }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
     }
-    
-    
+
 }
-
-
-

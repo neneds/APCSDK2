@@ -8,16 +8,16 @@
 
 import Foundation
 
-extension Array where Element : Equatable{
-    
+extension Array where Element: Equatable {
+
     @discardableResult
-    mutating func removeObject(_ object: Iterator.Element) -> Iterator.Element?{
-        if let idx = self.index(of: object) {
+    mutating func removeObject(_ object: Iterator.Element) -> Iterator.Element? {
+        if let idx = self.firstIndex(of: object) {
             return self.remove(at: idx)
         }
         return nil
     }
-    
+
     mutating func removeObjects(_ objects: [Iterator.Element]) {
         for value in objects {
             self.removeObject(value)

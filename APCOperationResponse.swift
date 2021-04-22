@@ -8,21 +8,21 @@
 
 import Foundation
 
-public class APCOperationResponse : NSObject{
-    
+public class APCOperationResponse: NSObject {
+
     public var data: AnyObject?
     public var status: APCOperationResultStatus
-    
+
     public init(data: AnyObject?, status: APCOperationResultStatus) {
         self.data = data
         self.status = status
     }
-    
-    public override var description: String{
+
+    public override var description: String {
         return "OperationResponse = [data = \(String(describing: self.data)), status = \(self.statusToString())]"
     }
-    
-    fileprivate func statusToString()-> String{
+
+    fileprivate func statusToString() -> String {
         switch status {
         case .completedSuccesfully:
             return "CompletedSuccesfully"
@@ -42,7 +42,7 @@ public class APCOperationResponse : NSObject{
     }
 }
 
-@objc public enum APCOperationResultStatus : Int {
+@objc public enum APCOperationResultStatus: Int {
     case completedSuccesfully = 0
     case operationUnauthorized = 1
     case connectionError = 2
@@ -50,5 +50,5 @@ public class APCOperationResponse : NSObject{
     case invalidParamters = 4
     case resourceNotFound = 5
     case noContentReturned = 6
-    
+
 }
