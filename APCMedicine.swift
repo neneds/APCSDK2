@@ -11,41 +11,41 @@ import Foundation
  Not Objective C support.
  */
 
-open class APCMedicine: NSObject, JsonConvertable {
+public class APCMedicine: NSObject, JsonConvertable {
     
-    open var cod : UInt64!
-    open var barCodeEAN : String!
-    open var activeIngredient: String!
-    open var CNPJ: String!
-    open var laboratory: String!
-    open var codeGGREM: String!
-    open var registerCode: String!
-    open var product: String!
-    open var presentation: String!
-    open var therapeuticClass: String!
-    open var releasedPrice: Bool!
-    open var pf : Float?
-    open var pf12 : Float?
-    open var pf17 : Float?
-    open var pf175 : Float?
-    open var pf175Alc : Float?
-    open var pf17Alc : Float?
-    open var pf18 : Float?
-    open var pf18Alc : Float?
-    open var pf20 : Float?
-    open var pmc : Float?
-    open var pmc12 : Float?
-    open var pmc17 : Float?
-    open var pmc175 : Float?
-    open var pmc175Alc : Float?
-    open var pmc17Alc : Float?
-    open var pmc18 : Float?
-    open var pmc18Alc : Float?
-    open var pmc20 : Float?
-    open var restriction: Bool!
-    open var CAP: Bool!
-    open var confaz87: Bool!
-    open var lastUpdate: Date!
+    public var cod : UInt64!
+    public var barCodeEAN : String!
+    public var activeIngredient: String!
+    public var CNPJ: String!
+    public var laboratory: String!
+    public var codeGGREM: String!
+    public var registerCode: String!
+    public var product: String!
+    public var presentation: String!
+    public var therapeuticClass: String!
+    public var releasedPrice: Bool!
+    public var pf : Float?
+    public var pf12 : Float?
+    public var pf17 : Float?
+    public var pf175 : Float?
+    public var pf175Alc : Float?
+    public var pf17Alc : Float?
+    public var pf18 : Float?
+    public var pf18Alc : Float?
+    public var pf20 : Float?
+    public var pmc : Float?
+    public var pmc12 : Float?
+    public var pmc17 : Float?
+    public var pmc175 : Float?
+    public var pmc175Alc : Float?
+    public var pmc17Alc : Float?
+    public var pmc18 : Float?
+    public var pmc18Alc : Float?
+    public var pmc20 : Float?
+    public var restriction: Bool!
+    public var CAP: Bool!
+    public var confaz87: Bool!
+    public var lastUpdate: Date!
 
     
     public required init(dictionary: [String : AnyObject]) {
@@ -101,7 +101,7 @@ open class APCMedicine: NSObject, JsonConvertable {
     
     //MARK:- Override description
     
-    open override var description: String{
+    public override var description: String{
         return "APCMedicine{apresentacao = [\(self.presentation), cap = \(self.CAP), classeTerapeutica = \(self.therapeuticClass),cnpj = \(self.CNPJ), cod = \(self.cod), codBarraEan = \(self.barCodeEAN), codGgrem = \(self.codeGGREM) confaz87 = \(self.confaz87), laboratorio = \(self.laboratory), pf0 = \(String(describing: self.pf)), pf12 = \(String(describing: self.pf12)), pf17 = \(String(describing: self.pf17)), pf175 = \(String(describing: self.pf175)), pf175Alc = \(String(describing: self.pf175Alc)), pf17Alc = \(String(describing: self.pf17Alc)),pf18 = \(String(describing: self.pf18)), pf18Alc = \(String(describing: self.pf18Alc)), pf20 = \(String(describing: self.pf20)), pmc = \(String(describing: self.pmc)), pmc12 = \(String(describing: self.pmc12)),pmc17 = \(String(describing: self.pmc17)), pmc175 = \(String(describing: self.pmc175)), pmc175Alc = \(String(describing: self.pmc175Alc)), pmc17Alc = \(String(describing: self.pmc17Alc)), pmc18 = \(String(describing: self.pmc18)), pmc18Alc = \(String(describing: self.pmc18Alc)), pmc20 = \(String(describing: self.pmc20)), precoLiberado = \(self.releasedPrice), principioAtivo = \(self.activeIngredient), produto = \(self.product), registro = \(self.registerCode), restricao = \(self.restriction), ultimaAlteracao = \(self.lastUpdate)]"
 
     }

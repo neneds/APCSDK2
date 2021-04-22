@@ -42,13 +42,13 @@ private let SecAttrAccessGroup: String! = kSecAttrAccessGroup as String
 private let sharedKeychainWrapper = KeychainWrapper()
 
 /// KeychainWrapper is a class to help make Keychain access in Swift more straightforward. It is designed to make accessing the Keychain services more like using NSUserDefaults, which is much more familiar to people.
-open class KeychainWrapper {
+public class KeychainWrapper {
     
     /// ServiceName is used for the kSecAttrService property to uniquely identify this keychain accessor. If no service name is specified, KeychainWrapper will default to using the bundleIdentifier.
-    fileprivate (set) open var serviceName: String = ""
+    fileprivate (set) public var serviceName: String = ""
     
     /// AccessGroup is used for the kSecAttrAccessGroup property to identify which Keychain Access Group this entry belongs to. This allows you to use the KeychainWrapper with shared keychain access between different applications.
-    fileprivate (set) open var accessGroup: String?
+    fileprivate (set) public var accessGroup: String?
     
     fileprivate static let defaultServiceName: String = {
         return Bundle.main.bundleIdentifier ?? "SwiftKeychainWrapper"
@@ -64,7 +64,7 @@ open class KeychainWrapper {
     }
     
     /// Standard access keychain
-    open class func standardKeychainAccess() -> KeychainWrapper {
+    public class func standardKeychainAccess() -> KeychainWrapper {
         return sharedKeychainWrapper
     }
 
@@ -74,7 +74,7 @@ open class KeychainWrapper {
     ///
     /// - parameter keyName: The key to check for.
     /// - returns: True if a value exists for the key. False otherwise.
-    open func hasValueForKey(_ keyName: String) -> Bool {
+    public func hasValueForKey(_ keyName: String) -> Bool {
         if let _ = self.dataForKey(keyName) {
             return true
         } else {
@@ -83,7 +83,7 @@ open class KeychainWrapper {
     }
     
     // MARK: Public Getters
-    open func integerForKey(_ keyName: String) -> Int? {
+    public func integerForKey(_ keyName: String) -> Int? {
         guard let numberValue = self.objectForKey(keyName) as? NSNumber else {
             return nil
         }
@@ -91,7 +91,7 @@ open class KeychainWrapper {
         return numberValue.intValue
     }
     
-    open func floatForKey(_ keyName: String) -> Float? {
+    public func floatForKey(_ keyName: String) -> Float? {
        guard let numberValue = self.objectForKey(keyName) as? NSNumber else {
             return nil
         }
@@ -99,7 +99,7 @@ open class KeychainWrapper {
         return numberValue.floatValue
     }
     
-    open func doubleForKey(_ keyName: String) -> Double? {
+    public func doubleForKey(_ keyName: String) -> Double? {
         guard let numberValue = objectForKey(keyName) as? NSNumber else {
             return nil
         }
@@ -107,7 +107,7 @@ open class KeychainWrapper {
         return numberValue.doubleValue
     }
     
-    open func boolForKey(_ keyName: String) -> Bool? {
+    public func boolForKey(_ keyName: String) -> Bool? {
         guard let numberValue = objectForKey(keyName) as? NSNumber else {
             return nil
         }
@@ -119,7 +119,7 @@ open class KeychainWrapper {
     ///
     /// - parameter keyName: The key to lookup data for.
     /// - returns: The String associated with the key if it exists. If no data exists, or the data found cannot be encoded as a string, returns nil.
-    open func stringForKey(_ keyName: String) -> String? {
+    public func stringForKey(_ keyName: String) -> String? {
         guard let keychainData = self.dataForKey(keyName) else {
             return nil
         }
@@ -131,7 +131,7 @@ open class KeychainWrapper {
     ///
     /// - parameter keyName: The key to lookup data for.
     /// - returns: The decoded object associated with the key if it exists. If no data exists, or the data found cannot be decoded, returns nil.
-    open func objectForKey(_ keyName: String) -> NSCoding? {
+    public func objectForKey(_ keyName: String) -> NSCoding? {
         guard let keychainData = self.dataForKey(keyName) else {
             return nil
         }
@@ -144,7 +144,7 @@ open class KeychainWrapper {
     ///
     /// - parameter keyName: The key to lookup data for.
     /// - returns: The NSData object associated with the key if it exists. If no data exists, returns nil.
-    open func dataForKey(_ keyName: String) -> Data? {
+    public func dataForKey(_ keyName: String) -> Data? {
         var keychainQueryDictionary = self.setupKeychainQueryDictionaryForKey(keyName)
         var result: AnyObject?
 
@@ -167,7 +167,7 @@ open class KeychainWrapper {
     ///
     /// - parameter keyName: The key to lookup data for.
     /// - returns: The persistent data reference object associated with the key if it exists. If no data exists, returns nil.
-    open func dataRefForKey(_ keyName: String) -> Data? {
+    public func dataRefForKey(_ keyName: String) -> Data? {
         var keychainQueryDictionary = self.setupKeychainQueryDictionaryForKey(keyName)
         var result: AnyObject?
         
@@ -187,19 +187,19 @@ open class KeychainWrapper {
     
     // MARK: Public Setters
     
-    open func setInteger(_ value: Int, forKey keyName: String) -> Bool {
+    public func setInteger(_ value: Int, forKey keyName: String) -> Bool {
         return self.setObject(NSNumber(value: value as Int), forKey: keyName)
     }
     
-    open func setFloat(_ value: Float, forKey keyName: String) -> Bool {
+    public func setFloat(_ value: Float, forKey keyName: String) -> Bool {
         return self.setObject(NSNumber(value: value as Float), forKey: keyName)
     }
     
-    open func setDouble(_ value: Double, forKey keyName: String) -> Bool {
+    public func setDouble(_ value: Double, forKey keyName: String) -> Bool {
         return self.setObject(NSNumber(value: value as Double), forKey: keyName)
     }
     
-    open func setBool(_ value: Bool, forKey keyName: String) -> Bool {
+    public func setBool(_ value: Bool, forKey keyName: String) -> Bool {
         return self.setObject(NSNumber(value: value as Bool), forKey: keyName)
     }
 
@@ -208,7 +208,7 @@ open class KeychainWrapper {
     /// - parameter value: The String value to save.
     /// - parameter forKey: The key to save the String under.
     /// - returns: True if the save was successful, false otherwise.
-    open func setString(_ value: String, forKey keyName: String) -> Bool {
+    public func setString(_ value: String, forKey keyName: String) -> Bool {
         if let data = value.data(using: String.Encoding.utf8) {
             return self.setData(data, forKey: keyName)
         } else {
@@ -221,7 +221,7 @@ open class KeychainWrapper {
     /// - parameter value: The NSCoding compliant object to save.
     /// - parameter forKey: The key to save the object under.
     /// - returns: True if the save was successful, false otherwise.
-    open func setObject(_ value: NSCoding, forKey keyName: String) -> Bool {
+    public func setObject(_ value: NSCoding, forKey keyName: String) -> Bool {
         let data = NSKeyedArchiver.archivedData(withRootObject: value)
         
         return self.setData(data, forKey: keyName)
@@ -232,7 +232,7 @@ open class KeychainWrapper {
     /// - parameter value: The NSData object to save.
     /// - parameter forKey: The key to save the object under.
     /// - returns: True if the save was successful, false otherwise.
-    open func setData(_ value: Data, forKey keyName: String) -> Bool {
+    public func setData(_ value: Data, forKey keyName: String) -> Bool {
         var keychainQueryDictionary: [String:AnyObject] = self.setupKeychainQueryDictionaryForKey(keyName)
 
         keychainQueryDictionary[SecValueData] = value as AnyObject?
@@ -255,7 +255,7 @@ open class KeychainWrapper {
     ///
     /// - parameter keyName: The key value to remove data for.
     /// - returns: True if successful, false otherwise.
-    open func removeObjectForKey(_ keyName: String) -> Bool {
+    public func removeObjectForKey(_ keyName: String) -> Bool {
         let keychainQueryDictionary: [String:AnyObject] = self.setupKeychainQueryDictionaryForKey(keyName)
 
         // Delete
@@ -269,7 +269,7 @@ open class KeychainWrapper {
     }
 
     /// Remove all keychain data added through KeychainWrapper. This will only delete items matching the currnt ServiceName and AccessGroup if one is set.
-    open func removeAllKeys() -> Bool {
+    public func removeAllKeys() -> Bool {
         //let keychainQueryDictionary = self.setupKeychainQueryDictionaryForKey(keyName)
         
         // Setup dictionary to access keychain and specify we are using a generic password (rather than a certificate, internet password, etc)
@@ -296,7 +296,7 @@ open class KeychainWrapper {
     ///
     /// - important: This may remove custom keychain entries you did not add via SwiftKeychainWrapper.
     ///
-    open class func wipeKeychain() {
+    public class func wipeKeychain() {
         _ = deleteKeychainSecClass(kSecClassGenericPassword) // Generic password items
         _ = deleteKeychainSecClass(kSecClassInternetPassword) // Internet password items
         _ = deleteKeychainSecClass(kSecClassCertificate) // Certificate items

@@ -12,7 +12,7 @@ import Alamofire
 /**
  Not Objective C support.
  */
-open class APCMedicineRetriver: NSObject {
+public class APCMedicineRetriver: NSObject {
 
     /**
      Busca remédios por parte do nome, apresentação, retornando os campos passados como parâmetros.
@@ -22,7 +22,7 @@ open class APCMedicineRetriver: NSObject {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e sempre os remédios no campo data.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    open func medicines(product: String?, presentation: String?, fields:[String]?, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
+    public func medicines(product: String?, presentation: String?, fields:[String]?, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         var sendParameters: [String : Any] = [:]
         sendParameters.updateOptionalValue(product as AnyObject?, forKey: "produto")
         sendParameters.updateOptionalValue(presentation as AnyObject?, forKey: "apresentacao")
@@ -30,7 +30,7 @@ open class APCMedicineRetriver: NSObject {
             sendParameters.updateValue(concatedFiels as AnyObject, forKey: "campos")
         }
         
-        Alamofire.request(APCURLProvider.medicinesURL(), method: .get, parameters: sendParameters, encoding: URLEncoding(), headers: nil).responseJSON { (responseObject) in
+        AF.request(APCURLProvider.medicinesURL(), method: .get, parameters: sendParameters, encoding: URLEncoding(), headers: nil).responseJSON { (responseObject) in
             self.medicinesResponseHandler(response: responseObject, result: result)
         }
     }
@@ -44,7 +44,7 @@ open class APCMedicineRetriver: NSObject {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e sempre os remédios no campo data.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    open func medicines(product:String?, presentation: String?, fields:[String]?, numberOfMedicines: Int, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
+    public func medicines(product:String?, presentation: String?, fields:[String]?, numberOfMedicines: Int, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         var parameters: [String : AnyObject] = [:]
         parameters.updateOptionalValue(product as AnyObject?, forKey: "produto")
         parameters.updateOptionalValue(presentation as AnyObject?, forKey: "apresentacao")
@@ -53,7 +53,7 @@ open class APCMedicineRetriver: NSObject {
             parameters.updateValue(concatedFiels as AnyObject, forKey: "campos")
         }
         
-        Alamofire.request(APCURLProvider.medicinesURL(), method: .get, parameters: parameters, encoding: URLEncoding(), headers: nil).responseJSON { (responseObject) in
+        AF.request(APCURLProvider.medicinesURL(), method: .get, parameters: parameters, encoding: URLEncoding(), headers: nil).responseJSON { (responseObject) in
             
             self.medicinesResponseHandler(response: responseObject, result: result)
         }
@@ -65,17 +65,17 @@ open class APCMedicineRetriver: NSObject {
      - parameter result Bloco que será executado após a operação ser completada. Retornará um objeto de APCOperationResponse com o Status da operação e sempre nil no campo data.
      - see APCOperationResponse.swift e APCOperationResultStatus
      */
-    open func medicine(barCodeEAN: UInt64, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
+    public func medicine(barCodeEAN: UInt64, result: @escaping (_ operationResponse: APCOperationResponse)-> Void){
         var parameters: [String : Any] = [:]
         parameters.updateOptionalValue(String(barCodeEAN) as AnyObject?, forKey: "codBarraEan")
         
-        Alamofire.request(APCURLProvider.medicinesURL(), method: .get, parameters: parameters, encoding: URLEncoding(), headers: nil).responseJSON { (responseObject) in
+        AF.request(APCURLProvider.medicinesURL(), method: .get, parameters: parameters, encoding: URLEncoding(), headers: nil).responseJSON { (responseObject) in
             self.singleMedicineResponseHandler(response: responseObject, result: result)
         }
     }
     
     
-    fileprivate func singleMedicineResponseHandler(response responseObject: DataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
+    fileprivate func singleMedicineResponseHandler(response responseObject: AFDataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
             if let unwrappedValue = responseValue as? [[String : AnyObject]]{
                 if let medicines = JsonObjectCreator.create(dictionaryArray: unwrappedValue, objectClass: APCMedicine.self) as? [APCMedicine] {
@@ -86,7 +86,7 @@ open class APCMedicineRetriver: NSObject {
             }, onNotFound: nil, onUnauthorized: nil, onInvalidParameters: nil, onConnectionError: nil, result: result)
     }
     
-    fileprivate func medicinesResponseHandler(response responseObject: DataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
+    fileprivate func medicinesResponseHandler(response responseObject: AFDataResponse<Any>, result: ((_ operationResponse: APCOperationResponse)-> Void)?){
         APCManagerUtils.responseHandler(response: responseObject, onSuccess: { (responseValue, responseHeaders) -> AnyObject? in
             if let unwrappedValue = responseValue as? [[String : AnyObject]]{
                 return JsonObjectCreator.create(dictionaryArray: unwrappedValue, objectClass: APCMedicine.self) as? [APCMedicine] as AnyObject?

@@ -9,16 +9,16 @@
 import Foundation
 
 
-open class APCUserSession: NSObject, NSCoding {
+public class APCUserSession: NSObject, NSCoding {
 
     
     //MARK:- Properties
-    open var currentUser: APCUser?
-    open var sessionToken: String?
-    open var expirationDate: Date?
+    public var currentUser: APCUser?
+    public var sessionToken: String?
+    public var expirationDate: Date?
     
     //MARK:- Computed Properties
-    open var isSessionExpired: Bool {
+    public var isSessionExpired: Bool {
         return (self.expirationDate as NSDate?)?.earlierDate(Date()) == self.expirationDate
     }
     
@@ -50,7 +50,7 @@ open class APCUserSession: NSObject, NSCoding {
         self.sessionToken = aDecoder.decodeObject(forKey: "session_token") as? String
     }
     
-    open func encode(with aCoder: NSCoder) {
+    public func encode(with aCoder: NSCoder) {
         aCoder.encode(self.currentUser, forKey: "current_user")
         aCoder.encode(self.expirationDate, forKey: "expiration_date")
         aCoder.encode(self.sessionToken, forKey: "session_token")
@@ -59,7 +59,7 @@ open class APCUserSession: NSObject, NSCoding {
     //MARK: Convenience methods
     
     //MARK:- Overrides
-    open override var description: String  {
+    public override var description: String  {
         return "currentUser = {\(String(describing: self.currentUser))}, sessionToken = \(String(describing: self.sessionToken)), expirationDate = \(String(describing: self.expirationDate))"
     }
 

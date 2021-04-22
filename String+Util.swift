@@ -21,7 +21,7 @@ extension String {
         }
         
         if !ret.isEmpty {
-            ret.remove(at: ret.characters.endIndex)
+            ret.remove(at: ret.endIndex)
         }
         
         return ret

@@ -25,7 +25,7 @@ class JsonObjectCreator: NSObject {
     
     class func createObject(jsonData: NSData , objectClass: JsonConvertable.Type) -> AnyObject?{
         if let deserializedData = try? JSONSerialization.jsonObject(with: jsonData as Data, options: .mutableContainers) as? [String : AnyObject]{
-            return objectClass.init(dictionary: deserializedData!)
+            return objectClass.init(dictionary: deserializedData)
         }
         
         return nil

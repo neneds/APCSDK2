@@ -8,17 +8,17 @@
 
 import Foundation
 
-open class APCOperationResponse : NSObject{
+public class APCOperationResponse : NSObject{
     
-    open var data: AnyObject?
-    open var status: APCOperationResultStatus
+    public var data: AnyObject?
+    public var status: APCOperationResultStatus
     
     public init(data: AnyObject?, status: APCOperationResultStatus) {
         self.data = data
         self.status = status
     }
     
-    open override var description: String{
+    public override var description: String{
         return "OperationResponse = [data = \(String(describing: self.data)), status = \(self.statusToString())]"
     }
     

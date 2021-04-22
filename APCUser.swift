@@ -8,29 +8,29 @@
 
 import Foundation
 import CoreLocation
-open class APCUser: NSObject, NSCoding, JsonConvertable {
+public class APCUser: NSObject, NSCoding, JsonConvertable {
     
     //MARK:- Properties
-    open var CEP: String?
-    open var biography: String?
-    open var cod: Int = 0
-    open var birthdate: Date?
-    open var email: String!
-    open var isEmailVerified: Bool = false
+    public var CEP: String?
+    public var biography: String?
+    public var cod: Int = 0
+    public var birthdate: Date?
+    public var email: String!
+    public var isEmailVerified: Bool = false
     
-    open var userLocation: CLLocationCoordinate2D = kCLLocationCoordinate2DInvalid
+    public var userLocation: CLLocationCoordinate2D = kCLLocationCoordinate2DInvalid
     
-    open var fullName: String?
-    open var username: String!
-    open var password: String?
-    open var gender: Gender = .none
-    open var tokenFacebook: String?
-    open var tokenGoogle: String?
-    open var tokenInstagram: String?
-    open var tokenTwitter: String?
+    public var fullName: String?
+    public var username: String!
+    public var password: String?
+    public var gender: Gender = .none
+    public var tokenFacebook: String?
+    public var tokenGoogle: String?
+    public var tokenInstagram: String?
+    public var tokenTwitter: String?
     
     //MARK:- Computed Properties
-    open var userAccountType: AccountType? {
+    public var userAccountType: AccountType? {
         if self.tokenFacebook != nil {
            return AccountType.facebookAccount
         }else if self.tokenTwitter != nil {
@@ -108,7 +108,7 @@ open class APCUser: NSObject, NSCoding, JsonConvertable {
         self.tokenTwitter = dictionary["tokenTwitter"] as? String
     }
     
-    open func asDictionary() -> [String : AnyObject] {
+    public func asDictionary() -> [String : AnyObject] {
         var dictionary : [String : AnyObject] = [:]
         dictionary.updateOptionalValue(self.CEP as AnyObject?, forKey: "CEP")
         dictionary.updateOptionalValue(self.biography as AnyObject?, forKey: "biografia")
@@ -170,7 +170,7 @@ open class APCUser: NSObject, NSCoding, JsonConvertable {
 
     }
     
-    open func encode(with aCoder: NSCoder) {
+    public func encode(with aCoder: NSCoder) {
         aCoder.encode(self.CEP, forKey: "CEP")
         aCoder.encode(self.biography, forKey: "biografia")
         aCoder.encode(self.cod, forKey: "cod")
@@ -194,7 +194,7 @@ open class APCUser: NSObject, NSCoding, JsonConvertable {
     }
     
     //MARK: Overrides
-    open override var description: String  {
+    public override var description: String  {
     
         return  "CEP = \(String(describing: self.CEP))\n" +
                 "biografia = \(String(describing: self.biography))\n" +

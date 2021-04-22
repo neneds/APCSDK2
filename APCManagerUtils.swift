@@ -22,7 +22,7 @@ class APCManagerUtils: NSObject {
         return nil
     }
     
-    class func responseHandler(response responseObject: DataResponse<Any>,
+    class func responseHandler(response responseObject: AFDataResponse<Any>,
                                         onSuccess: ((_ responseValue: AnyObject?, _ responseHeaders: [AnyHashable: Any]?)-> AnyObject?)? = nil,
                                         onNotFound: ((_ responseValue: AnyObject?, _ responseHeaders: [AnyHashable: Any]?)-> AnyObject?)? = nil,
                                         onUnauthorized: ((_ responseValue: AnyObject?, _ responseHeaders: [AnyHashable: Any]?)-> AnyObject?)? = nil,
@@ -30,31 +30,35 @@ class APCManagerUtils: NSObject {
                                         onConnectionError: ((_ responseValue: AnyObject?, _ responseHeaders: [AnyHashable: Any]?)-> AnyObject?)? = nil,
                                         result: ((_ operationResponse: APCOperationResponse)-> Void)?){
         
-        if let status = responseObject.response?.statusCode {
-            let responseValue = responseObject.result.value
-            let responseHeaders = responseObject.response?.allHeaderFields
-            
-            
-            switch status {
+        switch responseObject.result {
+        case let .success(value):
+            if let status = responseObject.response?.statusCode {
+                let responseValue = value
+                let responseHeaders = responseObject.response?.allHeaderFields
                 
-            case 200, 201:
-                result?(APCOperationResponse(data: onSuccess?(responseValue as AnyObject?, responseHeaders),status: .completedSuccesfully))
-            case 404:
-                result?(APCOperationResponse(data: onNotFound?(responseValue as AnyObject?, responseHeaders),status: .resourceNotFound))
-            case 500:
-                result?(APCOperationResponse(data: nil,status: .internalServerError))
-            case 401, 403:
-                result?(APCOperationResponse(data: onUnauthorized?(responseValue as AnyObject?, responseHeaders),status: .operationUnauthorized))
-            case 400:
-                result?(APCOperationResponse(data: onInvalidParameters?(responseValue as AnyObject?, responseHeaders),status: .invalidParamters))
-            case 204:
-                result?(APCOperationResponse(data: nil, status: .noContentReturned))
-            default:
-                result?(APCOperationResponse(data: onConnectionError?(responseValue as AnyObject?, responseHeaders),status: .connectionError))
+             
                 
+                switch status {
+                    
+                case 200, 201:
+                    result?(APCOperationResponse(data: onSuccess?(responseValue as AnyObject?, responseHeaders),status: .completedSuccesfully))
+                case 404:
+                    result?(APCOperationResponse(data: onNotFound?(responseValue as AnyObject?, responseHeaders),status: .resourceNotFound))
+                case 500:
+                    result?(APCOperationResponse(data: nil,status: .internalServerError))
+                case 401, 403:
+                    result?(APCOperationResponse(data: onUnauthorized?(responseValue as AnyObject?, responseHeaders),status: .operationUnauthorized))
+                case 400:
+                    result?(APCOperationResponse(data: onInvalidParameters?(responseValue as AnyObject?, responseHeaders),status: .invalidParamters))
+                case 204:
+                    result?(APCOperationResponse(data: nil, status: .noContentReturned))
+                default:
+                    result?(APCOperationResponse(data: onConnectionError?(responseValue as AnyObject?, responseHeaders),status: .connectionError))
+                    
+                }
             }
-        }else{
-            result?(APCOperationResponse(data: onConnectionError?(responseObject.result.error as AnyObject?, nil),status: .connectionError))
+        case let .failure(error):
+            result?(APCOperationResponse(data: onConnectionError?(error as AnyObject?, nil),status: .connectionError))
         }
     }
 

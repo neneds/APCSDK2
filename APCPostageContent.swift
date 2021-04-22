@@ -8,14 +8,14 @@
 
 import Foundation
 
-open class APCPostageContent: NSObject, JsonConvertable{
-    open var cod: Int = 0
-    open var postageCod: Int = 0
-    open fileprivate(set) var values: [String: AnyObject] = [:]
-    open var text: String?
-    open var numericValue: Double?
+public class APCPostageContent: NSObject, JsonConvertable{
+    public var cod: Int = 0
+    public var postageCod: Int = 0
+    public fileprivate(set) var values: [String: AnyObject] = [:]
+    public var text: String?
+    public var numericValue: Double?
     
-    open var hasBinaryData: Bool = false
+    public var hasBinaryData: Bool = false
     
     override init(){
         
@@ -40,11 +40,11 @@ open class APCPostageContent: NSObject, JsonConvertable{
     
  
     
-    open func setValue(_ value: AnyObject, toField field: String) {
+    public func setValue(_ value: AnyObject, toField field: String) {
        self.values[field] = value
     }
     
-    open subscript(field: String)-> AnyObject?{
+    public subscript(field: String)-> AnyObject?{
         get{
            return self.values[field]
         }
@@ -76,7 +76,7 @@ open class APCPostageContent: NSObject, JsonConvertable{
         }
     }
     
-    open func asDictionary() -> [String : AnyObject] {
+    public func asDictionary() -> [String : AnyObject] {
         if let jsonData = try? JSONSerialization.data(withJSONObject: self.values, options: JSONSerialization.WritingOptions.prettyPrinted){
             var data : [String : AnyObject] = [:]
             if let string = String(data: jsonData, encoding: String.Encoding.utf8){
@@ -96,7 +96,7 @@ open class APCPostageContent: NSObject, JsonConvertable{
     
     
     //MARK: - Overrides
-    open override var description: String{
+    public override var description: String{
         return  "APCPostageContent [additionalFields = \(self.values), text = \(String(describing: self.text)), numericValue = \(String(describing: self.numericValue))]"
     }
     

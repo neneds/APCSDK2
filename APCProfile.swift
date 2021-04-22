@@ -8,11 +8,11 @@
 
 import Foundation
 
-open class APCProfile: NSObject, JsonConvertable{
+public class APCProfile: NSObject, JsonConvertable{
     
-    open fileprivate(set) var aditionalFields: [String : AnyObject]? = [:]
-    open var profileTypeCod: Int = 0
-    open var profileDescription: String?
+    public fileprivate(set) var aditionalFields: [String : AnyObject]? = [:]
+    public var profileTypeCod: Int = 0
+    public var profileDescription: String?
     
     public override init() {
         
@@ -25,7 +25,7 @@ open class APCProfile: NSObject, JsonConvertable{
     
     
     
-    open subscript(field: String)-> AnyObject?{
+    public subscript(field: String)-> AnyObject?{
         get{
             return self.aditionalFields?[field]
         }
@@ -67,7 +67,7 @@ open class APCProfile: NSObject, JsonConvertable{
         return dictionary
     }
     
-    open override var description: String{
+    public override var description: String{
         return "[aditionalFields = \(String(describing: self.aditionalFields)),\nprofileTypeCod = \(self.profileTypeCod),\nprofileDescription = \(String(describing: self.profileDescription))]"
     }
 

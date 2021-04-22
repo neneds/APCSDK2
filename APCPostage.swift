@@ -8,18 +8,18 @@
 
 import Foundation
 
-open class APCPostage: NSObject, JsonConvertable{
+public class APCPostage: NSObject, JsonConvertable{
     
-    open var cod: Int = 0
-    open var codAuthor : Int = 0
-    open var codDestinatedObject: Int64 = 0
-    open var codDestinatedObjectType: Int = 0
-    open var codPostageType: Int = 0
-    open var date: Date = Date()
+    public var cod: Int = 0
+    public var codAuthor : Int = 0
+    public var codDestinatedObject: Int64 = 0
+    public var codDestinatedObjectType: Int = 0
+    public var codPostageType: Int = 0
+    public var date: Date = Date()
     
-    open var contentsCodes: [Int] = []
+    public var contentsCodes: [Int] = []
     
-    open var contents: [APCPostageContent]?
+    public var contents: [APCPostageContent]?
     
     fileprivate override init(){
         
@@ -83,7 +83,7 @@ open class APCPostage: NSObject, JsonConvertable{
         }
     }
     
-    open func asDictionary() -> [String : AnyObject] {
+    public func asDictionary() -> [String : AnyObject] {
         var data : [String : AnyObject] = [:]
         var author : [String : AnyObject] = [:]
         author.updateValue(self.codAuthor as AnyObject, forKey: "codPessoa")
@@ -102,7 +102,7 @@ open class APCPostage: NSObject, JsonConvertable{
     }
     
     
-    override open var description: String {
+    override public var description: String {
         return "[cod = \(self.cod), codAuthor = \(self.codAuthor), codObjetoDestino = \(self.codDestinatedObject), codTipoObjetoDestino = \(self.codDestinatedObjectType), codTipoPostagem = \(self.codPostageType), date = \(self.date), contentsCodes = \(self.contentsCodes)]\n, contents = \(String(describing: self.contents))"
     }
     
