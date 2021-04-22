@@ -9,15 +9,15 @@
 import Foundation
 
 extension Dictionary {
-    
-    mutating func updateOptionalValue(_ value: Value?, forKey key: Key){
+
+    mutating func updateOptionalValue(_ value: Value?, forKey key: Key) {
         if let unwrappedValue = value {
             self.updateValue(unwrappedValue, forKey: key)
         }
     }
-    
-    mutating func union(_ other: [Key: Value]){
-        for (k,v) in other {
+
+    mutating func union(_ other: [Key: Value]) {
+        for (k, v) in other {
             self.updateValue(v, forKey: k)
         }
     }

@@ -8,26 +8,24 @@
 
 import Foundation
 
+public class APCUserSession: NSObject, NSCoding {
 
-open class APCUserSession: NSObject, NSCoding {
+    // MARK: - Properties
+    public var currentUser: APCUser?
+    public var sessionToken: String?
+    public var expirationDate: Date?
 
-    
-    //MARK:- Properties
-    open var currentUser: APCUser?
-    open var sessionToken: String?
-    open var expirationDate: Date?
-    
-    //MARK:- Computed Properties
-    open var isSessionExpired: Bool {
+    // MARK: - Computed Properties
+    public var isSessionExpired: Bool {
         return (self.expirationDate as NSDate?)?.earlierDate(Date()) == self.expirationDate
     }
-    
-    //MARK:- Initializers
-    
+
+    // MARK: - Initializers
+
     override fileprivate init() {
         super.init()
     }
-    
+
     /**
      Initializes an user session with an user, a session token and an expiration date.
      - parameter user Session current user
@@ -39,27 +37,26 @@ open class APCUserSession: NSObject, NSCoding {
         self.currentUser = user
         self.sessionToken = token
         self.expirationDate = expirationDate
-        
+
     }
-    
-    
-    //MARK:- NSCoding implementation
+
+    // MARK: - NSCoding implementation
     required public init(coder aDecoder: NSCoder) {
         self.currentUser = aDecoder.decodeObject(forKey: "current_user") as? APCUser
         self.expirationDate = aDecoder.decodeObject(forKey: "expiration_date") as? Date
         self.sessionToken = aDecoder.decodeObject(forKey: "session_token") as? String
     }
-    
-    open func encode(with aCoder: NSCoder) {
+
+    public func encode(with aCoder: NSCoder) {
         aCoder.encode(self.currentUser, forKey: "current_user")
         aCoder.encode(self.expirationDate, forKey: "expiration_date")
         aCoder.encode(self.sessionToken, forKey: "session_token")
     }
-    
-    //MARK: Convenience methods
-    
-    //MARK:- Overrides
-    open override var description: String  {
+
+    // MARK: Convenience methods
+
+    // MARK: - Overrides
+    public override var description: String {
         return "currentUser = {\(String(describing: self.currentUser))}, sessionToken = \(String(describing: self.sessionToken)), expirationDate = \(String(describing: self.expirationDate))"
     }
 
